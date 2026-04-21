@@ -1,0 +1,10 @@
+node_modules
+.next
+cdk.out
+.env*
+!.env.example
+coverage
+dist
+infra/dist
+*.tsbuildinfo
+.DS_Store
