@@ -59,16 +59,9 @@ The monorepo is **pnpm workspaces**. No Turborepo / Nx in v1 — keep it boring.
 
 Hypercare does **not** own user identity. The other project ("main project") owns the Cognito user pool. Hypercare is a second app client.
 
-What Cursor needs from the user (block on TASK-002 if missing):
+Cognito handoff for TASK-002 is **documented in `docs/auth-contract.md`** (pool ID, region, app client, OAuth scopes, callback and sign-out URLs, Hosted UI domain, JWKS, custom attributes — none — and client-secret notes).
 
-1. Cognito User Pool ID.
-2. Cognito region.
-3. App Client ID for Hypercare (the user creates this in the main project's Cognito console; Hypercare's CDK does **not** create the user pool).
-4. Whether the App Client uses a client secret (recommended: no, public client + PKCE).
-5. Allowed callback URLs the user has set (`http://localhost:3000/api/auth/callback`, the Amplify preview URL, and prod URL).
-6. Hosted-UI domain, if any.
-
-Implementation: `aws-amplify` v6 with the `auth` category configured against the existing pool. Server-side session validation via the Cognito JWKS. **No password fields in the Hypercare UI** — sign-in routes through the shared Hosted UI (or a token bridge if the main project provides one). If the main project hands off via a redirect with a Cognito session cookie or a one-time code, the auth ticket will detail that flow once §4.1–§4.6 above are filled in.
+Implementation: `aws-amplify` v6 with the `auth` category configured against the existing pool. Server-side session validation via the Cognito JWKS. **No password fields in the Hypercare UI** — sign-in routes through the shared Hosted UI (or a token bridge if the main project provides one). If the main project hands off via a redirect with a Cognito session cookie or a one-time code, the auth ticket will detail that flow when implemented.
 
 ## 5. Conventions
 
