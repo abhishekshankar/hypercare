@@ -15,14 +15,14 @@ This document records how Hypercare authenticates against the **main project’s
 |--------|--------|
 | **App Client ID** | `2s4r9um36h654ehst7665vhsij` |
 | **App client name (Cognito console)** | `hypercare` |
-| **Client secret** | **Yes** — a client secret exists on this app client (value is **not** stored in this repo; use AWS console / Secrets Manager / env at runtime only). *Recommended for browser/Next.js + PKCE: a **public** app client **without** a secret; consider creating a new client and retiring this one.* |
+| **Client secret** | **Yes** — a client secret exists on this app client (value is **not** stored in this repo; use AWS console / Secrets Manager / env at runtime only). For a browser/Next.js app using **PKCE**, this is acceptable if the secret is used only in **server-side** auth config (e.g. NextAuth) and **never** exposed to the browser. *Optional later:* create a **public** app client (no secret) if you want to align strictly with SPA + PKCE patterns — **not blocking**. |
 
 ## OAuth configuration (as configured in Cognito)
 
 | Field | Value |
 |--------|--------|
 | **OAuth flows** | **Authorization code grant** (only flow listed). PKCE is not a separate toggle in the current Cognito console; enforce PKCE in the app/SDK (TASK-006). |
-| **OAuth scopes** | `openid`, `email`, `phone`. **`profile` is not enabled** — add `profile` if Hypercare needs standard name/picture claims. |
+| **OAuth scopes** | `openid`, `email`, `phone`, `profile` |
 
 ## Hypercare deployment URLs (user labels **a** / **b**)
 
@@ -35,29 +35,24 @@ These labels refer to **where Hypercare is hosted**, not to the token-bridge flo
 
 ## Callback and sign-out URLs (as configured in Cognito)
 
-**Allowed callback URLs** (exactly as whitelisted at handoff):
+**Allowed callback URLs** (4 total):
 
-- `https://d84l1y8p4kdic.cloudfront.net`
+| URL | Purpose |
+|-----|---------|
+| `https://d84l1y8p4kdic.cloudfront.net` | CloudFront (existing) |
+| `http://localhost:3000/api/auth/callback` | Local dev |
+| `https://main.d1ajzemw7s1n5f.amplifyapp.com/api/auth/callback` | Amplify (**a**) |
+| `https://cogcare.org/care1/api/auth/callback` | Production (**b** app path) |
 
-**Targets to add in Cognito** (same app client) so Hypercare OAuth works on **a**, **b**, and localhost — use these exact strings unless your Next.js [`basePath`](https://nextjs.org/docs/app/api-reference/config/next-config-js/basePath) differs from `/care1` for **b**:
+**Allowed sign-out URLs** (3 total):
 
-| Environment | Callback URL (whitelist) |
-|-------------|---------------------------|
-| Local | `http://localhost:3000/api/auth/callback` |
-| **a** (Amplify) | `https://main.d1ajzemw7s1n5f.amplifyapp.com/api/auth/callback` |
-| **b** (prod path) | `https://cogcare.org/care1/api/auth/callback` |
+| URL | Purpose |
+|-----|---------|
+| `http://localhost:3000` | Local dev |
+| `https://main.d1ajzemw7s1n5f.amplifyapp.com` | Amplify (**a**) |
+| `https://cogcare.org` | Production |
 
-**Allowed sign-out URLs** at handoff: **none configured.**
-
-**Sign-out URLs to whitelist** (match redirect behavior after logout):
-
-| Environment | Sign-out URL |
-|-------------|----------------|
-| Local | `http://localhost:3000/` |
-| **a** | `https://main.d1ajzemw7s1n5f.amplifyapp.com/` |
-| **b** | `https://cogcare.org/care1/` |
-
-If Cognito rejects a trailing slash, try the same URLs without `/` at the end. If **b** is served at domain root instead of under `/care1`, replace **b** rows with the real public origin + `/api/auth/callback`.
+Use the same strings in Hypercare and in any OAuth client config so redirects match Cognito exactly (including trailing slashes / lack thereof).
 
 ## Hosted UI
 
@@ -85,7 +80,7 @@ Server-side validation in Hypercare should use this JWKS URL with the pool’s i
 
 ## Custom attributes
 
-**Not inventoried at TASK-002.** Confirm in the user pool **Attributes** tab whether any custom attributes exist that Hypercare must read or write; update this section when known.
+**None.** The Cognito **Sign-up** experience shows **Custom attributes (0)** — “No custom attributes found” (console: [Hosted UI / app client settings](https://ca-central-1.console.aws.amazon.com/cognito/v2/idp/user-pools/ca-central-1_qvGFxxwDS/applications/app-clients/2s4r9um36h654ehst7665vhsij/login-pages/edit/hosted-ui-settings?region=ca-central-1)). Hypercare does not sync custom pool attributes for v1.
 
 ## What Hypercare must **not** do
 
@@ -98,10 +93,9 @@ Delegated-auth rules (see `prd.md` / PRD §4):
 
 ## Action items (Cognito / product)
 
-| Item | Notes |
+| Item | Status |
 |------|--------|
-| Public client for browser | Prefer **no client secret** + PKCE for browser; rotate to a new app client if needed. |
-| Scopes | Consider adding **`profile`** if claims are required. |
-| Callback URLs | Add localhost, Amplify preview, and production callback URLs (see above). |
-| Sign-out URLs | Configure at least localhost, preview, and prod origins. |
-| Custom attributes | List any pool custom attrs and whether Hypercare syncs them. |
+| OAuth scopes (`profile`, etc.) | Done — see [OAuth configuration](#oauth-configuration-as-configured-in-cognito). |
+| Callback / sign-out URLs | Done — see [Callback and sign-out URLs](#callback-and-sign-out-urls-as-configured-in-cognito). |
+| Custom attributes | Done — [none](#custom-attributes). |
+| Public client (no secret) | **Optional, not blocking** — current confidential client + server-side secret + PKCE is acceptable; see [Hypercare app client](#hypercare-app-client). |
