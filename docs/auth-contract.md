@@ -14,7 +14,7 @@ This document records how Hypercare authenticates against the **main project’s
 | Field | Value |
 |--------|--------|
 | **App Client ID** | `2s4r9um36h654ehst7665vhsij` |
-| **Console name (as of handoff)** | `My web app - 7savq` — rename to **hypercare** in Cognito for clarity. |
+| **App client name (Cognito console)** | `hypercare` |
 | **Client secret** | **Yes** — a client secret exists on this app client (value is **not** stored in this repo; use AWS console / Secrets Manager / env at runtime only). *Recommended for browser/Next.js + PKCE: a **public** app client **without** a secret; consider creating a new client and retiring this one.* |
 
 ## OAuth configuration (as configured in Cognito)
@@ -85,7 +85,6 @@ Delegated-auth rules (see `prd.md` / PRD §4):
 
 | Item | Notes |
 |------|--------|
-| Rename app client | Prefer name **hypercare** in the console. |
 | Public client for browser | Prefer **no client secret** + PKCE for browser; rotate to a new app client if needed. |
 | Scopes | Consider adding **`profile`** if claims are required. |
 | Callback URLs | Add localhost, Amplify preview, and production callback URLs (see above). |
