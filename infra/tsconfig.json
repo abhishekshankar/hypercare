@@ -1,7 +1,6 @@
 {
   "extends": "../tsconfig.base.json",
   "compilerOptions": {
-    "exactOptionalPropertyTypes": false,
     "target": "ES2022",
     "module": "CommonJS",
     "moduleResolution": "Node",
@@ -15,6 +14,6 @@
     "outDir": "dist",
     "rootDir": "."
   },
-  "include": ["bin/**/*.ts", "lib/**/*.ts"],
+  "include": ["bin/**/*.ts", "lib/**/*.ts", "lib/bootstrap-lambda/pem.d.ts"],
   "exclude": ["node_modules", "cdk.out", "dist"]
 }

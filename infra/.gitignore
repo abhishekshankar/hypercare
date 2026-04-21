@@ -1,5 +1,6 @@
 *.js
 *.d.ts
+!lib/bootstrap-lambda/pem.d.ts
 node_modules
 
 # CDK asset staging directory

@@ -30,6 +30,8 @@ export class DataStack extends cdk.Stack {
     cdk.Tags.of(this).add("app", TAG_APP);
     cdk.Tags.of(this).add("env", TAG_ENV);
 
+    // Under `exactOptionalPropertyTypes`, concrete `ec2.Vpc` is not assignable to `ec2.IVpc` (TS2375:
+    // `vpnGatewayId` is `string | undefined` on the class but an optional-exact `string` on the iface).
     const vpc = new ec2.Vpc(this, "Vpc", {
       maxAzs: 2,
       natGateways: 1,
@@ -38,7 +40,7 @@ export class DataStack extends cdk.Stack {
         { name: "Private", subnetType: ec2.SubnetType.PRIVATE_WITH_EGRESS },
         { name: "Isolated", subnetType: ec2.SubnetType.PRIVATE_ISOLATED },
       ],
-    });
+    }) as ec2.IVpc;
 
     const bastion = new ec2.BastionHostLinux(this, "Bastion", {
       vpc,
@@ -88,6 +90,9 @@ export class DataStack extends cdk.Stack {
       bundling: {
         minify: true,
         sourceMap: false,
+        loader: {
+          ".pem": "text",
+        },
         // Node 20 runtime does not include AWS SDK v3; bundle the Secrets Manager client.
         externalModules: [],
       },

@@ -1,10 +1,14 @@
 /**
  * CDK Provider onEvent handler: create app databases and enable pgvector.
  * Rejected alternative: RDS Data API — it does not support pgvector operators.
+ *
+ * TLS: `rds-global-bundle.pem` is the RDS/Aurora global CA bundle from
+ * https://truststore.pki.rds.amazonaws.com/global/global-bundle.pem (refresh periodically).
  */
 import { GetSecretValueCommand, SecretsManagerClient } from "@aws-sdk/client-secrets-manager";
 import type { CloudFormationCustomResourceEvent } from "aws-lambda";
 import { Client } from "pg";
+import rdsGlobalCaPem from "./rds-global-bundle.pem";
 
 const DB_NAMES = ["hypercare_dev", "hypercare_prod"] as const;
 
@@ -39,7 +43,10 @@ function createClient(secret: RdsSecret, database: string): Client {
     password,
     database,
     connectionTimeoutMillis: 120_000,
-    ssl: { rejectUnauthorized: false },
+    ssl: {
+      ca: rdsGlobalCaPem,
+      rejectUnauthorized: true,
+    },
   });
 }
 

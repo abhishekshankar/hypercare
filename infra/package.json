@@ -22,13 +22,13 @@
     "@types/pg": "^8.15.5",
     "aws-cdk": "2.1118.4",
     "esbuild": "^0.27.2",
+    "pg": "^8.17.2",
     "ts-node": "^10.9.2",
     "typescript": "~5.9.3"
   },
   "dependencies": {
     "@aws-sdk/client-secrets-manager": "^3.971.0",
     "aws-cdk-lib": "^2.248.0",
-    "constructs": "^10.5.0",
-    "pg": "^8.17.2"
+    "constructs": "^10.5.0"
   }
 }
