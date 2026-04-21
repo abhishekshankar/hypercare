@@ -67,7 +67,7 @@ export class DataStack extends cdk.Stack {
 
     const bootstrapSg = new ec2.SecurityGroup(this, "BootstrapLambdaSg", {
       vpc,
-      description: "Bootstrap custom resource Lambda → Aurora",
+      description: "Bootstrap custom resource Lambda to Aurora",
       allowAllOutbound: true,
     });
     cluster.connections.allowDefaultPortFrom(bootstrapSg, "Bootstrap Lambda to cluster");

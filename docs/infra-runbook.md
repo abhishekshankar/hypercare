@@ -6,7 +6,8 @@ This runbook brings up **HypercareData-dev**: a VPC, Aurora PostgreSQL Serverles
 
 - **AWS account** with permissions to create VPC, EC2, RDS, Secrets Manager, Lambda, IAM, CloudWatch Logs, and CloudFormation stacks.
 - **AWS CLI v2** configured (`aws configure` or environment variables). Prefer a named profile, e.g. `export AWS_PROFILE=your-profile`.
-- **Default Region** `ca-central-1` (matches `docs/auth-contract.md`). The CDK app defaults `CDK_DEFAULT_REGION` to `ca-central-1` when unset.
+- **Session Manager plugin** for the AWS CLI (required for `./scripts/db-tunnel.sh` and `aws ssm start-session`). [Install guide](https://docs.aws.amazon.com/systems-manager/latest/userguide/session-manager-working-with-install-plugin.html).
+- **Default Region** `ca-central-1` (matches `docs/auth-contract.md`). The CDK app defaults `CDK_DEFAULT_REGION` to `ca-central-1` when unset. For **deploy and bootstrap**, also set `AWS_REGION` / `AWS_DEFAULT_REGION` to `ca-central-1` so asset publishing and the CDK bootstrap SSM lookup use the same region (otherwise the CLI may default to another region and fail with “environment not bootstrapped”).
 - **CDK bootstrap** once per account/region (from repo root):
 
   ```bash
@@ -27,6 +28,7 @@ From the **repository root**:
 
 ```bash
 pnpm install
+export AWS_REGION=ca-central-1 AWS_DEFAULT_REGION=ca-central-1
 export CDK_DEFAULT_REGION=ca-central-1
 export CDK_DEFAULT_ACCOUNT=$(aws sts get-caller-identity --query Account --output text)
 pnpm --filter infra cdk deploy HypercareData-dev
@@ -137,4 +139,4 @@ Turn off or destroy the stack when not actively developing to avoid NAT and Auro
 
 - **`cdk deploy` cannot assume lookup role**: Ensure the account/region matches where you bootstrapped, and credentials are for the same account.
 - **Bootstrap Lambda fails**: Check CloudWatch Logs for `/aws/lambda/<DbBootstrapOnEvent...>` — often the cluster is still provisioning; redeploy or wait and update the stack.
-- **Session Manager tunnel fails**: The bastion instance profile must allow SSM; `BastionHostLinux` includes this. Confirm the instance is **running** and your IAM user can start sessions.
+- **Session Manager tunnel fails**: The bastion instance profile must allow SSM; `BastionHostLinux` includes this. Confirm the instance is **running** and your IAM user can start sessions. If you see `SessionManagerPlugin is not found`, install the [Session Manager plugin](https://docs.aws.amazon.com/systems-manager/latest/userguide/session-manager-working-with-install-plugin.html).
