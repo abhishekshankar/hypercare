@@ -14,8 +14,8 @@ Cursor works tickets in **ID order**. Never start the next ticket until the prev
 
 | ID       | Title                                                                                                                                                                                | Depends on | Status  | PR  |
 | -------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------ | ---------- | ------- | --- |
-| TASK-001 | Monorepo scaffold, lint, typecheck, CI                                                                                                                                               | —          | in_review | —   |
-| TASK-002 | Collect Cognito parameters from user + document                                                                                                                                      | —          | pending | —   |
+| TASK-001 | Monorepo scaffold, lint, typecheck, CI                                                                                                                                               | —          | done | `d2c79d3` |
+| TASK-002 | Collect Cognito parameters from user + document                                                                                                                                      | —          | done | `0a26b61`+`e680353`+`02d94b4` |
 | TASK-003 | CDK app, Aurora Serverless v2 + pgvector, dev env up                                                                                                                                 | 001        | pending | —   |
 | TASK-004 | Drizzle schema v0: users, care_profile, conversations, messages, modules, module_chunks, safety_flags                                                                                | 003        | pending | —   |
 | TASK-005 | Next.js app skeleton, Tailwind, 8-screen route stubs, persistent crisis strip                                                                                                        | 001        | pending | —   |
