@@ -7,13 +7,13 @@ This runbook brings up **HypercareData-dev**: a VPC, Aurora PostgreSQL Serverles
 - **AWS account** with permissions to create VPC, EC2, RDS, Secrets Manager, Lambda, IAM, CloudWatch Logs, and CloudFormation stacks.
 - **AWS CLI v2** configured (`aws configure` or environment variables). Prefer a named profile, e.g. `export AWS_PROFILE=your-profile`.
 - **Default Region** `ca-central-1` (matches `docs/auth-contract.md`). The CDK app defaults `CDK_DEFAULT_REGION` to `ca-central-1` when unset.
-- **CDK bootstrap** once per account/region:
+- **CDK bootstrap** once per account/region (from repo root):
 
   ```bash
-  pnpm exec cdk bootstrap aws://ACCOUNT_ID/ca-central-1
+  pnpm --filter infra cdk bootstrap aws://<your-account-id>/ca-central-1
   ```
 
-  Use your real account ID. If you use a profile: `aws sts get-caller-identity`.
+  Substitute your account ID (`aws sts get-caller-identity --query Account --output text`). Use the same profile/region you will use for deploy.
 
 - **Node 20+** and **pnpm** (repo root).
 
@@ -31,6 +31,26 @@ export CDK_DEFAULT_REGION=ca-central-1
 export CDK_DEFAULT_ACCOUNT=$(aws sts get-caller-identity --query Account --output text)
 pnpm --filter infra cdk deploy HypercareData-dev
 ```
+
+### End-to-end smoke (bootstrap → tunnel → `psql`)
+
+After a **first-time** bootstrap in this account/region, typical flow:
+
+```bash
+pnpm --filter infra cdk bootstrap aws://<your-account-id>/ca-central-1   # only once per account/region
+pnpm --filter infra cdk deploy HypercareData-dev
+./scripts/db-tunnel.sh
+```
+
+In a **second** terminal (password = JSON `password` from Secrets Manager for the stack secret; see `SecretArn` in stack outputs):
+
+```bash
+psql "postgres://hypercare_admin:<password-from-secrets-manager>@localhost:15432/hypercare_dev" -c '\l'
+psql "postgres://hypercare_admin:<password-from-secrets-manager>@localhost:15432/hypercare_dev" -c '\dx'
+psql "postgres://hypercare_admin:<password-from-secrets-manager>@localhost:15432/hypercare_prod" -c '\dx'
+```
+
+Expect `\l` to list `hypercare_dev` and `hypercare_prod`, and `\dx` on each DB to include `vector` after the bootstrap custom resource succeeds.
 
 Notes:
 
@@ -75,15 +95,7 @@ The cluster has **no public endpoint**. Use **Session Manager** port forwarding 
      --parameters '{"host":["YOUR_CLUSTER_ENDPOINT"],"portNumber":["5432"],"localPortNumber":["15432"]}'
    ```
 
-4. Fetch the password (JSON field `password`) from Secrets Manager using `SecretArn` from outputs, then connect:
-
-   ```bash
-   export DATABASE_URL="postgres://hypercare_admin:YOUR_PASSWORD@localhost:15432/hypercare_dev"
-   psql "$DATABASE_URL" -c '\l'
-   psql "$DATABASE_URL" -c '\dx'
-   ```
-
-   Expect databases `hypercare_dev` and `hypercare_prod`, and extension `vector` on each after bootstrap succeeds.
+4. Fetch the password (JSON field `password`) from Secrets Manager using `SecretArn` from outputs, then run the `psql` lines in **End-to-end smoke** above (or set `DATABASE_URL` and reuse it).
 
 ## Tagging verification
 
