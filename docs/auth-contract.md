@@ -24,25 +24,40 @@ This document records how Hypercare authenticates against the **main project’s
 | **OAuth flows** | **Authorization code grant** (only flow listed). PKCE is not a separate toggle in the current Cognito console; enforce PKCE in the app/SDK (TASK-006). |
 | **OAuth scopes** | `openid`, `email`, `phone`. **`profile` is not enabled** — add `profile` if Hypercare needs standard name/picture claims. |
 
+## Hypercare deployment URLs (user labels **a** / **b**)
+
+These labels refer to **where Hypercare is hosted**, not to the token-bridge flow options in **Token-bridge / handoff** below.
+
+| Label | Role | Base URL |
+|-------|------|----------|
+| **a** | AWS Amplify (main branch app) | `https://main.d1ajzemw7s1n5f.amplifyapp.com` |
+| **b** | Production (path on cogcare.org) | `https://cogcare.org/care1` |
+
 ## Callback and sign-out URLs (as configured in Cognito)
 
 **Allowed callback URLs** (exactly as whitelisted at handoff):
 
 - `https://d84l1y8p4kdic.cloudfront.net`
 
-**Gaps (required before local dev / Amplify / prod work end-to-end):**
+**Targets to add in Cognito** (same app client) so Hypercare OAuth works on **a**, **b**, and localhost — use these exact strings unless your Next.js [`basePath`](https://nextjs.org/docs/app/api-reference/config/next-config-js/basePath) differs from `/care1` for **b**:
 
-- Add `http://localhost:3000/api/auth/callback` for local development.
-- Add Amplify preview callback(s), e.g. `https://main.<app-id>.amplifyapp.com/api/auth/callback` (match your Amplify app).
-- Add production callback, e.g. `https://<your-prod-domain>/api/auth/callback`.
+| Environment | Callback URL (whitelist) |
+|-------------|---------------------------|
+| Local | `http://localhost:3000/api/auth/callback` |
+| **a** (Amplify) | `https://main.d1ajzemw7s1n5f.amplifyapp.com/api/auth/callback` |
+| **b** (prod path) | `https://cogcare.org/care1/api/auth/callback` |
 
 **Allowed sign-out URLs** at handoff: **none configured.**
 
-**Minimum recommended sign-out URLs** (to be added in Cognito):
+**Sign-out URLs to whitelist** (match redirect behavior after logout):
 
-- `http://localhost:3000/`
-- Amplify preview origin(s) as needed.
-- Production site origin.
+| Environment | Sign-out URL |
+|-------------|----------------|
+| Local | `http://localhost:3000/` |
+| **a** | `https://main.d1ajzemw7s1n5f.amplifyapp.com/` |
+| **b** | `https://cogcare.org/care1/` |
+
+If Cognito rejects a trailing slash, try the same URLs without `/` at the end. If **b** is served at domain root instead of under `/care1`, replace **b** rows with the real public origin + `/api/auth/callback`.
 
 ## Hosted UI
 
