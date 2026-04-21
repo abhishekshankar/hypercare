@@ -39,6 +39,7 @@ pnpm --filter infra cdk deploy HypercareData-dev
 After a **first-time** bootstrap in this account/region, typical flow:
 
 ```bash
+export AWS_REGION=ca-central-1 AWS_DEFAULT_REGION=ca-central-1
 pnpm --filter infra cdk bootstrap aws://<your-account-id>/ca-central-1   # only once per account/region
 pnpm --filter infra cdk deploy HypercareData-dev
 ./scripts/db-tunnel.sh
