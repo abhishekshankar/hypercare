@@ -1,5 +1,7 @@
 This is a [Next.js](https://nextjs.org) project bootstrapped with [`create-next-app`](https://nextjs.org/docs/app/api-reference/cli/create-next-app).
 
+From the monorepo root, run `pnpm dev` to start the development server at [http://localhost:3000](http://localhost:3000). Route group `(authed)` under `src/app/` holds screens that will be protected; **TASK-006** adds the session guard.
+
 ## Getting Started
 
 First, run the development server:

@@ -236,6 +236,8 @@ Single page. Warm but serious typography — closer to the New York Times than t
 
 - **Persistent crisis strip:** "If you're in crisis right now, call the Alzheimer's Association 24/7 helpline: 800-272-3900." Always visible.
 
+  _Implementation note (TASK-005):_ placement (`sticky` vs `fixed`), palette, and typography tokens are recorded in [`docs/adr/0003-design-tokens-and-crisis-strip.md`](docs/adr/0003-design-tokens-and-crisis-strip.md).
+
 ## **6.2 Screen 2 — Onboarding**
 
 The care profile questionnaire from Section 5, split into 5 short steps. One question per screen on mobile, 2–3 on desktop. Progress bar. Persistent micro-copy: "You can change any of this later." Target duration: 4–5 minutes.
