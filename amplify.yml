@@ -23,26 +23,13 @@ applications:
             - pnpm --filter web... run build
         postBuild:
           commands:
-            # `next build` leaves webpack/turbopack caches under `.next/cache` and copies them
-            # again under `standalone/.../.next/cache`. They are not needed at runtime but can
-            # exceed Amplify's ~220MB deploy artifact limit (~400MB+ observed).
+            # `next build` leaves webpack/turbopack caches under `.next/cache`. They are not
+            # needed at runtime and can push the artifact over Amplify's ~220MB deploy limit.
             - echo "=== postBuild start ==="
-            # Confirm Amplify's cwd and what's around it — `appRoot` + `buildPath` interaction
-            # in monorepo mode can resolve artifact paths from a different anchor than expected.
-            - pwd 2>&1 || true
-            - ls -la 2>&1 || true
-            - rm -rf apps/web/.next/cache apps/web/.next/standalone/apps/web/.next/cache 2>&1 || true
-            # Diagnostic block: every command merges stderr into stdout (`2>&1`) so the Amplify
-            # log viewer can't hide "No such file or directory" warnings on missing subtrees.
-            # `ls -la` proves what `.next` actually contains; `find` confirms the standalone
-            # entry point (`server.js`); `du -sh` gives per-subtree sizes for cap diagnosis.
+            - rm -rf apps/web/.next/cache 2>&1 || true
+            # Diagnostics: confirm artifact layout + SSR-detection manifests at root.
             - ls -la apps/web/.next 2>&1 || true
-            - ls -la apps/web/.next/standalone 2>&1 || true
-            - find apps/web/.next/standalone -name "server.js" 2>&1 || true
-            - du -sh apps/web/.next apps/web/.next/server apps/web/.next/static apps/web/.next/standalone 2>&1 || true
-            # SSR-detection guard: Amplify needs these at the artifact root or it provisions no
-            # compute function (CloudFront then returns 500 with no `server:` header). Fail the
-            # build here instead of shipping a half-broken deploy.
+            - du -sh apps/web/.next apps/web/.next/server apps/web/.next/static 2>&1 || true
             - |
               missing=""
               for f in BUILD_ID required-server-files.json routes-manifest.json prerender-manifest.json; do
@@ -55,25 +42,15 @@ applications:
               echo "SSR detection manifests present at .next/ root."
             - echo "=== postBuild done ==="
       artifacts:
-        # `output: 'standalone'` (apps/web/next.config.ts) writes a self-contained server tree
-        # under `.next/standalone` plus the client chunks under `.next/static`. Shipping the full
-        # `.next/` would also upload `.next/server` — a duplicate of what's already inside
-        # `standalone/` — and put the artifact over Amplify's ~220MB deploy limit (440MB+ observed).
-        #
-        # IMPORTANT: Amplify Hosting's Next.js SSR build provider detects "this is an SSR app"
-        # by reading manifests at the artifact root (`required-server-files.json`, `BUILD_ID`,
-        # `routes-manifest.json`, `prerender-manifest.json`, `app-path-routes-manifest.json`,
-        # `app-build-manifest.json`, `build-manifest.json`). If those are missing, Amplify
-        # provisions NO compute function — CloudFront has no origin and every URL returns
-        # `500` from CloudFront (header `x-cache: Error from cloudfront`, no `server:` header).
-        # The build & deploy phases still report SUCCEED because nothing throws; the failure
-        # is silent at the SSR-detection step. Total manifest weight is ~380KB.
+        # Canonical AWS monorepo Next.js SSR artifact pattern: ship the whole `.next/` so
+        # Amplify Hosting's SSR provider can bundle the function itself from `.next/server` +
+        # `next-server.js.nft.json`. We do NOT use `output: 'standalone'` (apps/web/next.config.ts)
+        # because with `outputFileTracingRoot` at the repo root the standalone entry lands at
+        # `standalone/apps/web/server.js` — Amplify expects `standalone/server.js` at the artifact
+        # root and silently fails to provision compute when it's nested.
         baseDirectory: apps/web/.next
         files:
-          - "BUILD_ID"
-          - "*.json"
-          - "standalone/**/*"
-          - "static/**/*"
+          - "**/*"
       cache:
         paths:
           - node_modules/**/*
