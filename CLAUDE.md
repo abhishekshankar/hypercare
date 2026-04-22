@@ -20,6 +20,14 @@ Library: both must be `1` or `true` for SSE. Route is `POST /api/app/library/sea
 
 Conversation messages: `POST /api/app/conversation/[id]/message` reads `users.routing_cohort` for Layer-5 routing when `MODEL_ROUTING=1`. Unit tests that invoke this route without Postgres mock `@hypercare/db` `createDbClient` and partially mock `@/lib/env.server` (see `test/safety/conversation-escalation.test.ts`).
 
+### Amplify Hosting (build succeeds, site is 404)
+
+If `curl -sI https://<branch>.<appId>.amplifyapp.com/` shows **404** and **`server: AmazonS3`**, Amplify deployed the `.next` folder as a **static** site (platform **WEB**). This app needs **SSR + API routes** (platform **WEB_COMPUTE**, framework **Next.js - SSR**). S3 cannot run Next.js, so there is no document at `/`.
+
+**Fix (console):** Amplify → your app → **Hosting** → **Environment variables** — ensure `AMPLIFY_MONOREPO_APP_ROOT` is `apps/web` (must match `appRoot` in root `amplify.yml`). **App settings** → **General** — set **Platform** to **WEB_COMPUTE** and **Framework** to **Next.js - SSR** (not “Web”), then redeploy the branch.
+
+**Fix (CLI):** `aws amplify update-app --app-id <appId> --platform WEB_COMPUTE --region <region>` then trigger a new build. Use the app’s AWS region (CLI default account/region must match the Amplify app).
+
 ## Product / architecture pointers
 
 - `PROJECT_BRIEF.md`, `prd.md`, root `README.md`, `ARCHITECTURE.md`
