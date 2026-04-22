@@ -20,6 +20,9 @@ export type UiMessage =
       citations: Citation[];
       refusal: RefusalReason | null;
       createdAt: string;
+      /** TASK-011 / TASK-036: optional helpfulness on eligible assistant rows. */
+      rating: "up" | "down" | null;
+      ratingInvited: boolean;
     };
 
 export type RecentConversation = {
@@ -51,6 +54,8 @@ export async function loadThread(
       citations: messages.citations,
       refusal: messages.refusal,
       createdAt: messages.createdAt,
+      rating: messages.rating,
+      ratingInvited: messages.ratingInvited,
     })
     .from(messages)
     .where(eq(messages.conversationId, conversationId))
@@ -65,6 +70,8 @@ export async function loadThread(
         citations: (r.citations ?? []) as Citation[],
         refusal: (r.refusal ?? null) as RefusalReason | null,
         createdAt: r.createdAt.toISOString(),
+        rating: (r.rating as "up" | "down" | null) ?? null,
+        ratingInvited: r.ratingInvited === true,
       };
     }
     return {

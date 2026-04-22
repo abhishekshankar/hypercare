@@ -3,7 +3,7 @@
 - **Owner:** Cursor (surfaces, queue, SLA job); PM + Care Specialist (review the queue, triage); content team (acts on feedback that points to module issues)
 - **Depends on:** TASK-011 (assistant-turn rating thumbs up/down column on `messages`), TASK-021 (the in-app help surface or whatever the support entrypoint is — if not yet shipped, this ticket ships that too), TASK-029 (`/internal/*` admin auth + metrics surface — we add to it)
 - **Unblocks:** the closed-beta → GA learning loop; PRD §12 "we actually read the thumbs-downs" commitment; a defensible answer to *"what did you do with the signal?"*
-- **Status:** pending
+- **Status:** done (code + ADR; apply migration `0012` in each env; wire `SLACK_FEEDBACK_WEBHOOK_URL` + `CRON_SECRET` + EventBridge)
 - **ADR:** `docs/adr/0025-feedback-reviewer-loop.md` (new — queue semantics, SLA, what closes a ticket, who reviews)
 
 ---

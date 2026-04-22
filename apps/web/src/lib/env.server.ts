@@ -59,6 +59,33 @@ const serverSchema = z.object({
    * Production should rely on `users.role = 'admin'`.
    */
   INTERNAL_METRICS_ALLOW_EMAILS: z.string().optional(),
+  /** Incoming webhook for #hc-feedback-queue (TASK-036); optional in dev/test. */
+  SLACK_FEEDBACK_WEBHOOK_URL: z
+    .preprocess((v) => (typeof v === "string" && v.trim() !== "" ? v.trim() : undefined), z.string().url().optional()),
+  /** Protects `/api/cron/feedback-sla` (EventBridge or manual). */
+  CRON_SECRET: z
+    .preprocess((v) => (typeof v === "string" && v.trim() !== "" ? v.trim() : undefined), z.string().min(16).optional()),
+  /**
+   * Self-serve data export (TASK-032). When unset, `POST /api/app/privacy/export` returns 503 in production.
+   * Tests may leave unset; unit tests mock S3.
+   */
+  PRIVACY_EXPORT_S3_BUCKET: z
+    .preprocess((v) => (typeof v === "string" && v.trim() !== "" ? v.trim() : undefined), z.string().min(1).optional()),
+  /** AWS region for the export bucket. */
+  AWS_REGION: z
+    .preprocess((v) => (typeof v === "string" && v.trim() !== "" ? v.trim() : undefined), z.string().min(1).optional()),
+  /** TASK-031: pair with NEXT_PUBLIC_STREAMING_ANSWERS; optional. */
+  STREAMING_ANSWERS: z
+    .preprocess((v) => (typeof v === "string" && v.trim() !== "" ? v.trim() : undefined), z.string().optional()),
+  /** TASK-040: pair with NEXT_PUBLIC_STREAMING_LESSONS. */
+  STREAMING_LESSONS: z
+    .preprocess((v) => (typeof v === "string" && v.trim() !== "" ? v.trim() : undefined), z.string().optional()),
+  /** TASK-041: pair with NEXT_PUBLIC_STREAMING_LIBRARY. */
+  STREAMING_LIBRARY: z
+    .preprocess((v) => (typeof v === "string" && v.trim() !== "" ? v.trim() : undefined), z.string().optional()),
+  /** TASK-042: per-user model routing experiment (Layer 5). */
+  MODEL_ROUTING: z
+    .preprocess((v) => (typeof v === "string" && v.trim() !== "" ? v.trim() : undefined), z.string().optional()),
 });
 
 function formatZodError(err: z.ZodError): string {
@@ -86,6 +113,14 @@ const NEXT_BUILD_PLACEHOLDERS = {
   SESSION_COOKIE_SECRET: "0123456789abcdef0123456789abcdef",
   DATABASE_URL: "postgres://b:b@127.0.0.1:1/b",
   INTERNAL_METRICS_ALLOW_EMAILS: undefined,
+  SLACK_FEEDBACK_WEBHOOK_URL: undefined,
+  CRON_SECRET: undefined,
+  PRIVACY_EXPORT_S3_BUCKET: undefined,
+  AWS_REGION: "ca-central-1",
+  STREAMING_ANSWERS: undefined,
+  STREAMING_LESSONS: undefined,
+  STREAMING_LIBRARY: undefined,
+  MODEL_ROUTING: undefined,
 } as const;
 
 const isNextProductionBuild = process.env.NEXT_PHASE === "phase-production-build";
@@ -121,6 +156,14 @@ const raw = {
   DATABASE_URL_ADMIN: process.env.DATABASE_URL_ADMIN,
   NODE_ENV: process.env.NODE_ENV as "development" | "test" | "production" | undefined,
   INTERNAL_METRICS_ALLOW_EMAILS: process.env.INTERNAL_METRICS_ALLOW_EMAILS as string | undefined,
+  SLACK_FEEDBACK_WEBHOOK_URL: process.env.SLACK_FEEDBACK_WEBHOOK_URL,
+  CRON_SECRET: process.env.CRON_SECRET,
+  PRIVACY_EXPORT_S3_BUCKET: process.env.PRIVACY_EXPORT_S3_BUCKET,
+  AWS_REGION: process.env.AWS_REGION,
+  STREAMING_ANSWERS: process.env.STREAMING_ANSWERS as string | undefined,
+  STREAMING_LESSONS: process.env.STREAMING_LESSONS as string | undefined,
+  STREAMING_LIBRARY: process.env.STREAMING_LIBRARY as string | undefined,
+  MODEL_ROUTING: process.env.MODEL_ROUTING as string | undefined,
 };
 
 const parsed = serverSchema.safeParse(raw);
@@ -153,6 +196,30 @@ export function callbackUrl(): string {
 
 export function baseUrl(): string {
   return serverEnv.AUTH_BASE_URL.replace(/\/$/, "");
+}
+
+/** Server flag for TASK-031 (pair with NEXT_PUBLIC_STREAMING_ANSWERS in the browser). */
+export function streamingAnswersEnabled(): boolean {
+  const v = serverEnv.STREAMING_ANSWERS;
+  return v === "1" || v === "true";
+}
+
+/** TASK-040: both server and NEXT_PUBLIC must be on for the lesson streaming path. */
+export function streamingLessonsEnabled(): boolean {
+  const v = serverEnv.STREAMING_LESSONS;
+  return v === "1" || v === "true";
+}
+
+/** TASK-041: both server and NEXT_PUBLIC must be on for the library SSE search path. */
+export function streamingLibraryEnabled(): boolean {
+  const v = serverEnv.STREAMING_LIBRARY;
+  return v === "1" || v === "true";
+}
+
+/** TASK-042: Layer-5 model routing + `model_routing_decisions` logging. */
+export function modelRoutingEnabled(): boolean {
+  const v = serverEnv.MODEL_ROUTING;
+  return v === "1" || v === "true";
 }
 
 export function isProductionCookieSecure(): boolean {

@@ -19,3 +19,9 @@ export const CLASSIFIER_REGION = "ca-central-1";
 
 export const CLASSIFIER_MAX_TOKENS = 200;
 export const CLASSIFIER_TEMPERATURE = 0;
+
+/** Bedrock model or inference profile id for TASK-039 Layer-B fine-tuned classifier. */
+export const SAFETY_FT_MODEL_ID =
+  process.env.BEDROCK_SAFETY_FT_MODEL_ID?.trim() || "";
+
+export type SafetyLayerBClassifier = "zero_shot" | "fine_tuned";

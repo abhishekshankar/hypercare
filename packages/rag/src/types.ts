@@ -1,3 +1,5 @@
+import type { ClassifierVerdict } from "@hypercare/model-router";
+
 /** Stage labels used for retrieval filtering. Mirrors apps/web/src/lib/onboarding/stage.ts. */
 export type Stage = "early" | "middle" | "late";
 
@@ -5,6 +7,11 @@ export type Stage = "early" | "middle" | "late";
 export type AnswerInput = {
   question: string;
   userId: string;
+  /**
+   * TASK-042: `users.routing_cohort` for model routing A/B. When `MODEL_ROUTING=1`, callers
+   * should pass the DB value (or deterministic fallback); when unset, routing is skipped.
+   */
+  routingCohort?: string | null;
   /** Optional last user line for short-followup topic disambiguation (TASK-022). */
   priorUserTurn?: string | null;
   /** When present, safety `safety_flags` dedupe + linkage use this (TASK-025). */
@@ -103,7 +110,11 @@ export type RefusalReason =
   | { code: "off_topic"; matched_category: string | null }
   | { code: "uncitable_response"; stripped_sentences: number }
   | SafetyTriageReason
-  | { code: "internal_error"; detail: string };
+  | { code: "internal_error"; detail: string }
+  /** Layer 6 fast-path (regex) caught unsafe partial output mid-stream (TASK-031). */
+  | { code: "verifier_rejected"; message?: string }
+  /** User aborted streaming (Escape); assistant text is not persisted (TASK-031). */
+  | { code: "user_cancelled" };
 
 /**
  * Bedrock-reported token counts from the generation step (layer 5), for
@@ -133,6 +144,22 @@ export type OperatorMetadata = {
   lastGenerationUsage: RagUsage | null;
 };
 
+/** TASK-042: persisted to `model_routing_decisions` after the assistant row exists. */
+export type RoutingAuditPayload = {
+  userId: string;
+  cohort: string;
+  classifierVerdict: ClassifierVerdict;
+  policyVersion: number;
+  matchedRuleIndex: number | null;
+  modelId: string;
+  reason: string;
+  latencyMs: number | null;
+  tokensIn: number | null;
+  tokensOut: number | null;
+};
+
+type RoutingFields = { routingAudit?: RoutingAuditPayload };
+
 export type AnswerResult =
-  | ({ kind: "answered"; text: string; citations: Citation[]; usage: RagUsage; operator: OperatorMetadata } & TopicFields)
-  | ({ kind: "refused"; reason: RefusalReason; operator: OperatorMetadata } & TopicFields);
+  | ({ kind: "answered"; text: string; citations: Citation[]; usage: RagUsage; operator: OperatorMetadata } & TopicFields & RoutingFields)
+  | ({ kind: "refused"; reason: RefusalReason; operator: OperatorMetadata } & TopicFields & RoutingFields);

@@ -3,7 +3,7 @@
 - **Owner:** Cursor (implementation); PM + Care Specialist (question wording + sign-off); lived-experience reviewers (validation study)
 - **Depends on:** TASK-005 (onboarding scaffold), TASK-007 (onboarding writes), and TASK-020 (editable profile — the new wording has to land there too)
 - **Unblocks:** a more accurate inferred stage (which every personalization surface keys off), PRD §14 open-question resolution, the PRD §5.2 requirement that the 8 questions be "validated with the Care Specialist and 5–10 caregivers before they're built"
-- **Status:** pending
+- **Status:** in progress (implementation landed; PM sign-off + validation notes still required for merge)
 - **ADR:** `docs/adr/0023-onboarding-stage-questions-v1.md` (new — final question wording, rationale, stage-inference rule deltas, back-compat migration)
 
 ---

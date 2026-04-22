@@ -1,8 +1,22 @@
 import Link from "next/link";
 
-export default function HomePage() {
+type Props = {
+  searchParams: Promise<{ deleted?: string }>;
+};
+
+export default async function HomePage({ searchParams }: Props) {
+  const sp = await searchParams;
+  const deleted = sp.deleted === "1";
   return (
     <>
+      {deleted ? (
+        <p
+          className="mb-6 rounded-md border border-border bg-muted/40 px-3 py-2 text-sm text-foreground"
+          role="status"
+        >
+          Your account has been deleted. If you need support, contact the team.
+        </p>
+      ) : null}
       <header className="mb-8">
         <h1 className="font-serif text-3xl font-normal italic leading-tight tracking-tight text-foreground md:text-4xl">
           Caregiving for someone with dementia is relentless. You shouldn&apos;t have to figure it

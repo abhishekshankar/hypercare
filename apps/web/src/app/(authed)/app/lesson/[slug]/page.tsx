@@ -1,10 +1,14 @@
 import { notFound } from "next/navigation";
 
+import { createDbClient } from "@hypercare/db";
+import { pickThisWeeksFocus } from "@hypercare/picker";
+
 import { LessonExperience } from "@/components/lesson/LessonExperience";
 import { loadModuleBySlug } from "@/lib/library/load-module";
 import { requireSession } from "@/lib/auth/session";
-import { inferStage } from "@/lib/onboarding/stage";
-import type { StageAnswersRecord } from "@/lib/onboarding/stage-keys";
+import { serverEnv, streamingLessonsEnabled } from "@/lib/env.server";
+import { careProfileToStageSnapshot } from "@/lib/onboarding/care-profile-stage-snapshot";
+import { inferInferredStage } from "@/lib/onboarding/stage";
 import { loadProfileBundle } from "@/lib/onboarding/status";
 
 export default async function LessonPage({
@@ -23,13 +27,37 @@ export default async function LessonPage({
   }
   const { profile } = await loadProfileBundle(session.userId);
   const crFirstName = profile?.crFirstName?.trim() ?? null;
-  const stage = inferStage((profile?.stageAnswers ?? {}) as StageAnswersRecord);
+  const stage = profile ? inferInferredStage(careProfileToStageSnapshot(profile)) : null;
+
+  const publicStreamLessons =
+    process.env.NEXT_PUBLIC_STREAMING_LESSONS === "1" ||
+    process.env.NEXT_PUBLIC_STREAMING_LESSONS === "true";
+  const lessonStreamEnabled = streamingLessonsEnabled() && publicStreamLessons;
+
+  const db = createDbClient(serverEnv.DATABASE_URL);
+  const focus = await pickThisWeeksFocus(
+    { userId: session.userId },
+    { db, now: () => new Date() },
+  );
+  let reviewHint: string | null = null;
+  if (
+    focus.kind === "pick" &&
+    focus.slug === slug &&
+    "reviewResurface" in focus &&
+    focus.reviewResurface != null
+  ) {
+    const d = focus.reviewResurface.lastSeenDaysAgo;
+    reviewHint = `Last seen ${String(d)} day${d === 1 ? "" : "s"} ago — due for a quick review.`;
+  }
 
   return (
-    <div className="space-y-6" data-testid="lesson-page">
+    <div className="space-y-6">
       <LessonExperience
         crFirstName={crFirstName}
-        mod={mod}
+        lessonStreamEnabled={lessonStreamEnabled}
+        mod={lessonStreamEnabled ? null : mod}
+        reviewHint={reviewHint}
+        slug={slug}
         sourceParam={sp.source ?? null}
         userStage={stage}
       />

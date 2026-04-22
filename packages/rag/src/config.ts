@@ -46,6 +46,13 @@ export const MEMORY_MODEL_REGION = ANSWER_REGION;
  */
 export const REWRITE_QUERY_WITH_MEMORY = false;
 
+/**
+ * Streaming generation (TASK-031): minimum chars in the commit window before we may flush;
+ * tail reserve (chars) held back until the next commit or full Layer 6 pass.
+ */
+export const STREAM_COMMIT_MIN_CHARS = 120;
+export const STREAM_COMMIT_TAIL_RESERVE = 200;
+
 /** All knobs in one shape so callers can override piecewise. */
 export type RagConfig = {
   retrievalK: number;
@@ -61,6 +68,8 @@ export type RagConfig = {
   memoryRefreshEveryN: number;
   memoryMaxTokens: number;
   rewriteQueryWithMemory: boolean;
+  streamCommitMinChars: number;
+  streamCommitTailReserve: number;
 };
 
 export const DEFAULT_CONFIG: Readonly<RagConfig> = Object.freeze({
@@ -77,6 +86,8 @@ export const DEFAULT_CONFIG: Readonly<RagConfig> = Object.freeze({
   memoryRefreshEveryN: MEMORY_REFRESH_EVERY_N,
   memoryMaxTokens: MEMORY_MAX_TOKENS,
   rewriteQueryWithMemory: REWRITE_QUERY_WITH_MEMORY,
+  streamCommitMinChars: STREAM_COMMIT_MIN_CHARS,
+  streamCommitTailReserve: STREAM_COMMIT_TAIL_RESERVE,
 });
 
 export function withConfig(overrides: Partial<RagConfig> = {}): RagConfig {

@@ -1,10 +1,10 @@
 import { changeSummaryLine, formatChangedAtLabel } from "@/lib/profile/change-copy";
 import type { ProfileChangePart } from "@/lib/profile/change-diff";
-import type { ProfileChangeListRow } from "@/lib/profile/load-recent-changes";
+import type { ProfileChangeListRowWithEditor } from "@/lib/profile/load-recent-changes";
 
-type Props = { items: ProfileChangeListRow[] };
+type Props = { items: ProfileChangeListRowWithEditor[]; viewerUserId: string };
 
-export function RecentChanges({ items }: Props) {
+export function RecentChanges({ items, viewerUserId }: Props) {
   if (items.length === 0) {
     return <p className="text-sm text-muted-foreground">No changes recorded yet.</p>;
   }
@@ -23,6 +23,11 @@ export function RecentChanges({ items }: Props) {
               relativeTime: formatChangedAtLabel(
                 row.changedAt instanceof Date ? row.changedAt.toISOString() : String(row.changedAt),
               ),
+              viewerIsEditor: row.changedBy === viewerUserId,
+              editorLabel:
+                row.editorDisplayName?.trim() ||
+                row.editorEmail?.split("@")[0] ||
+                "Another caregiver",
             },
           )}
         </li>

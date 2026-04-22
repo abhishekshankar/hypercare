@@ -2,8 +2,6 @@
  * Deep equality and per-field diffs for care profile change-log writes.
  */
 
-import { STAGE_ANSWER_KEYS, type StageAnswerKey } from "@/lib/onboarding/stage-keys";
-
 export function deepEqual(a: unknown, b: unknown): boolean {
   if (Object.is(a, b)) {
     return true;
@@ -67,23 +65,3 @@ export function diffScalarFields(
   return out;
 }
 
-export function diffStageAnswerKeys(
-  before: Record<string, unknown>,
-  after: Record<string, unknown>,
-): ProfileChangePart[] {
-  const out: ProfileChangePart[] = [];
-  for (const key of STAGE_ANSWER_KEYS) {
-    const o = before[key];
-    const n = after[key];
-    if (deepEqual(o, n)) {
-      continue;
-    }
-    out.push({
-      section: "stage",
-      field: key as StageAnswerKey,
-      oldValue: o ?? null,
-      newValue: n ?? null,
-    });
-  }
-  return out;
-}

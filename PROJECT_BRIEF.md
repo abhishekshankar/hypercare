@@ -42,11 +42,12 @@ PM does not write feature code. Cursor does not invent stack choices. If a ticke
   PROJECT_BRIEF.md       this file
   TASKS.md               sprint board
   tasks/                 individual ticket files (TASK-NNN-slug.md)
-  docs/                  ADRs, runbooks, schema notes
+  docs/                  ADRs, runbooks, schema notes (incl. `schema-v1.md`, `auth-runbook.md`)
   apps/web/              Next.js app
   packages/              shared TS packages (only when needed; default to apps/web)
     db/                  drizzle schema + migrations
     rag/                 retrieval + prompt composition + verification
+    model-router/        Layer-5 answer model policy (YAML + `selectModel`; TASK-042)
     safety/              classifier + escalation flows
     eval/                red-team + golden-answer eval harness
   infra/                 AWS CDK app
@@ -65,6 +66,8 @@ Implementation: `aws-amplify` v6 with the `auth` category configured against the
 
 **Session model (entry point):** PKCE authorization code flow, token exchange and JWKS verification on the server, **`hc_session` opaque HMAC cookie** (not a browser-visible Cognito JWT) — see [`docs/adr/0004-auth-session-model.md`](docs/adr/0004-auth-session-model.md).
 
+**Family sharing (TASK-038):** multiple caregivers can share one `care_profile` via `care_profile_members`; conversations and saved answers stay **per Cognito user** (`conversations.user_id`, `saved_answers.user_id`). Operators: invite/accept notes in [`docs/auth-runbook.md`](docs/auth-runbook.md) § “Co-caregiver invites”. Schema + retention: [`docs/schema-v1.md`](docs/schema-v1.md) § `care_profile_members` / `invite_tokens`. ADR: [`docs/adr/0027-family-sharing-data-model-and-privacy.md`](docs/adr/0027-family-sharing-data-model-and-privacy.md).
+
 ### Environment variables (runtime vs operator)
 
 - **`DATABASE_URL`**: Postgres URL for the **`hypercare_app`** role; used by the Next.js app and app-owned jobs. Required for auth callback user upsert and any DB-backed route.
@@ -73,6 +76,7 @@ Implementation: `aws-amplify` v6 with the `auth` category configured against the
 - **`BEDROCK_CLASSIFIER_MODEL_ID`**: Optional override for the safety classifier’s Layer B model (same default family / inference-profile pattern as the answerer). Default in `packages/safety/src/config.ts`; see `docs/adr/0008-rag-pipeline-v0.md` §4 and `docs/adr/0009-safety-classifier-v0.md` §5.
 - **`EVAL_LIVE`**: Set to `1` to run the `@hypercare/eval` harness against **real** Postgres (`DATABASE_URL`) and Bedrock (unset = offline fixtures, deterministic). See `docs/adr/0011-eval-harness-v0.md`.
 - **`EVAL_USER_ID`**: Optional; when set with `EVAL_LIVE=1`, passed through as the `userId` in answer eval so `loadStage` can resolve a real `care_profile` (defaults to a synthetic `eval-answers:…` id if unset).
+- **`MODEL_ROUTING`**: Set to `1` or `true` to enable **Layer-5 model routing** (topic-aware policy + A/B cohort). Requires migration **`0021_model_routing.sql`** (`users.routing_cohort`, `model_routing_decisions`). When unset, answering uses `BEDROCK_ANSWER_MODEL_ID` / package default only and no routing decision rows are written. Policy file: `packages/model-router/config/model-routing.yaml`. Contract: `docs/adr/0030-per-user-model-routing.md`.
 
 ## 5. Conventions
 

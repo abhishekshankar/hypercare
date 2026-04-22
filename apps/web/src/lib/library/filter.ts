@@ -1,3 +1,8 @@
+import {
+  librarySubstringMatchScore,
+  normalizeLibrarySearchQuery,
+} from "@hypercare/db/library-search-score";
+
 import type { LibraryModuleListItem, StageKey } from "./types";
 
 const STAGES: readonly StageKey[] = ["early", "middle", "late"];
@@ -16,9 +21,9 @@ export function matchesSearchQuery(
   m: LibraryModuleListItem,
   query: string,
 ): boolean {
-  const q = query.trim().toLowerCase();
+  const q = normalizeLibrarySearchQuery(query);
   if (q.length === 0) return true;
-  return searchHaystack(m).includes(q);
+  return librarySubstringMatchScore(searchHaystack(m), q) > 0;
 }
 
 /**

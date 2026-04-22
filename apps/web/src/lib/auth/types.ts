@@ -4,6 +4,8 @@ export type SessionPayload = {
   email: string;
   iat: number;
   exp: number;
+  /** Short-lived key for revocation + device list (TASK-032). Omitted in legacy cookies. */
+  sid?: string;
 };
 
 export type OauthStatePayload = {

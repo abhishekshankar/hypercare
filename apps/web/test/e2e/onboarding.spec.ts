@@ -36,14 +36,26 @@ test("onboarding: full wizard, summary, home, then /onboarding redirects to /app
   await page.getByRole("button", { name: "Continue" }).click();
 
   await expect(page.getByRole("heading", { level: 1 })).toContainText("day-to-day");
-  const stageGroups = page.locator("fieldset");
-  await expect(stageGroups).toHaveCount(8);
-  const step2Answers = ["yes", "yes", "yes", "yes", "yes", "no", "yes", "yes"] as const;
-  for (let i = 0; i < 8; i += 1) {
-    const v = step2Answers[i];
-    const label = v === "yes" ? "Yes" : v === "no" ? "No" : "Unsure";
-    await stageGroups.nth(i).getByRole("radio", { name: label }).check();
-  }
+  await expect(page.getByText(/need help remembering or taking their medications/i)).toBeVisible();
+  await page.getByRole("radio", { name: "They manage on their own" }).check();
+  await page.getByRole("radio", { name: "Yes — safely" }).check();
+  await page
+    .getByRole("group", { name: /Safety worries when alone/i })
+    .getByText("Nothing in particular")
+    .click();
+  await page.getByRole("radio", { name: "Yes, usually" }).check();
+  await page.getByRole("radio", { name: "On their own" }).check();
+  await page
+    .locator("fieldset")
+    .filter({ hasText: /gotten lost or wandered/i })
+    .getByRole("radio", { name: "No" })
+    .check();
+  await page
+    .locator("fieldset")
+    .filter({ hasText: /conversation that makes sense/i })
+    .getByRole("radio", { name: "Yes" })
+    .check();
+  await page.getByRole("radio", { name: "Mostly sleeps through" }).check();
   await page.getByRole("button", { name: "Continue" }).click();
 
   await page.getByLabel(/Where do they live/i).selectOption("with_caregiver");

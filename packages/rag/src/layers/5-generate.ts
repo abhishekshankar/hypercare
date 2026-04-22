@@ -13,6 +13,8 @@ import type { GenerateInput, GenerateOutput } from "../bedrock/claude.js";
 export type GenerateLayerInput = {
   systemPrompt: string;
   userPrompt: string;
+  /** TASK-042: when set, overrides `BEDROCK_ANSWER_MODEL_ID` / config default for this invoke. */
+  modelId?: string;
 };
 
 export type GenerateLayerOutput = {
@@ -34,6 +36,7 @@ export async function generate(
   const out = await deps.generate({
     systemPrompt: input.systemPrompt,
     userPrompt: input.userPrompt,
+    ...(input.modelId !== undefined ? { modelId: input.modelId } : {}),
   });
   return {
     text: out.text,

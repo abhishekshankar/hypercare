@@ -3,7 +3,7 @@
 - **Owner:** Cursor
 - **Depends on:** TASK-020 (editable care profile UI — this ticket extends it), TASK-027 (conversation memory — the mirror surface this ticket exposes)
 - **Unblocks:** user trust at scale; PRD §5.6 transparency promise; a future v2 feature where the memory feeds retrieval visibly
-- **Status:** pending
+- **Status:** done (landed 2026-04-22)
 - **ADR:** `docs/adr/0022-transparency-surface.md` (new — what we expose, what we hide, "forget this" semantics per field)
 
 ---

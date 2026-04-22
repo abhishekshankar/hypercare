@@ -69,6 +69,8 @@ describe("regression check", () => {
           uncitable_response: 0,
           safety_triaged: 0,
           internal_error: 0,
+          verifier_rejected: 0,
+          user_cancelled: 0,
         },
       },
       cases: [],

@@ -30,6 +30,12 @@ export function WeeksFocusCard(props: Readonly<{ result: PickerResult; subtitle:
     >
       <h2 className="font-serif text-lg font-medium text-foreground">This week&apos;s focus</h2>
       <p className="mt-1 text-sm text-muted-foreground">{subtitle}</p>
+      {"reviewResurface" in result && result.reviewResurface != null ? (
+        <p className="mt-1 text-xs text-muted-foreground" data-testid="weeks-focus-review-hint">
+          Last seen {result.reviewResurface.lastSeenDaysAgo} day
+          {result.reviewResurface.lastSeenDaysAgo === 1 ? "" : "s"} ago — due for a quick review.
+        </p>
+      ) : null}
       <Link
         className="mt-3 inline-flex rounded-md border border-accent bg-accent px-4 py-2.5 text-sm font-medium text-accent-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-accent"
         data-testid="weeks-focus-cta"

@@ -17,5 +17,7 @@ export type PickerResult =
       slug: string;
       title: string;
       rationale: PickerRationale;
+      /** TASK-037: surfaced again after a prior completion / revisit (not `started_not_completed` only). */
+      reviewResurface?: { lastSeenDaysAgo: number };
     }
-  | { kind: "no_pick"; reason: "no_eligible_modules" };
+  | { kind: "no_pick"; reason: "no_eligible_modules" | "multiple_profiles" };

@@ -38,7 +38,7 @@ The AI guide that helps you care for someone with dementia — tailored to their
 
 Each of these is tempting; each is deferred on purpose.
 
-- Multi-patient profiles (one caregiver, one care recipient in v1).
+- Multi-patient profiles (one caregiver, one care recipient in v1).[^family-sharing-v2]
 
 - Native mobile apps (iOS/Android).
 
@@ -60,7 +60,9 @@ Each of these is tempting; each is deferred on purpose.
 
 The primary user is the family caregiver — most often an adult child (commonly a daughter aged 45–65) or a spouse (often themselves 65+). They are overwhelmed, time-starved, and reading this on a phone, probably at night, probably tired. They are not medical professionals, and they should never need to be.
 
-A secondary consideration: in many families, caregiving is split across siblings with unequal involvement. v1 is tuned to the primary caregiver's voice; family sharing is a v2 concern.
+A secondary consideration: in many families, caregiving is split across siblings with unequal involvement. v1 is tuned to the primary caregiver's voice; family sharing is a v2 concern.[^family-sharing-v2]
+
+[^family-sharing-v2]: **Sprint 5 update (TASK-038):** family sharing v1 shipped — multiple caregivers may share one `care_profile` via `care_profile_members`, with conversation history and saved answers staying per-caregiver by default. The "v2 concern" framing here is preserved for narrative continuity; the data model and privacy posture are documented in [`docs/schema-v2.md`](docs/schema-v2.md) § `care_profile_members` and [ADR 0027](docs/adr/0027-family-sharing-data-model-and-privacy.md). The "multi-patient profiles" deferral above is unchanged: one care **recipient** per profile remains the v1 contract.
 
 ## **2.2 The jobs to be done**
 
@@ -124,9 +126,11 @@ The content strategy (Section 7\) is explicitly organized around these sources.
 
 Five rules, from which everything else in this document derives. If any of these is wrong, the product is wrong.
 
-### **4.1 One caregiver, one care recipient, one profile**
+### **4.1 One care recipient per profile; caregivers and households**
 
-The product is emotionally and informationally tuned to this situation. Multi-patient dashboards, family sharing, and caregiver-team features are v2. If a user cares for two parents, they make two accounts in v1.
+The product is emotionally and informationally tuned to **one care recipient per Hypercare care profile**. **Multi-patient dashboards** (one logged-in caregiver formally managing two parents in one account) remain out of scope for v1 — if a user cares for two parents, they still use two accounts today.
+
+**Family sharing (Sprint 5, TASK-038):** a **second caregiver** (e.g. a sibling) can be invited onto the **same** care profile so the household shares the plan (stage, situation notes, library catalog). Each caregiver keeps their **own** Cognito identity, **own** conversation threads, and **own** saved answers unless a future opt-in changes that; see `docs/adr/0027-family-sharing-data-model-and-privacy.md`. Deeper “caregiver team” workflows (ownership transfer, cross-thread sharing) stay on the roadmap beyond v1.
 
 ### **4.2 Crisis-first, not curriculum-first**
 
@@ -549,6 +553,8 @@ The "add this topic" button feeds the content pipeline's queue of requested modu
 | Reranker              | Cross-encoder (Cohere or OSS)                   | Real quality improvement, worth the latency cost.             |
 | Observability         | Log every query / retrieval / prompt / response | Weekly review of 50 random queries by Content Lead \+ expert. |
 
+**Model routing (v1, TASK-042):** When the server flag `MODEL_ROUTING` is on, the **answering** Bedrock model id is chosen from a checked-in policy (`@hypercare/model-router`, topic bridged from the topic classifier) with an A/B cohort on `users.routing_cohort` (`routing_v1_control` = always default model; `routing_v1_treatment` = full policy). Each assistant turn can append one row to `model_routing_decisions` for experiment analysis. When the flag is off, behavior matches the single default answer model. See **`docs/adr/0030-per-user-model-routing.md`** and migration **`0021_model_routing.sql`**. Internal metrics (`/internal/metrics`) include a per-cohort routing comparison tile for operators.
+
 ## **9.5 Evaluation**
 
 A red-team eval set exists from day one, not after launch:
@@ -675,7 +681,11 @@ Three metrics, in strict priority order.
 | Return rate      | % of users returning in week 2 / week 4 / week 8\.                       | ≥ 50% W2, ≥ 40% W4, ≥ 25% W8                             |
 | Behavior change  | Weekly check-in: "Did you try something this week that helped?" → % yes. | ≥ 50% of active caregivers                               |
 
+Observed values (per-sprint snapshots from `/internal/metrics`) are captured in [`docs/beta-cohort-metrics-sprint4-snapshot.md`](docs/beta-cohort-metrics-sprint4-snapshot.md); the definitions here are the source of truth, the snapshot is the dated readout. See also ADR 0019.
+
 Deliberately not tracked as primary metrics: session length, DAU, streaks, or any engagement metric that rewards anxiety-driven use.
+
+When **model routing** is enabled (`MODEL_ROUTING`; TASK-042, ADR 0030), operators can slice the same helpfulness signal by routing cohort on `/internal/metrics` — a secondary readout for experiments; it does not change the priority order of the three metrics above.
 
 # **13\. Risks and mitigations**
 

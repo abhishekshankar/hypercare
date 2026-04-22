@@ -7,9 +7,13 @@ export function LessonCarousel(props: Readonly<{
   total: number;
   onPrev: () => void;
   onNext: () => void;
+  /**
+   * When `true`, disables Next (e.g. next card not loaded yet) in addition to the end-of-deck check.
+   */
+  lockNext?: boolean;
   children: ReactNode;
 }>) {
-  const { current, total, onPrev, onNext, children } = props;
+  const { current, total, onPrev, onNext, lockNext, children } = props;
   return (
     <div className="space-y-4">
       <div className="min-h-[50vh] rounded-xl border border-border bg-background p-5 shadow-sm sm:min-h-[60vh]">
@@ -29,7 +33,7 @@ export function LessonCarousel(props: Readonly<{
         </p>
         <button
           className="rounded-md border border-border px-3 py-2 text-sm disabled:opacity-40"
-          disabled={current >= total - 1}
+          disabled={current >= total - 1 || lockNext === true}
           onClick={onNext}
           type="button"
         >

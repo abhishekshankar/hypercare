@@ -9,6 +9,10 @@ export const careProfileChanges = pgTable(
     userId: uuid("user_id")
       .notNull()
       .references(() => users.id, { onDelete: "cascade" }),
+    /** Editor who made the change (TASK-038; mirrors `user_id` for legacy rows). */
+    changedBy: uuid("changed_by")
+      .notNull()
+      .references(() => users.id, { onDelete: "cascade" }),
     section: text("section").notNull(),
     field: text("field").notNull(),
     oldValue: jsonb("old_value"),

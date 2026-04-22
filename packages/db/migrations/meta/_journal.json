@@ -61,22 +61,106 @@
     {
       "idx": 8,
       "version": "7",
+      "when": 1777250000000,
+      "tag": "0008_content_authoring_workflow",
+      "breakpoints": true
+    },
+    {
+      "idx": 9,
+      "version": "7",
       "when": 1777300000000,
       "tag": "0009_saved_answers",
       "breakpoints": true
     },
     {
-      "idx": 9,
+      "idx": 10,
       "version": "7",
       "when": 1777400000000,
       "tag": "0010_metrics_surface",
       "breakpoints": true
     },
     {
-      "idx": 10,
+      "idx": 11,
       "version": "7",
       "when": 1777500000000,
       "tag": "0011_conversation_memory",
+      "breakpoints": true
+    },
+    {
+      "idx": 12,
+      "version": "7",
+      "when": 1777550000000,
+      "tag": "0012_user_feedback",
+      "breakpoints": true
+    },
+    {
+      "idx": 13,
+      "version": "7",
+      "when": 1777700000000,
+      "tag": "0013_stage_questions_v1",
+      "breakpoints": true
+    },
+    {
+      "idx": 14,
+      "version": "7",
+      "when": 1777800000000,
+      "tag": "0014_streaming_answer_metrics",
+      "breakpoints": true
+    },
+    {
+      "idx": 15,
+      "version": "7",
+      "when": 1777900000000,
+      "tag": "0015_transparency_memory_forgotten",
+      "breakpoints": true
+    },
+    {
+      "idx": 16,
+      "version": "7",
+      "when": 1778000000000,
+      "tag": "0016_lesson_review_schedule",
+      "breakpoints": true
+    },
+    {
+      "idx": 17,
+      "version": "7",
+      "when": 1778100000000,
+      "tag": "0017_family_sharing",
+      "breakpoints": true
+    },
+    {
+      "idx": 18,
+      "version": "7",
+      "when": 1778200000000,
+      "tag": "0018_privacy_posture_v1",
+      "breakpoints": true
+    },
+    {
+      "idx": 19,
+      "version": "7",
+      "when": 1778300000000,
+      "tag": "0019_safety_ft_shadow_decisions",
+      "breakpoints": true
+    },
+    {
+      "idx": 20,
+      "version": "7",
+      "when": 1778400000000,
+      "tag": "0020_library_search_streams",
+      "breakpoints": true
+    },
+    {
+      "idx": 21,
+      "version": "7",
+      "when": 1778500000000,
+      "tag": "0021_model_routing",
+      "breakpoints": true
+    },
+    {
+      "idx": 22,
+      "version": "7",
+      "when": 1778600000000,
+      "tag": "0022_lesson_stream_telemetry",
       "breakpoints": true
     }
   ]

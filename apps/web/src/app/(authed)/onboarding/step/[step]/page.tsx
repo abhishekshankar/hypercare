@@ -10,8 +10,7 @@ import { OnboardingMicrocopy } from "@/components/onboarding/onboarding-microcop
 import { OnboardingProgress } from "@/components/onboarding/onboarding-progress";
 import { requireSession } from "@/lib/auth/session";
 import { assertOnboardingStepAllowed } from "@/lib/onboarding/guards";
-import { loadProfileBundle } from "@/lib/onboarding/status";
-import type { StageAnswersRecord } from "@/lib/onboarding/stage-keys";
+import { displayNameForProfileWizard, loadProfileBundle } from "@/lib/onboarding/status";
 
 type Props = {
   params: Promise<{ step: string }>;
@@ -35,7 +34,8 @@ export default async function OnboardingStepPage({ params }: Props) {
   await assertOnboardingStepAllowed(n);
 
   const session = await requireSession();
-  const { user, profile } = await loadProfileBundle(session.userId);
+  const { user, profile, membership } = await loadProfileBundle(session.userId);
+  const displayDefault = displayNameForProfileWizard(user, membership) ?? "";
 
   if (n === 2 && (!profile?.crFirstName?.trim() || !profile?.crRelationship)) {
     redirect("/onboarding/step/1");
@@ -70,10 +70,7 @@ export default async function OnboardingStepPage({ params }: Props) {
       ) : null}
 
       {n === 2 ? (
-        <Step2Form
-          crFirstName={profile?.crFirstName ?? ""}
-          defaults={(profile?.stageAnswers as StageAnswersRecord | null) ?? {}}
-        />
+        <Step2Form crFirstName={profile?.crFirstName ?? ""} profile={profile ?? null} />
       ) : null}
 
       {n === 3 ? (
@@ -90,7 +87,7 @@ export default async function OnboardingStepPage({ params }: Props) {
       {n === 4 ? (
         <Step4Form
           defaults={{
-            displayName: user.displayName ?? "",
+            displayName: displayDefault,
             caregiverAgeBracket: profile?.caregiverAgeBracket ?? null,
             caregiverWorkStatus: profile?.caregiverWorkStatus ?? null,
             caregiverState1_5: profile?.caregiverState1_5 ?? null,

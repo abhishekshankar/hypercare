@@ -3,6 +3,8 @@ import { dirname, join } from "node:path";
 import { fileURLToPath } from "node:url";
 import { parse as parseYaml } from "yaml";
 
+import { resolveScriptFilename, type SafetyClassifierCategory } from "@hypercare/safety";
+
 import { redteamSetSchema, type RedteamQuery } from "./schema.js";
 
 const _here = dirname(fileURLToPath(import.meta.url));
@@ -29,8 +31,17 @@ export async function loadRedteamFixture(filename: string): Promise<RedteamQuery
       q.expected.soft_flag_kind === "caregiver_burnout"
         ? ("self_care_burnout" as const)
         : q.expected.soft_flag_kind;
+    let expected_flow = q.expected_flow;
+    if (expected_flow === undefined && q.expected.triaged && q.expected.category) {
+      expected_flow = resolveScriptFilename(q.expected.category as SafetyClassifierCategory, q.text);
+    }
+    if (expected_flow === undefined && !q.expected.triaged) {
+      expected_flow = null;
+    }
     out.push({
       ...q,
+      source: q.source ?? "adversarial",
+      expected_flow: expected_flow ?? null,
       expected: { ...q.expected, ...(soft !== undefined ? { soft_flag_kind: soft } : {}) },
     });
   }

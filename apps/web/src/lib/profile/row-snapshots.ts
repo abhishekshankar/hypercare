@@ -1,5 +1,8 @@
+import { mapStageAnswersV0ToV1 } from "@hypercare/content/stage-rules";
+
 import type { CareProfileRow } from "@/lib/onboarding/status";
-import { STAGE_ANSWER_KEYS, type StageAnswersRecord } from "@/lib/onboarding/stage-keys";
+import type { StageAnswersRecord } from "@/lib/onboarding/stage-keys";
+import { getStage2DefaultsForProfile } from "@/lib/onboarding/stage2-defaults";
 
 import type { Step1Input, Step2Input, Step3Input, Step4Input, Step5Input } from "@/lib/onboarding/schemas";
 
@@ -13,13 +16,30 @@ export function rowToAboutCrSnapshot(row: CareProfileRow): Record<string, unknow
   } satisfies Record<string, unknown>;
 }
 
+/**
+ * Snapshots the stage section in v1 form keys so diffs are stable across v0 → v1 migration.
+ */
 export function rowToStageSnapshot(row: CareProfileRow): Record<string, unknown> {
-  const a = (row.stageAnswers ?? {}) as StageAnswersRecord;
-  const o: Record<string, unknown> = {};
-  for (const k of STAGE_ANSWER_KEYS) {
-    o[k] = a[k] ?? null;
+  if ((row.stageQuestionsVersion ?? 0) >= 1) {
+    return { ...getStage2DefaultsForProfile(row) } as Record<string, unknown>;
   }
-  return o;
+  return {
+    ...v1FormDefaultsFromV0Answers((row.stageAnswers ?? {}) as StageAnswersRecord),
+  } as Record<string, unknown>;
+}
+
+function v1FormDefaultsFromV0Answers(answers: StageAnswersRecord): Record<string, unknown> {
+  const m = mapStageAnswersV0ToV1(answers);
+  return {
+    med_management_v1: m.medManagementV1,
+    driving_v1: m.drivingV1,
+    alone_safety_v1: m.aloneSafetyV1,
+    recognition_v1: m.recognitionV1,
+    bathing_dressing_v1: m.bathingDressingV1,
+    wandering_v1: m.wanderingV1,
+    conversation_v1: m.conversationV1,
+    sleep_v1: m.sleepV1,
+  };
 }
 
 export function rowToLivingSnapshot(row: CareProfileRow): Record<string, unknown> {
@@ -85,6 +105,34 @@ export function step5ToCareProfileUpdate(d: Step5Input) {
   };
 }
 
-export function step2ToStageAnswers(d: Step2Input): StageAnswersRecord {
-  return d as StageAnswersRecord;
+export function step2V1ToCareProfileUpdate(
+  d: Step2Input,
+  inferred: string | null,
+): {
+  medManagementV1: string;
+  drivingV1: string;
+  aloneSafetyV1: string[];
+  recognitionV1: string;
+  bathingDressingV1: string;
+  wanderingV1: string;
+  conversationV1: string;
+  sleepV1: string;
+  stageQuestionsVersion: number;
+  stageAnswers: Record<string, never>;
+  inferredStage: string | null;
+} {
+  return {
+    medManagementV1: d.med_management_v1,
+    drivingV1: d.driving_v1,
+    aloneSafetyV1: d.alone_safety_v1,
+    recognitionV1: d.recognition_v1,
+    bathingDressingV1: d.bathing_dressing_v1,
+    wanderingV1: d.wandering_v1,
+    conversationV1: d.conversation_v1,
+    sleepV1: d.sleep_v1,
+    stageQuestionsVersion: 1,
+    stageAnswers: {},
+    inferredStage: inferred,
+  };
 }
+

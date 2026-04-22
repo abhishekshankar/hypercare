@@ -6,7 +6,7 @@ import { useCallback, useState } from "react";
 import { AboutCrFields } from "@/components/care-profile/about-cr-fields";
 import { AboutYouFields } from "@/components/care-profile/about-you-fields";
 import { LivingFields } from "@/components/care-profile/living-fields";
-import { StageFields } from "@/components/care-profile/stage-fields";
+import { StageV1Fields } from "@/components/care-profile/stage-v1-fields";
 import { WhatMattersFields } from "@/components/care-profile/what-matters-fields";
 import { SectionPanel } from "@/components/profile/SectionPanel";
 import {
@@ -19,8 +19,9 @@ import {
 import { redirectToLoginForNextPath } from "@/lib/profile/redirect-login";
 import { fullSectionDetail, profileSectionSummaries } from "@/lib/profile/summaries";
 import { flattenFieldErrors } from "@/lib/onboarding/schemas";
+import type { StageV1FormDefaults } from "@/lib/onboarding/questions-v1";
 import type { CareProfileRow } from "@/lib/onboarding/status";
-import type { StageAnswersRecord } from "@/lib/onboarding/stage-keys";
+import { getStage2DefaultsForProfile } from "@/lib/onboarding/stage2-defaults";
 
 type Props = {
   profile: CareProfileRow;
@@ -62,7 +63,7 @@ export function CareProfileEditor({ profile, displayName }: Props) {
   }, [router]);
 
   const sums = profileSectionSummaries(profile);
-  const stageDefaults = (profile.stageAnswers ?? {}) as StageAnswersRecord;
+  const stageDefaults = getStage2DefaultsForProfile(profile);
 
   return (
     <div className="space-y-4" key={k}>
@@ -242,7 +243,7 @@ function EditStage({
   onSaved,
 }: {
   crFirstName: string;
-  stageDefaults: StageAnswersRecord;
+  stageDefaults: StageV1FormDefaults;
   onCancel: () => void;
   onSaved: () => void;
 }) {
@@ -274,7 +275,7 @@ function EditStage({
         onSaved();
       }}
     >
-      <StageFields
+      <StageV1Fields
         crFirstName={crFirstName}
         defaults={stageDefaults}
         errors={errors}

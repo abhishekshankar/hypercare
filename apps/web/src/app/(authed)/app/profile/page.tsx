@@ -2,12 +2,15 @@ import Link from "next/link";
 import { redirect } from "next/navigation";
 
 import { CareProfileEditor } from "@/components/profile/CareProfileEditor";
+import { PrivacyAndDataSection } from "@/components/profile/PrivacyAndDataSection";
 import { RecentChanges } from "@/components/profile/RecentChanges";
+import { TransparencyProfileClient } from "@/components/profile/transparency/TransparencyProfileClient";
 import { ScreenHeader } from "@/components/screen-header";
 import { requireSession } from "@/lib/auth/session";
 import { greetingForLocalHour } from "@/lib/greeting";
-import { loadRecentProfileChanges } from "@/lib/profile/load-recent-changes";
+import { getRetentionSummaryRows } from "@/lib/privacy/retention-summary";
 import { loadProfileBundle } from "@/lib/onboarding/status";
+import { loadRecentProfileChanges } from "@/lib/profile/load-recent-changes";
 
 type Props = {
   searchParams: Promise<{ saved?: string }>;
@@ -20,6 +23,7 @@ export default async function ProfilePage({ searchParams }: Props) {
     redirect("/onboarding/step/1");
   }
   const recent = await loadRecentProfileChanges(session.userId, 5);
+  const retentionRows = getRetentionSummaryRows();
   const sp = await searchParams;
   const banner = sp.saved === "1";
 
@@ -60,7 +64,7 @@ export default async function ProfilePage({ searchParams }: Props) {
       <CareProfileEditor displayName={user.displayName ?? ""} profile={profile} />
       <section className="space-y-2">
         <h2 className="text-lg font-medium text-foreground">Recent changes</h2>
-        <RecentChanges items={recent} />
+        <RecentChanges items={recent} viewerUserId={session.userId} />
         <p>
           <Link
             className="text-sm text-muted-foreground underline-offset-2 hover:underline"
@@ -70,6 +74,11 @@ export default async function ProfilePage({ searchParams }: Props) {
           </Link>
         </p>
       </section>
+      <TransparencyProfileClient />
+      <PrivacyAndDataSection
+        retentionRows={retentionRows}
+        userEmail={user.email ?? ""}
+      />
     </div>
   );
 }

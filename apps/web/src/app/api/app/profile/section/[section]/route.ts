@@ -2,7 +2,8 @@ import { NextRequest, NextResponse } from "next/server";
 
 import { getSession } from "@/lib/auth/session";
 import { loadProfileBundle, type CareProfileRow } from "@/lib/onboarding/status";
-import { diffScalarFields, diffStageAnswerKeys } from "@/lib/profile/change-diff";
+import { diffScalarFields } from "@/lib/profile/change-diff";
+import { loadHouseholdMemoryUserIds } from "@/lib/profile/household-memory";
 import { applyCareProfileTransaction, type ChangeRowWithTrigger } from "@/lib/profile/persist";
 import {
   rowToAboutCrSnapshot,
@@ -11,12 +12,13 @@ import {
   rowToStageSnapshot,
   rowToWhatMattersSnapshot,
   step1ToCareProfileUpdate,
-  step2ToStageAnswers,
+  step2V1ToCareProfileUpdate,
   step3ToCareProfileUpdate,
   step4ToCareProfileUpdate,
   step5ToCareProfileUpdate,
 } from "@/lib/profile/row-snapshots";
-import { inferStage } from "@/lib/onboarding/stage";
+import { careProfileToStageSnapshot } from "@/lib/onboarding/care-profile-stage-snapshot";
+import { inferInferredStage } from "@/lib/onboarding/stage";
 import {
   step1Schema,
   step2Schema,
@@ -108,7 +110,7 @@ function handleAboutCr(userId: string, profile: CareProfileRow, body: unknown) {
     return NextResponse.json({ ok: true, changedFields: [] } satisfies OkBody);
   }
   const changes: ChangeRowWithTrigger[] = part.map((p) => ({ ...p, trigger: "user_edit" as const }));
-  return persistAndJson(userId, step1ToCareProfileUpdate(d), changes);
+  return persistAndJson(userId, profile, step1ToCareProfileUpdate(d), changes);
 }
 
 function handleStage(userId: string, profile: CareProfileRow, body: unknown) {
@@ -120,16 +122,28 @@ function handleStage(userId: string, profile: CareProfileRow, body: unknown) {
     );
   }
   const d = parsed.data;
-  const stageAnswers = step2ToStageAnswers(d);
   const before = rowToStageSnapshot(profile);
   const after: Record<string, unknown> = { ...d };
-  const part = diffStageAnswerKeys(before, after);
-  const prevInferred = profile.inferredStage;
-  const nextInferred = inferStage(stageAnswers);
-  if (part.length === 0 && prevInferred === (nextInferred as string | null)) {
+  const part = diffScalarFields("stage", before, after);
+  const nextSnap = {
+    ...careProfileToStageSnapshot(profile),
+    medManagementV1: d.med_management_v1,
+    drivingV1: d.driving_v1,
+    aloneSafetyV1: d.alone_safety_v1,
+    recognitionV1: d.recognition_v1,
+    bathingDressingV1: d.bathing_dressing_v1,
+    wanderingV1: d.wandering_v1,
+    conversationV1: d.conversation_v1,
+    sleepV1: d.sleep_v1,
+    stageQuestionsVersion: 1,
+    stageAnswers: {} as Record<string, never>,
+  };
+  const nextInferred = inferInferredStage(nextSnap);
+  if (part.length === 0 && profile.inferredStage === (nextInferred as string | null)) {
     return NextResponse.json({ ok: true, changedFields: [] } satisfies OkBody);
   }
   const changes: ChangeRowWithTrigger[] = part.map((p) => ({ ...p, trigger: "user_edit" as const }));
+  const prevInferred = profile.inferredStage;
   if (prevInferred !== (nextInferred as string | null)) {
     changes.push({
       section: "stage",
@@ -139,10 +153,12 @@ function handleStage(userId: string, profile: CareProfileRow, body: unknown) {
       trigger: "system_inferred",
     });
   }
-  const careProfileUpdate = { stageAnswers, inferredStage: nextInferred };
+  const up = step2V1ToCareProfileUpdate(d, nextInferred);
+  const careProfileUpdate = up;
   const fieldNames = changes.map((c) => c.field);
   return persistAndJson(
     userId,
+    profile,
     careProfileUpdate,
     changes,
     { inferredStage: nextInferred as OkBody["inferredStage"] },
@@ -171,7 +187,7 @@ function handleLiving(userId: string, profile: CareProfileRow, body: unknown) {
     return NextResponse.json({ ok: true, changedFields: [] } satisfies OkBody);
   }
   const changes: ChangeRowWithTrigger[] = part.map((p) => ({ ...p, trigger: "user_edit" as const }));
-  return persistAndJson(userId, step3ToCareProfileUpdate(d), changes);
+  return persistAndJson(userId, profile, step3ToCareProfileUpdate(d), changes);
 }
 
 async function handleAboutYou(
@@ -201,11 +217,14 @@ async function handleAboutYou(
     return NextResponse.json({ ok: true, changedFields: [] } satisfies OkBody);
   }
   const changes: ChangeRowWithTrigger[] = part.map((p) => ({ ...p, trigger: "user_edit" as const }));
+  const memIds = await loadHouseholdMemoryUserIds(profile.id);
   await applyCareProfileTransaction({
     userId,
+    careProfileId: profile.id,
     userDisplayName: d.display_name,
     careProfileUpdate: step4ToCareProfileUpdate(d),
     changes,
+    invalidateMemoryUserIds: memIds.length > 0 ? memIds : [userId],
   });
   return NextResponse.json({
     ok: true,
@@ -233,21 +252,27 @@ function handleWhatMatters(userId: string, profile: CareProfileRow, body: unknow
     return NextResponse.json({ ok: true, changedFields: [] } satisfies OkBody);
   }
   const changes: ChangeRowWithTrigger[] = part.map((p) => ({ ...p, trigger: "user_edit" as const }));
-  return persistAndJson(userId, step5ToCareProfileUpdate(d), changes);
+  return persistAndJson(userId, profile, step5ToCareProfileUpdate(d), changes);
 }
 
 function persistAndJson(
   userId: string,
+  profile: CareProfileRow,
   careProfileUpdate: Record<string, unknown>,
   changes: ChangeRowWithTrigger[],
   extra?: { inferredStage: OkBody["inferredStage"] },
   fieldNamesOverride?: string[],
 ) {
-  return applyCareProfileTransaction({
-    userId,
-    careProfileUpdate: careProfileUpdate as never,
-    changes,
-  }).then(() => {
+  return (async () => {
+    const memIds = await loadHouseholdMemoryUserIds(profile.id);
+    await applyCareProfileTransaction({
+      userId,
+      careProfileId: profile.id,
+      careProfileUpdate: careProfileUpdate as never,
+      changes,
+      invalidateMemoryUserIds: memIds.length > 0 ? memIds : [userId],
+    });
+  })().then(() => {
     const payload: OkBody = {
       ok: true,
       changedFields: fieldNamesOverride ?? changes.map((c) => c.field),

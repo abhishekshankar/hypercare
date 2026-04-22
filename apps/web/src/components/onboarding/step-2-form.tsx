@@ -3,22 +3,24 @@
 import Link from "next/link";
 
 import { submitOnboardingStep2 } from "@/app/(authed)/onboarding/_actions";
-import { StageFields } from "@/components/care-profile/stage-fields";
-import type { StageAnswersRecord } from "@/lib/onboarding/stage-keys";
+import { StageV1Fields } from "@/components/care-profile/stage-v1-fields";
+import { getStage2DefaultsForProfile } from "@/lib/onboarding/stage2-defaults";
+import type { CareProfileRow } from "@/lib/onboarding/status";
 
 import { OnboardingStepForm } from "./onboarding-step-form";
 
 type Props = {
   crFirstName: string;
-  defaults: StageAnswersRecord;
+  profile: CareProfileRow | null;
 };
 
-export function Step2Form({ crFirstName, defaults }: Props) {
+export function Step2Form({ crFirstName, profile }: Props) {
+  const defaults = getStage2DefaultsForProfile(profile);
   return (
     <OnboardingStepForm action={submitOnboardingStep2}>
       {({ pending, errors }) => (
         <>
-          <StageFields
+          <StageV1Fields
             crFirstName={crFirstName}
             defaults={defaults}
             errors={errors}

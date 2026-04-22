@@ -28,6 +28,11 @@ function getOverride(): AnswerFn | undefined {
   return (globalThis as GlobalWithOverride).__HYPERCARE_RAG_OVERRIDE__;
 }
 
+/** True when E2E installed the process-wide RAG mock (TASK-031: force JSON path). */
+export function hasActiveRagOverride(): boolean {
+  return getOverride() !== undefined;
+}
+
 /** Public entry the route handlers call. Identical contract to `answer()`. */
 export async function answerForUser(input: AnswerInput): Promise<AnswerResult> {
   const override = getOverride();

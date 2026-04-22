@@ -24,15 +24,16 @@ export function parseStep1Form(fd: FormData) {
 }
 
 export function parseStep2Form(fd: FormData) {
+  const alone = fd.getAll("alone_safety_v1");
   return step2Schema.safeParse({
-    manages_meds: fd.get("manages_meds"),
-    drives: fd.get("drives"),
-    left_alone: fd.get("left_alone"),
-    recognizes_you: fd.get("recognizes_you"),
-    bathes_alone: fd.get("bathes_alone"),
-    wandering_incidents: fd.get("wandering_incidents"),
-    conversations: fd.get("conversations"),
-    sleeps_through_night: fd.get("sleeps_through_night"),
+    med_management_v1: fd.get("med_management_v1"),
+    driving_v1: fd.get("driving_v1"),
+    alone_safety_v1: alone,
+    recognition_v1: fd.get("recognition_v1"),
+    bathing_dressing_v1: fd.get("bathing_dressing_v1"),
+    wandering_v1: fd.get("wandering_v1"),
+    conversation_v1: fd.get("conversation_v1"),
+    sleep_v1: fd.get("sleep_v1"),
   });
 }
 

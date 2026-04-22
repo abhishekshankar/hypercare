@@ -3,17 +3,19 @@ import { z } from "zod";
 
 import { getSession } from "@/lib/auth/session";
 import { loadProfileBundle } from "@/lib/onboarding/status";
-import { diffScalarFields, diffStageAnswerKeys } from "@/lib/profile/change-diff";
+import { careProfileToStageSnapshot } from "@/lib/onboarding/care-profile-stage-snapshot";
+import { diffScalarFields } from "@/lib/profile/change-diff";
+import { loadHouseholdMemoryUserIds } from "@/lib/profile/household-memory";
 import { applyCareProfileTransaction, type ChangeRowWithTrigger } from "@/lib/profile/persist";
 import {
   rowToAboutYouSnapshot,
   rowToLivingSnapshot,
   rowToStageSnapshot,
-  step2ToStageAnswers,
+  step2V1ToCareProfileUpdate,
   step3ToCareProfileUpdate,
   step4ToCareProfileUpdate,
 } from "@/lib/profile/row-snapshots";
-import { inferStage } from "@/lib/onboarding/stage";
+import { inferInferredStage } from "@/lib/onboarding/stage";
 import { step2Schema, step3Schema, step4Schema } from "@/lib/onboarding/schemas";
 
 export const dynamic = "force-dynamic";
@@ -69,22 +71,34 @@ export async function POST(request: NextRequest) {
   const careProfileUpdate: Record<string, unknown> = {};
   const changedSet = new Set<string>();
   let userDisplayName: string | undefined;
-  let evolvedInferred: ReturnType<typeof inferStage> | undefined;
+  let evolvedInferred: ReturnType<typeof inferInferredStage> | undefined;
 
   if (data.stage != null) {
     const d = data.stage;
-    const stageAnswers = step2ToStageAnswers(d);
     const before = rowToStageSnapshot(profile);
     const after: Record<string, unknown> = { ...d };
-    const part = diffStageAnswerKeys(before, after).map(
+    const part = diffScalarFields("stage", before, after).map(
       (p): ChangeRowWithTrigger => ({ ...p, trigger: "evolved_state_flow" }),
     );
     for (const p of part) {
       allChanges.push(p);
       changedSet.add(p.field);
     }
+    const nextSnap = {
+      ...careProfileToStageSnapshot(profile),
+      medManagementV1: d.med_management_v1,
+      drivingV1: d.driving_v1,
+      aloneSafetyV1: d.alone_safety_v1,
+      recognitionV1: d.recognition_v1,
+      bathingDressingV1: d.bathing_dressing_v1,
+      wanderingV1: d.wandering_v1,
+      conversationV1: d.conversation_v1,
+      sleepV1: d.sleep_v1,
+      stageQuestionsVersion: 1,
+      stageAnswers: {} as Record<string, never>,
+    };
+    const next = inferInferredStage(nextSnap);
     const prev = profile.inferredStage;
-    const next = inferStage(stageAnswers);
     if (prev !== (next as string | null)) {
       allChanges.push({
         section: "stage",
@@ -95,8 +109,7 @@ export async function POST(request: NextRequest) {
       });
       changedSet.add("inferred_stage");
     }
-    careProfileUpdate.stageAnswers = stageAnswers;
-    careProfileUpdate.inferredStage = next;
+    Object.assign(careProfileUpdate, step2V1ToCareProfileUpdate(d, next));
     evolvedInferred = next;
   }
 
@@ -161,11 +174,14 @@ export async function POST(request: NextRequest) {
     return NextResponse.json({ ok: true, changedFields: [] } satisfies Ok);
   }
 
+  const memIds = await loadHouseholdMemoryUserIds(profile.id);
   await applyCareProfileTransaction({
     userId: session.userId,
+    careProfileId: profile.id,
     ...(userDisplayName !== undefined ? { userDisplayName } : {}),
     careProfileUpdate: careProfileUpdate as never,
     changes: allChanges,
+    invalidateMemoryUserIds: memIds.length > 0 ? memIds : [session.userId],
   });
 
   const resBody: Ok = { ok: true, changedFields: [...changedSet] };

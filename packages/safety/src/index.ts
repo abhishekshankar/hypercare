@@ -31,6 +31,10 @@ export {
   CLASSIFIER_MODEL_ID,
   CLASSIFIER_REGION,
   CLASSIFIER_TEMPERATURE,
+  SAFETY_FT_MODEL_ID,
 } from "./config.js";
-export { classifyWithLlm, parseLlmJson, defaultInvoke } from "./llm/classifier.js";
+export type { SafetyLayerBClassifier } from "./config.js";
+export { classifyWithLlm, parseLlmJson, defaultInvoke, defaultInvokeFineTuned } from "./llm/classifier.js";
 export type { ClassifyLlmDeps, LlmClassification } from "./llm/classifier.js";
+export { makeFtShadowLogger, llmVerdictToJson } from "./shadow-log.js";
+export type { FtShadowLogFn, FtShadowLogInput } from "./shadow-log.js";

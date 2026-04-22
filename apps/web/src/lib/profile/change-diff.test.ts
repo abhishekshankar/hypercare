@@ -1,7 +1,6 @@
 import { describe, expect, it } from "vitest";
 
-import { diffScalarFields, diffStageAnswerKeys, deepEqual } from "./change-diff";
-import { STAGE_ANSWER_KEYS } from "@/lib/onboarding/stage-keys";
+import { diffScalarFields, deepEqual } from "./change-diff";
 
 describe("deepEqual", () => {
   it("treats null and undefined as equal", () => {
@@ -34,26 +33,21 @@ describe("diffScalarFields", () => {
   });
 });
 
-describe("diffStageAnswerKeys", () => {
-  it("diffs per stage key", () => {
-    const before: Record<string, unknown> = Object.fromEntries(
-      STAGE_ANSWER_KEYS.map((k) => [k, "yes"]),
-    );
-    const after: Record<string, unknown> = { ...before, bathes_alone: "no" };
-    const d = diffStageAnswerKeys(before, after);
+describe("diffScalarFields (stage v1 shape)", () => {
+  it("diffs v1 med column", () => {
+    const before: Record<string, unknown> = {
+      med_management_v1: "self",
+      alone_safety_v1: ["nothing"],
+    };
+    const after: Record<string, unknown> = { ...before, med_management_v1: "reminders" };
+    const d = diffScalarFields("stage", before, after);
     expect(d).toEqual([
       {
         section: "stage",
-        field: "bathes_alone",
-        oldValue: "yes",
-        newValue: "no",
+        field: "med_management_v1",
+        oldValue: "self",
+        newValue: "reminders",
       },
     ]);
-  });
-  it("empty when no key changes", () => {
-    const o: Record<string, unknown> = Object.fromEntries(
-      STAGE_ANSWER_KEYS.map((k) => [k, "yes"]),
-    );
-    expect(diffStageAnswerKeys(o, { ...o })).toHaveLength(0);
   });
 });

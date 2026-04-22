@@ -62,6 +62,11 @@ describe("upsertUserFromClaims", () => {
     };
     const db = {
       insert: () => insertChain,
+      update: () => ({
+        set: () => ({
+          where: () => Promise.resolve(undefined),
+        }),
+      }),
     } as never;
 
     const r = await upsertUserFromClaims(claims, db);

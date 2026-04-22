@@ -1,10 +1,10 @@
-import { createDbClient, careProfile } from "@hypercare/db";
+import { createDbClient } from "@hypercare/db";
 import { pickThisWeeksFocus } from "@hypercare/picker";
-import { eq } from "drizzle-orm";
 import { NextResponse } from "next/server";
 
 import { getSession } from "@/lib/auth/session";
 import { refineFocusSubtitle } from "@/lib/home/focus-subtitle";
+import { loadProfileBundle } from "@/lib/onboarding/status";
 import { serverEnv } from "@/lib/env.server";
 
 export const dynamic = "force-dynamic";
@@ -19,11 +19,7 @@ export async function GET() {
     { userId: session.userId },
     { db, now: () => new Date() },
   );
-  const [cp] = await db
-    .select({ hardestThing: careProfile.hardestThing })
-    .from(careProfile)
-    .where(eq(careProfile.userId, session.userId))
-    .limit(1);
-  const subtitle = refineFocusSubtitle(result, cp?.hardestThing ?? null);
+  const { profile } = await loadProfileBundle(session.userId);
+  const subtitle = refineFocusSubtitle(result, profile?.hardestThing ?? null);
   return NextResponse.json({ result, subtitle });
 }

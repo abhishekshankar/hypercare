@@ -1,14 +1,14 @@
 {
   "runner": "retrieval",
-  "mode": "live",
-  "created_at": "2026-04-22T05:23:16.108Z",
+  "mode": "offline",
+  "created_at": "2026-04-22T13:53:59.722Z",
   "summary": {
-    "recall_at_k": 0.9666666666666667,
+    "recall_at_k": 1,
     "k": 5,
-    "cases_pass": 29,
+    "cases_pass": 30,
     "cases_total": 30,
-    "p50_ms": 808,
-    "p95_ms": 4106
+    "p50_ms": 0,
+    "p95_ms": 3
   },
   "cases": [
     {
@@ -17,16 +17,15 @@
       "top_module_slugs": [
         "behavior-sundowning",
         "behavior-sundowning",
-        "behavior-sundowning",
-        "behavior-sundowning",
-        "behavior-sundowning"
+        "daily-bathing-resistance",
+        "self-care-caregiver-burnout"
       ],
       "first_expected_rank": 1,
       "expected_modules": [
         "behavior-sundowning"
       ],
       "violations_not": [],
-      "latency_ms": 2475,
+      "latency_ms": 4,
       "notes": "TODO(PM): review"
     },
     {
@@ -35,16 +34,15 @@
       "top_module_slugs": [
         "behavior-sundowning",
         "behavior-sundowning",
-        "behavior-sundowning",
-        "behavior-sundowning",
-        "behavior-sundowning"
+        "daily-bathing-resistance",
+        "self-care-caregiver-burnout"
       ],
       "first_expected_rank": 1,
       "expected_modules": [
         "behavior-sundowning"
       ],
       "violations_not": [],
-      "latency_ms": 4106,
+      "latency_ms": 3,
       "notes": "TODO(PM): review"
     },
     {
@@ -53,16 +51,15 @@
       "top_module_slugs": [
         "behavior-sundowning",
         "behavior-sundowning",
-        "behavior-sundowning",
-        "behavior-sundowning",
-        "behavior-sundowning"
+        "daily-bathing-resistance",
+        "self-care-caregiver-burnout"
       ],
       "first_expected_rank": 1,
       "expected_modules": [
         "behavior-sundowning"
       ],
       "violations_not": [],
-      "latency_ms": 746,
+      "latency_ms": 2,
       "notes": "Paraphrase; stage may not match content — see eval notes (TODO PM)"
     },
     {
@@ -71,16 +68,15 @@
       "top_module_slugs": [
         "behavior-sundowning",
         "behavior-sundowning",
-        "behavior-sundowning",
-        "behavior-sundowning",
-        "behavior-sundowning"
+        "daily-bathing-resistance",
+        "self-care-caregiver-burnout"
       ],
       "first_expected_rank": 1,
       "expected_modules": [
         "behavior-sundowning"
       ],
       "violations_not": [],
-      "latency_ms": 735
+      "latency_ms": 0
     },
     {
       "id": "r_bs_05",
@@ -88,16 +84,15 @@
       "top_module_slugs": [
         "behavior-sundowning",
         "behavior-sundowning",
-        "behavior-sundowning",
-        "behavior-sundowning",
-        "behavior-sundowning"
+        "daily-bathing-resistance",
+        "self-care-caregiver-burnout"
       ],
       "first_expected_rank": 1,
       "expected_modules": [
         "behavior-sundowning"
       ],
       "violations_not": [],
-      "latency_ms": 721
+      "latency_ms": 0
     },
     {
       "id": "r_bs_06",
@@ -105,16 +100,15 @@
       "top_module_slugs": [
         "behavior-sundowning",
         "behavior-sundowning",
-        "behavior-sundowning",
-        "behavior-sundowning",
-        "daily-bathing-resistance"
+        "daily-bathing-resistance",
+        "self-care-caregiver-burnout"
       ],
       "first_expected_rank": 1,
       "expected_modules": [
         "behavior-sundowning"
       ],
       "violations_not": [],
-      "latency_ms": 726
+      "latency_ms": 0
     },
     {
       "id": "r_bs_07",
@@ -122,16 +116,15 @@
       "top_module_slugs": [
         "behavior-sundowning",
         "behavior-sundowning",
-        "behavior-sundowning",
-        "behavior-sundowning",
-        "behavior-sundowning"
+        "daily-bathing-resistance",
+        "self-care-caregiver-burnout"
       ],
       "first_expected_rank": 1,
       "expected_modules": [
         "behavior-sundowning"
       ],
       "violations_not": [],
-      "latency_ms": 2572
+      "latency_ms": 0
     },
     {
       "id": "r_bs_08",
@@ -139,16 +132,15 @@
       "top_module_slugs": [
         "behavior-sundowning",
         "behavior-sundowning",
-        "behavior-sundowning",
-        "behavior-sundowning",
-        "behavior-sundowning"
+        "daily-bathing-resistance",
+        "self-care-caregiver-burnout"
       ],
       "first_expected_rank": 1,
       "expected_modules": [
         "behavior-sundowning"
       ],
       "violations_not": [],
-      "latency_ms": 2536
+      "latency_ms": 0
     },
     {
       "id": "r_bs_09",
@@ -156,16 +148,14 @@
       "top_module_slugs": [
         "behavior-sundowning",
         "behavior-sundowning",
-        "behavior-sundowning",
-        "behavior-sundowning",
-        "behavior-sundowning"
+        "daily-bathing-resistance"
       ],
       "first_expected_rank": 1,
       "expected_modules": [
         "behavior-sundowning"
       ],
       "violations_not": [],
-      "latency_ms": 2857
+      "latency_ms": 0
     },
     {
       "id": "r_bs_10",
@@ -173,16 +163,15 @@
       "top_module_slugs": [
         "behavior-sundowning",
         "behavior-sundowning",
-        "behavior-sundowning",
-        "behavior-sundowning",
-        "behavior-sundowning"
+        "daily-bathing-resistance",
+        "self-care-caregiver-burnout"
       ],
       "first_expected_rank": 1,
       "expected_modules": [
         "behavior-sundowning"
       ],
       "violations_not": [],
-      "latency_ms": 818
+      "latency_ms": 0
     },
     {
       "id": "r_db_01",
@@ -190,16 +179,15 @@
       "top_module_slugs": [
         "daily-bathing-resistance",
         "daily-bathing-resistance",
-        "daily-bathing-resistance",
-        "daily-bathing-resistance",
-        "daily-bathing-resistance"
+        "behavior-sundowning",
+        "self-care-caregiver-burnout"
       ],
       "first_expected_rank": 1,
       "expected_modules": [
         "daily-bathing-resistance"
       ],
       "violations_not": [],
-      "latency_ms": 872
+      "latency_ms": 0
     },
     {
       "id": "r_db_02",
@@ -207,16 +195,15 @@
       "top_module_slugs": [
         "daily-bathing-resistance",
         "daily-bathing-resistance",
-        "daily-bathing-resistance",
-        "daily-bathing-resistance",
-        "daily-bathing-resistance"
+        "behavior-sundowning",
+        "self-care-caregiver-burnout"
       ],
       "first_expected_rank": 1,
       "expected_modules": [
         "daily-bathing-resistance"
       ],
       "violations_not": [],
-      "latency_ms": 808
+      "latency_ms": 0
     },
     {
       "id": "r_db_03",
@@ -224,16 +211,15 @@
       "top_module_slugs": [
         "daily-bathing-resistance",
         "daily-bathing-resistance",
-        "daily-bathing-resistance",
-        "daily-bathing-resistance",
-        "daily-bathing-resistance"
+        "behavior-sundowning",
+        "self-care-caregiver-burnout"
       ],
       "first_expected_rank": 1,
       "expected_modules": [
         "daily-bathing-resistance"
       ],
       "violations_not": [],
-      "latency_ms": 826
+      "latency_ms": 0
     },
     {
       "id": "r_db_04",
@@ -241,16 +227,15 @@
       "top_module_slugs": [
         "daily-bathing-resistance",
         "daily-bathing-resistance",
-        "daily-bathing-resistance",
-        "daily-bathing-resistance",
-        "daily-bathing-resistance"
+        "behavior-sundowning",
+        "self-care-caregiver-burnout"
       ],
       "first_expected_rank": 1,
       "expected_modules": [
         "daily-bathing-resistance"
       ],
       "violations_not": [],
-      "latency_ms": 4465
+      "latency_ms": 0
     },
     {
       "id": "r_db_05",
@@ -258,16 +243,15 @@
       "top_module_slugs": [
         "daily-bathing-resistance",
         "daily-bathing-resistance",
-        "daily-bathing-resistance",
-        "daily-bathing-resistance",
-        "daily-bathing-resistance"
+        "behavior-sundowning",
+        "self-care-caregiver-burnout"
       ],
       "first_expected_rank": 1,
       "expected_modules": [
         "daily-bathing-resistance"
       ],
       "violations_not": [],
-      "latency_ms": 761
+      "latency_ms": 1
     },
     {
       "id": "r_db_06",
@@ -275,16 +259,15 @@
       "top_module_slugs": [
         "daily-bathing-resistance",
         "daily-bathing-resistance",
-        "daily-bathing-resistance",
-        "daily-bathing-resistance",
-        "daily-bathing-resistance"
+        "behavior-sundowning",
+        "self-care-caregiver-burnout"
       ],
       "first_expected_rank": 1,
       "expected_modules": [
         "daily-bathing-resistance"
       ],
       "violations_not": [],
-      "latency_ms": 733
+      "latency_ms": 0
     },
     {
       "id": "r_db_07",
@@ -292,16 +275,15 @@
       "top_module_slugs": [
         "daily-bathing-resistance",
         "daily-bathing-resistance",
-        "daily-bathing-resistance",
-        "daily-bathing-resistance",
-        "daily-bathing-resistance"
+        "behavior-sundowning",
+        "self-care-caregiver-burnout"
       ],
       "first_expected_rank": 1,
       "expected_modules": [
         "daily-bathing-resistance"
       ],
       "violations_not": [],
-      "latency_ms": 788
+      "latency_ms": 0
     },
     {
       "id": "r_db_08",
@@ -309,16 +291,15 @@
       "top_module_slugs": [
         "daily-bathing-resistance",
         "daily-bathing-resistance",
-        "daily-bathing-resistance",
-        "daily-bathing-resistance",
-        "daily-bathing-resistance"
+        "behavior-sundowning",
+        "self-care-caregiver-burnout"
       ],
       "first_expected_rank": 1,
       "expected_modules": [
         "daily-bathing-resistance"
       ],
       "violations_not": [],
-      "latency_ms": 746
+      "latency_ms": 0
     },
     {
       "id": "r_db_09",
@@ -326,16 +307,14 @@
       "top_module_slugs": [
         "daily-bathing-resistance",
         "daily-bathing-resistance",
-        "daily-bathing-resistance",
-        "daily-bathing-resistance",
-        "daily-bathing-resistance"
+        "behavior-sundowning"
       ],
       "first_expected_rank": 1,
       "expected_modules": [
         "daily-bathing-resistance"
       ],
       "violations_not": [],
-      "latency_ms": 749
+      "latency_ms": 0
     },
     {
       "id": "r_db_10",
@@ -343,16 +322,15 @@
       "top_module_slugs": [
         "daily-bathing-resistance",
         "daily-bathing-resistance",
-        "daily-bathing-resistance",
-        "daily-bathing-resistance",
-        "daily-bathing-resistance"
+        "behavior-sundowning",
+        "self-care-caregiver-burnout"
       ],
       "first_expected_rank": 1,
       "expected_modules": [
         "daily-bathing-resistance"
       ],
       "violations_not": [],
-      "latency_ms": 829
+      "latency_ms": 0
     },
     {
       "id": "r_sc_01",
@@ -360,76 +338,7 @@
       "top_module_slugs": [
         "self-care-caregiver-burnout",
         "self-care-caregiver-burnout",
-        "self-care-caregiver-burnout",
-        "self-care-caregiver-burnout",
-        "self-care-caregiver-burnout"
-      ],
-      "first_expected_rank": 1,
-      "expected_modules": [
-        "self-care-caregiver-burnout"
-      ],
-      "violations_not": [],
-      "latency_ms": 3755
-    },
-    {
-      "id": "r_sc_02",
-      "pass": true,
-      "top_module_slugs": [
-        "self-care-caregiver-burnout",
-        "self-care-caregiver-burnout",
-        "self-care-caregiver-burnout",
-        "self-care-caregiver-burnout",
-        "self-care-caregiver-burnout"
-      ],
-      "first_expected_rank": 1,
-      "expected_modules": [
-        "self-care-caregiver-burnout"
-      ],
-      "violations_not": [],
-      "latency_ms": 2625
-    },
-    {
-      "id": "r_sc_03",
-      "pass": true,
-      "top_module_slugs": [
-        "daily-bathing-resistance",
-        "daily-bathing-resistance",
-        "daily-bathing-resistance",
-        "self-care-caregiver-burnout",
-        "behavior-sundowning"
-      ],
-      "first_expected_rank": 4,
-      "expected_modules": [
-        "self-care-caregiver-burnout"
-      ],
-      "violations_not": [],
-      "latency_ms": 789
-    },
-    {
-      "id": "r_sc_04",
-      "pass": true,
-      "top_module_slugs": [
         "behavior-sundowning",
-        "self-care-caregiver-burnout",
-        "self-care-caregiver-burnout",
-        "behavior-sundowning",
-        "self-care-caregiver-burnout"
-      ],
-      "first_expected_rank": 2,
-      "expected_modules": [
-        "self-care-caregiver-burnout"
-      ],
-      "violations_not": [],
-      "latency_ms": 823
-    },
-    {
-      "id": "r_sc_05",
-      "pass": true,
-      "top_module_slugs": [
-        "self-care-caregiver-burnout",
-        "daily-bathing-resistance",
-        "daily-bathing-resistance",
-        "self-care-caregiver-burnout",
         "daily-bathing-resistance"
       ],
       "first_expected_rank": 1,
@@ -437,7 +346,71 @@
         "self-care-caregiver-burnout"
       ],
       "violations_not": [],
-      "latency_ms": 783
+      "latency_ms": 0
+    },
+    {
+      "id": "r_sc_02",
+      "pass": true,
+      "top_module_slugs": [
+        "self-care-caregiver-burnout",
+        "self-care-caregiver-burnout",
+        "behavior-sundowning",
+        "daily-bathing-resistance"
+      ],
+      "first_expected_rank": 1,
+      "expected_modules": [
+        "self-care-caregiver-burnout"
+      ],
+      "violations_not": [],
+      "latency_ms": 0
+    },
+    {
+      "id": "r_sc_03",
+      "pass": true,
+      "top_module_slugs": [
+        "self-care-caregiver-burnout",
+        "self-care-caregiver-burnout",
+        "behavior-sundowning",
+        "daily-bathing-resistance"
+      ],
+      "first_expected_rank": 1,
+      "expected_modules": [
+        "self-care-caregiver-burnout"
+      ],
+      "violations_not": [],
+      "latency_ms": 0
+    },
+    {
+      "id": "r_sc_04",
+      "pass": true,
+      "top_module_slugs": [
+        "self-care-caregiver-burnout",
+        "self-care-caregiver-burnout",
+        "behavior-sundowning",
+        "daily-bathing-resistance"
+      ],
+      "first_expected_rank": 1,
+      "expected_modules": [
+        "self-care-caregiver-burnout"
+      ],
+      "violations_not": [],
+      "latency_ms": 0
+    },
+    {
+      "id": "r_sc_05",
+      "pass": true,
+      "top_module_slugs": [
+        "self-care-caregiver-burnout",
+        "self-care-caregiver-burnout",
+        "behavior-sundowning",
+        "daily-bathing-resistance"
+      ],
+      "first_expected_rank": 1,
+      "expected_modules": [
+        "self-care-caregiver-burnout"
+      ],
+      "violations_not": [],
+      "latency_ms": 0
     },
     {
       "id": "r_sc_06",
@@ -445,33 +418,31 @@
       "top_module_slugs": [
         "self-care-caregiver-burnout",
         "self-care-caregiver-burnout",
-        "self-care-caregiver-burnout",
-        "self-care-caregiver-burnout",
-        "behavior-sundowning"
+        "behavior-sundowning",
+        "daily-bathing-resistance"
       ],
       "first_expected_rank": 1,
       "expected_modules": [
         "self-care-caregiver-burnout"
       ],
       "violations_not": [],
-      "latency_ms": 769
+      "latency_ms": 0
     },
     {
       "id": "r_sc_07",
-      "pass": false,
+      "pass": true,
       "top_module_slugs": [
-        "daily-bathing-resistance",
-        "daily-bathing-resistance",
-        "daily-bathing-resistance",
-        "daily-bathing-resistance",
-        "behavior-sundowning"
+        "self-care-caregiver-burnout",
+        "self-care-caregiver-burnout",
+        "behavior-sundowning",
+        "daily-bathing-resistance"
       ],
-      "first_expected_rank": null,
+      "first_expected_rank": 1,
       "expected_modules": [
         "self-care-caregiver-burnout"
       ],
       "violations_not": [],
-      "latency_ms": 761
+      "latency_ms": 0
     },
     {
       "id": "r_sc_08",
@@ -479,16 +450,15 @@
       "top_module_slugs": [
         "self-care-caregiver-burnout",
         "self-care-caregiver-burnout",
-        "self-care-caregiver-burnout",
-        "self-care-caregiver-burnout",
-        "self-care-caregiver-burnout"
+        "behavior-sundowning",
+        "daily-bathing-resistance"
       ],
       "first_expected_rank": 1,
       "expected_modules": [
         "self-care-caregiver-burnout"
       ],
       "violations_not": [],
-      "latency_ms": 737
+      "latency_ms": 0
     },
     {
       "id": "r_sc_09",
@@ -496,16 +466,15 @@
       "top_module_slugs": [
         "self-care-caregiver-burnout",
         "self-care-caregiver-burnout",
-        "self-care-caregiver-burnout",
-        "self-care-caregiver-burnout",
-        "self-care-caregiver-burnout"
+        "behavior-sundowning",
+        "daily-bathing-resistance"
       ],
       "first_expected_rank": 1,
       "expected_modules": [
         "self-care-caregiver-burnout"
       ],
       "violations_not": [],
-      "latency_ms": 815
+      "latency_ms": 0
     },
     {
       "id": "r_sc_10",
@@ -513,16 +482,15 @@
       "top_module_slugs": [
         "self-care-caregiver-burnout",
         "self-care-caregiver-burnout",
-        "self-care-caregiver-burnout",
-        "self-care-caregiver-burnout",
-        "self-care-caregiver-burnout"
+        "behavior-sundowning",
+        "daily-bathing-resistance"
       ],
       "first_expected_rank": 1,
       "expected_modules": [
         "self-care-caregiver-burnout"
       ],
       "violations_not": [],
-      "latency_ms": 782
+      "latency_ms": 0
     }
   ]
 }

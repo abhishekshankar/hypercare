@@ -1,8 +1,23 @@
+import { countStageV1Answered, type StageV1Answers } from "@hypercare/content/stage-rules";
+
 import { aboutCrOneLiner } from "@/lib/profile/change-copy";
 import { STAGE_ANSWER_KEYS, type StageAnswersRecord } from "@/lib/onboarding/stage-keys";
 import type { CareProfileRow } from "@/lib/onboarding/status";
 
-function countStageAnswers(answers: unknown): number {
+function countStageSignals(profile: CareProfileRow): number {
+  if ((profile.stageQuestionsVersion ?? 0) >= 1) {
+    return countStageV1Answered({
+      medManagementV1: profile.medManagementV1,
+      drivingV1: profile.drivingV1,
+      aloneSafetyV1: profile.aloneSafetyV1,
+      recognitionV1: profile.recognitionV1,
+      bathingDressingV1: profile.bathingDressingV1,
+      wanderingV1: profile.wanderingV1,
+      conversationV1: profile.conversationV1,
+      sleepV1: profile.sleepV1,
+    } as StageV1Answers);
+  }
+  const answers = profile.stageAnswers;
   if (answers == null || typeof answers !== "object") {
     return 0;
   }
@@ -40,8 +55,7 @@ const PROX: Record<string, string> = {
 };
 
 export function profileSectionSummaries(profile: CareProfileRow) {
-  const a = (profile.stageAnswers ?? {}) as StageAnswersRecord;
-  const n = countStageAnswers(a);
+  const n = countStageSignals(profile);
   const firstName = profile.crFirstName?.trim() || "Them";
   return {
     about: aboutCrOneLiner({
@@ -96,7 +110,7 @@ export function fullSectionDetail(
       .join(" ");
   }
   if (key === "stage") {
-    return `Eight day-to-day signals (medications, safety, sleep, and more) shape which lessons we suggest for ${firstName}. Tap Edit to update your answers.`;
+    return `Eight day-to-day questions (medications, safety, sleep, and more) shape which lessons we suggest for ${firstName}. Tap Edit to update your answers.`;
   }
   if (key === "living") {
     return [

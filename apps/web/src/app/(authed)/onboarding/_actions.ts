@@ -3,7 +3,13 @@
 import { eq } from "drizzle-orm";
 import { redirect } from "next/navigation";
 
-import { careProfile, createDbClient, users } from "@hypercare/db";
+import {
+  careProfile,
+  createDbClient,
+  ensureOwnerMembershipRow,
+  getCareProfileForUser,
+  users,
+} from "@hypercare/db";
 
 import { requireSession } from "@/lib/auth/session";
 import { serverEnv } from "@/lib/env.server";
@@ -16,10 +22,12 @@ import {
   step5Schema,
 } from "@/lib/onboarding/schemas";
 import { setOnboardingAck } from "@/lib/onboarding/ack";
-import { inferStage } from "@/lib/onboarding/stage";
-import type { StageAnswersRecord } from "@/lib/onboarding/stage-keys";
+import { careProfileToStageSnapshot } from "@/lib/onboarding/care-profile-stage-snapshot";
+import { inferInferredStage } from "@/lib/onboarding/stage";
+import { step2V1ToCareProfileUpdate } from "@/lib/profile/row-snapshots";
 import type { OnboardingActionState } from "@/lib/onboarding/action-state";
 import {
+  displayNameForProfileWizard,
   getFirstIncompleteStep,
   isWizardDataCompleteFromSnapshot,
   loadProfileBundle,
@@ -48,6 +56,10 @@ export async function submitOnboardingStep1(
   }
   const d = parsed.data;
   const db = createDbClient(serverEnv.DATABASE_URL);
+  const existingBundle = await getCareProfileForUser(db, session.userId);
+  if (existingBundle?.membership.role === "co_caregiver") {
+    redirect("/app");
+  }
   await db
     .insert(careProfile)
     .values({
@@ -69,6 +81,14 @@ export async function submitOnboardingStep1(
         updatedAt: new Date(),
       },
     });
+  const [cp] = await db
+    .select({ id: careProfile.id })
+    .from(careProfile)
+    .where(eq(careProfile.userId, session.userId))
+    .limit(1);
+  if (cp != null) {
+    await ensureOwnerMembershipRow(db, { careProfileId: cp.id, userId: session.userId });
+  }
   redirect("/onboarding/step/2");
 }
 
@@ -77,42 +97,48 @@ export async function submitOnboardingStep2(
   formData: FormData,
 ): Promise<OnboardingActionState> {
   const session = await requireSession();
-  const raw: Record<string, unknown> = {};
-  for (const k of [
-    "manages_meds",
-    "drives",
-    "left_alone",
-    "recognizes_you",
-    "bathes_alone",
-    "wandering_incidents",
-    "conversations",
-    "sleeps_through_night",
-  ] as const) {
-    raw[k] = formData.get(k);
-  }
+  const raw = {
+    med_management_v1: formData.get("med_management_v1"),
+    driving_v1: formData.get("driving_v1"),
+    alone_safety_v1: formData.getAll("alone_safety_v1"),
+    recognition_v1: formData.get("recognition_v1"),
+    bathing_dressing_v1: formData.get("bathing_dressing_v1"),
+    wandering_v1: formData.get("wandering_v1"),
+    conversation_v1: formData.get("conversation_v1"),
+    sleep_v1: formData.get("sleep_v1"),
+  };
   const parsed = step2Schema.safeParse(raw);
   if (!parsed.success) {
     return fail(flattenFieldErrors(parsed.error));
   }
-  const stageAnswers = parsed.data as StageAnswersRecord;
-  const inferred = inferStage(stageAnswers);
+  const d = parsed.data;
   const db = createDbClient(serverEnv.DATABASE_URL);
-  const [existing] = await db
-    .select({ id: careProfile.id })
-    .from(careProfile)
-    .where(eq(careProfile.userId, session.userId))
-    .limit(1);
+  const { profile: existing } = await loadProfileBundle(session.userId);
   if (existing == null) {
     redirect("/onboarding/step/1");
   }
+  const nextSnap = {
+    ...careProfileToStageSnapshot(existing),
+    medManagementV1: d.med_management_v1,
+    drivingV1: d.driving_v1,
+    aloneSafetyV1: d.alone_safety_v1,
+    recognitionV1: d.recognition_v1,
+    bathingDressingV1: d.bathing_dressing_v1,
+    wanderingV1: d.wandering_v1,
+    conversationV1: d.conversation_v1,
+    sleepV1: d.sleep_v1,
+    stageQuestionsVersion: 1,
+    stageAnswers: {} as Record<string, never>,
+  };
+  const inferred = inferInferredStage(nextSnap);
+  const up = step2V1ToCareProfileUpdate(d, inferred);
   await db
     .update(careProfile)
     .set({
-      stageAnswers,
-      inferredStage: inferred,
+      ...up,
       updatedAt: new Date(),
     })
-    .where(eq(careProfile.userId, session.userId));
+    .where(eq(careProfile.id, existing.id));
   redirect("/onboarding/step/3");
 }
 
@@ -133,11 +159,7 @@ export async function submitOnboardingStep3(
   }
   const d = parsed.data;
   const db = createDbClient(serverEnv.DATABASE_URL);
-  const [row] = await db
-    .select({ id: careProfile.id })
-    .from(careProfile)
-    .where(eq(careProfile.userId, session.userId))
-    .limit(1);
+  const { profile: row } = await loadProfileBundle(session.userId);
   if (row == null) {
     redirect("/onboarding/step/1");
   }
@@ -150,7 +172,7 @@ export async function submitOnboardingStep3(
       caregiverProximity: d.caregiver_proximity,
       updatedAt: new Date(),
     })
-    .where(eq(careProfile.userId, session.userId));
+    .where(eq(careProfile.id, row.id));
   redirect("/onboarding/step/4");
 }
 
@@ -172,11 +194,7 @@ export async function submitOnboardingStep4(
   }
   const d = parsed.data;
   const db = createDbClient(serverEnv.DATABASE_URL);
-  const [row] = await db
-    .select({ id: careProfile.id })
-    .from(careProfile)
-    .where(eq(careProfile.userId, session.userId))
-    .limit(1);
+  const { profile: row } = await loadProfileBundle(session.userId);
   if (row == null) {
     redirect("/onboarding/step/1");
   }
@@ -193,7 +211,7 @@ export async function submitOnboardingStep4(
       hardestThing: d.hardest_thing,
       updatedAt: new Date(),
     })
-    .where(eq(careProfile.userId, session.userId));
+    .where(eq(careProfile.id, row.id));
   redirect("/onboarding/step/5");
 }
 
@@ -213,11 +231,7 @@ export async function submitOnboardingStep5(
   }
   const d = parsed.data;
   const db = createDbClient(serverEnv.DATABASE_URL);
-  const [row] = await db
-    .select({ id: careProfile.id })
-    .from(careProfile)
-    .where(eq(careProfile.userId, session.userId))
-    .limit(1);
+  const { profile: row } = await loadProfileBundle(session.userId);
   if (row == null) {
     redirect("/onboarding/step/1");
   }
@@ -229,15 +243,16 @@ export async function submitOnboardingStep5(
       crPersonalityNotes: d.cr_personality_notes,
       updatedAt: new Date(),
     })
-    .where(eq(careProfile.userId, session.userId));
+    .where(eq(careProfile.id, row.id));
   redirect("/onboarding/summary");
 }
 
 export async function confirmOnboardingSummary(): Promise<void> {
   const session = await requireSession();
-  const { user, profile } = await loadProfileBundle(session.userId);
-  if (!isWizardDataCompleteFromSnapshot(profile, user.displayName)) {
-    const step = getFirstIncompleteStep(profile, user.displayName) ?? 1;
+  const { user, profile, membership } = await loadProfileBundle(session.userId);
+  const disp = displayNameForProfileWizard(user, membership);
+  if (!isWizardDataCompleteFromSnapshot(profile, disp)) {
+    const step = getFirstIncompleteStep(profile, disp) ?? 1;
     redirect(`/onboarding/step/${step}`);
   }
   await setOnboardingAck();

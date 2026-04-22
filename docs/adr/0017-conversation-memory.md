@@ -19,7 +19,7 @@ RAG `answer()` was stateless for the current thread: retrieval and generation sa
 ## PM / privacy
 
 - Summary text: log **metadata** (section flags, `summary_tokens`, `refresh_count`, latency) via `warn` / structured `rag.memory.*` events. **Full summary text in CloudWatch** is a team decision: prefer a **dedicated log group, 30-day retention, restricted IAM** if full text is enabled (aligns with PRD §9.4 “log every LLM call” vs privacy).
-- No user-facing “what we remember” UI in v0; internal audit at `/internal/conversation/[id]/memory` (session + conversation ownership).
+- No user-facing “what we remember” UI in v0; internal audit at `/internal/conversation/[id]/memory` (session + conversation ownership). **Update:** caregiver-visible mirror on `/app/profile` ships in [ADR 0022](0022-transparency-surface.md) (TASK-033).
 
 ## Out of scope (v0)
 

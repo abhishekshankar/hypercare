@@ -1,5 +1,7 @@
 import "server-only";
-import { createDbClient, users } from "@hypercare/db";
+import { and, eq, isNull } from "drizzle-orm";
+
+import { createDbClient, routingCohortFromUserId, users } from "@hypercare/db";
 
 import { serverEnv } from "../env.server";
 import type { IdTokenClaims } from "./jwks";
@@ -35,6 +37,12 @@ export async function upsertUserFromClaims(
   if (row == null) {
     throw new Error("upsert_user: no row returned");
   }
+
+  await db
+    .update(users)
+    .set({ routingCohort: routingCohortFromUserId(row.id) })
+    .where(and(eq(users.id, row.id), isNull(users.routingCohort)));
+
   return {
     id: row.id,
     cognitoSub: row.cognitoSub,

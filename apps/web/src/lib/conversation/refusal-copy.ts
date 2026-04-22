@@ -41,6 +41,13 @@ export const REFUSAL_COPY: Record<NonTriageRefusalCode, RefusalCopy> = {
   internal_error: {
     body: "Something broke on our end. Try again in a moment.",
   },
+  verifier_rejected: {
+    body:
+      "I wasn’t able to write a safe answer to that. Try asking in a different way, or see Help.",
+  },
+  user_cancelled: {
+    body: "You cancelled this reply. Send another message whenever you’re ready.",
+  },
 };
 
 /** Display headings paired with each card so screen readers announce intent. */
@@ -50,4 +57,6 @@ export const REFUSAL_HEADINGS: Record<NonTriageRefusalCode, string> = {
   off_topic: "Outside what I can help with",
   uncitable_response: "Couldn’t finish that answer",
   internal_error: "Something broke",
+  verifier_rejected: "Couldn’t finish safely",
+  user_cancelled: "Reply cancelled",
 };

@@ -1,6 +1,8 @@
 This is a [Next.js](https://nextjs.org) project bootstrapped with [`create-next-app`](https://nextjs.org/docs/app/api-reference/cli/create-next-app).
 
-From the monorepo root, run `pnpm dev` to start the development server at [http://localhost:3000](http://localhost:3000). Route group `(authed)` under `src/app/` holds screens that will be protected; **TASK-006** adds the session guard.
+From the **monorepo root**, run `pnpm dev` to start this app at [http://localhost:3000](http://localhost:3000). Env vars, migrations, and streaming flags (`STREAMING_*` / `NEXT_PUBLIC_STREAMING_*`) are documented in the root [`README.md`](../README.md) and [`CLAUDE.md`](../CLAUDE.md).
+
+Route group `(authed)` under `src/app/` holds screens that will be protected; **TASK-006** adds the session guard.
 
 ## Getting Started
 

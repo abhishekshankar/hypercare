@@ -53,6 +53,8 @@ export type AssistantMessageRow = {
   citations: Citation[];
   refusal: RefusalReason | null;
   createdAt: Date;
+  rating: "up" | "down" | null;
+  ratingInvited: boolean;
 };
 
 export type UserMessageRow = {
@@ -108,6 +110,8 @@ export async function persistTurn(args: {
     args.result.kind === "refused" ? args.result.reason : null;
   const responseKind: "answer" | "refusal" =
     args.result.kind === "answered" ? "answer" : "refusal";
+  const isSafetyEscalation =
+    args.result.kind === "refused" && args.result.reason.code === "safety_triaged";
   const op = args.result.operator;
   const genUsage = op.lastGenerationUsage;
 
@@ -126,7 +130,9 @@ export async function persistTurn(args: {
       bedrockOutputTokens: genUsage?.outputTokens ?? null,
       modelId: genUsage?.modelId ?? null,
       generationLatencyMs: op.pipelineLatencyMs,
-      ratingInvited: responseKind === "answer" ? true : false,
+      streamFirstChunkMs: null,
+      streamTotalMs: null,
+      ratingInvited: responseKind === "answer" || isSafetyEscalation,
     })
     .returning({
       id: messages.id,
@@ -159,6 +165,113 @@ export async function persistTurn(args: {
       citations: (assistantRow.citations ?? []) as Citation[],
       refusal: (assistantRow.refusal ?? null) as RefusalReason | null,
       createdAt: assistantRow.createdAt,
+      rating: null,
+      ratingInvited: responseKind === "answer" || isSafetyEscalation,
     },
+  };
+}
+
+/** Insert the user row only (TASK-031 streaming: before generation starts). */
+export async function persistUserMessageOnly(args: {
+  conversationId: string;
+  userText: string;
+  classifiedTopics: TopicFields["classifiedTopics"];
+  topicConfidence: TopicFields["topicConfidence"];
+}): Promise<UserMessageRow> {
+  const db = createDbClient(serverEnv.DATABASE_URL);
+  const [userRow] = await db
+    .insert(messages)
+    .values({
+      conversationId: args.conversationId,
+      role: "user",
+      content: args.userText,
+      classifiedTopics: args.classifiedTopics,
+      topicConfidence: args.topicConfidence,
+    })
+    .returning({
+      id: messages.id,
+      content: messages.content,
+      createdAt: messages.createdAt,
+    });
+  if (!userRow) {
+    throw new Error("Failed to insert user message.");
+  }
+  await db
+    .update(conversations)
+    .set({ updatedAt: new Date() })
+    .where(eq(conversations.id, args.conversationId));
+  return {
+    id: userRow.id,
+    role: "user",
+    content: userRow.content,
+    createdAt: userRow.createdAt,
+  };
+}
+
+/** Insert assistant row after streaming or refusal mid-stream (TASK-031). */
+export async function persistAssistantMessage(args: {
+  conversationId: string;
+  result: AnswerResult;
+  streamFirstChunkMs?: number | null;
+  streamTotalMs?: number | null;
+}): Promise<AssistantMessageRow> {
+  const db = createDbClient(serverEnv.DATABASE_URL);
+  const assistantContent = args.result.kind === "answered" ? args.result.text : "";
+  const assistantCitations: Citation[] =
+    args.result.kind === "answered" ? args.result.citations : [];
+  const assistantRefusal: RefusalReason | null =
+    args.result.kind === "refused" ? args.result.reason : null;
+  const responseKind: "answer" | "refusal" =
+    args.result.kind === "answered" ? "answer" : "refusal";
+  const isSafetyEscalation =
+    args.result.kind === "refused" && args.result.reason.code === "safety_triaged";
+  const op = args.result.operator;
+  const genUsage = op.lastGenerationUsage;
+
+  const [assistantRow] = await db
+    .insert(messages)
+    .values({
+      conversationId: args.conversationId,
+      role: "assistant",
+      content: assistantContent,
+      responseKind,
+      citations: assistantCitations,
+      refusal: assistantRefusal,
+      retrievalTopTier: op.topRetrievalTier,
+      refusalReasonCode: args.result.kind === "refused" ? refusalReasonCode(args.result.reason) : null,
+      bedrockInputTokens: genUsage?.inputTokens ?? null,
+      bedrockOutputTokens: genUsage?.outputTokens ?? null,
+      modelId: genUsage?.modelId ?? null,
+      generationLatencyMs: op.pipelineLatencyMs,
+      streamFirstChunkMs: args.streamFirstChunkMs ?? null,
+      streamTotalMs: args.streamTotalMs ?? null,
+      ratingInvited: responseKind === "answer" || isSafetyEscalation,
+    })
+    .returning({
+      id: messages.id,
+      content: messages.content,
+      citations: messages.citations,
+      refusal: messages.refusal,
+      createdAt: messages.createdAt,
+      rating: messages.rating,
+      ratingInvited: messages.ratingInvited,
+    });
+  if (!assistantRow) {
+    throw new Error("Failed to insert assistant message.");
+  }
+  await db
+    .update(conversations)
+    .set({ updatedAt: new Date() })
+    .where(eq(conversations.id, args.conversationId));
+
+  return {
+    id: assistantRow.id,
+    role: "assistant",
+    content: assistantRow.content,
+    citations: (assistantRow.citations ?? []) as Citation[],
+    refusal: (assistantRow.refusal ?? null) as RefusalReason | null,
+    createdAt: assistantRow.createdAt,
+    rating: (assistantRow.rating ?? null) as AssistantMessageRow["rating"],
+    ratingInvited: Boolean(assistantRow.ratingInvited),
   };
 }

@@ -2,6 +2,15 @@ import { z } from "zod";
 
 import { STAGE_ANSWER_KEYS, type StageAnswerKey } from "./stage-keys";
 
+const aloneChip = z.enum([
+  "nothing",
+  "wandering",
+  "falls",
+  "cooking",
+  "medication_mistakes",
+  "other",
+]);
+
 const crRelationshipEnum = z.enum(["parent", "spouse", "sibling", "in_law", "other"]);
 
 const crDiagnosisEnum = z.enum([
@@ -61,12 +70,17 @@ export const step1Schema = z.object({
   cr_diagnosis_year: optionalYear(),
 });
 
-/** Step 2 — Stage assessment (all eight required) */
-const stageShape = Object.fromEntries(
-  STAGE_ANSWER_KEYS.map((k) => [k, ynUnsure]),
-) as Record<StageAnswerKey, typeof ynUnsure>;
-
-export const step2Schema = z.object(stageShape as z.ZodRawShape);
+/** Step 2 — Stage assessment v1 (TASK-034): all eight required */
+export const step2Schema = z.object({
+  med_management_v1: z.enum(["self", "reminders", "hands_on_help"]),
+  driving_v1: z.enum(["safe", "worried", "stopped_recent", "stopped_long_ago", "never_drove"]),
+  alone_safety_v1: z.array(aloneChip).min(1, "Choose at least one option"),
+  recognition_v1: z.enum(["yes_always", "yes_usually", "sometimes", "rarely"]),
+  bathing_dressing_v1: z.enum(["on_own", "with_reminders", "hands_on_help"]),
+  wandering_v1: z.enum(["no", "once", "few_times", "often"]),
+  conversation_v1: z.enum(["yes", "yes_repeats", "only_short", "rarely_makes_sense"]),
+  sleep_v1: z.enum(["sleep_through", "some_nights_hard", "most_nights_hard"]),
+});
 
 /** Step 3 — Living / care */
 export const step3Schema = z.object({
@@ -110,6 +124,13 @@ export const step5Schema = z.object({
 
 export type Step1Input = z.infer<typeof step1Schema>;
 export type Step2Input = z.infer<typeof step2Schema>;
+
+/** @deprecated v0 only — `STAGE_ANSWER_KEYS` + yes/no/unsure (tests / legacy fixtures). */
+const stageShapeV0 = Object.fromEntries(
+  STAGE_ANSWER_KEYS.map((k) => [k, ynUnsure]),
+) as Record<StageAnswerKey, typeof ynUnsure>;
+export const step2SchemaV0 = z.object(stageShapeV0 as z.ZodRawShape);
+export type Step2V0Input = z.infer<typeof step2SchemaV0>;
 export type Step3Input = z.infer<typeof step3Schema>;
 export type Step4Input = z.infer<typeof step4Schema>;
 export type Step5Input = z.infer<typeof step5Schema>;

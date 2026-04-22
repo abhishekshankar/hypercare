@@ -68,7 +68,8 @@ export function pickThisWeeksFocusFromData(input: {
   topTopics: { slug: string; weight: number }[];
   userStage: PickerStage | null;
 }): PickerResult {
-  const { now, publishedModules, recentlyCompletedModuleIds, profileChanges7d, topTopics, userStage } = input;
+  const { now, publishedModules, recentlyCompletedModuleIds, profileChanges7d, topTopics, userStage } =
+    input;
   if (publishedModules.length === 0) {
     return { kind: "no_pick", reason: "no_eligible_modules" };
   }

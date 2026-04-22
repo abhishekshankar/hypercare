@@ -7,7 +7,7 @@ describe("canonicalLoopbackRedirectUrl", () => {
     vi.unstubAllEnvs();
   });
 
-  it("returns null when hosts already match", () => {
+  it("returns null when origin already matches AUTH_BASE_URL", () => {
     expect(
       canonicalLoopbackRedirectUrl(
         "http://localhost:3000/app",
@@ -15,6 +15,16 @@ describe("canonicalLoopbackRedirectUrl", () => {
         "development",
       ),
     ).toBeNull();
+  });
+
+  it("redirects same hostname to AUTH_BASE_URL port (Next dev alternate port)", () => {
+    expect(
+      canonicalLoopbackRedirectUrl(
+        "http://localhost:3001/api/auth/login?next=%2Fapp",
+        "http://localhost:3000",
+        "development",
+      ),
+    ).toBe("http://localhost:3000/api/auth/login?next=%2Fapp");
   });
 
   it("redirects 127.0.0.1 to localhost from AUTH_BASE_URL", () => {
@@ -89,5 +99,31 @@ describe("canonicalLoopbackRedirectUrl", () => {
         "http://127.0.0.1:3456",
       ),
     ).toBe("http://localhost:3000/app?x=1");
+  });
+
+  it("uses Host header to detect mismatch when Next dev rewrites request.url", () => {
+    // Next dev replaces `request.url` hostname with its canonical even when the browser used
+    // a different loopback name. Trust the Host header — that's the origin scoping the cookie.
+    expect(
+      canonicalLoopbackRedirectUrl(
+        "http://localhost:3000/api/auth/login?next=%2Fapp",
+        "http://localhost:3000",
+        "development",
+        undefined,
+        "127.0.0.1:3000",
+      ),
+    ).toBe("http://localhost:3000/api/auth/login?next=%2Fapp");
+  });
+
+  it("returns null when Host header matches AUTH_BASE_URL origin", () => {
+    expect(
+      canonicalLoopbackRedirectUrl(
+        "http://localhost:3000/app",
+        "http://localhost:3000",
+        "development",
+        undefined,
+        "localhost:3000",
+      ),
+    ).toBeNull();
   });
 });

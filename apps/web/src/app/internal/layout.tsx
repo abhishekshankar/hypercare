@@ -30,6 +30,12 @@ export default async function InternalLayout({ children }: Readonly<{ children: 
           >
             Safety flags
           </Link>
+          <Link className="text-zinc-600 underline-offset-2 hover:underline" href="/internal/safety">
+            Safety FT shadow
+          </Link>
+          <Link className="text-zinc-600 underline-offset-2 hover:underline" href="/internal/feedback">
+            Feedback
+          </Link>
         </nav>
       </div>
       <div className="mx-auto max-w-5xl px-4 py-6">{children}</div>

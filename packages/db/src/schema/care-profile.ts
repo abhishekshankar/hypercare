@@ -36,6 +36,16 @@ export const careProfile = pgTable(
     crBackground: text("cr_background"),
     crJoy: text("cr_joy"),
     crPersonalityNotes: text("cr_personality_notes"),
+    /** 0 = sprint-2 yes/no/unsure `stage_answers` only; 1 = TASK-034 v1 ordinals. */
+    stageQuestionsVersion: integer("stage_questions_version").notNull().default(0),
+    medManagementV1: text("med_management_v1"),
+    drivingV1: text("driving_v1"),
+    aloneSafetyV1: text("alone_safety_v1").array(),
+    recognitionV1: text("recognition_v1"),
+    bathingDressingV1: text("bathing_dressing_v1"),
+    wanderingV1: text("wandering_v1"),
+    conversationV1: text("conversation_v1"),
+    sleepV1: text("sleep_v1"),
     createdAt: timestamp("created_at", { withTimezone: true }).defaultNow().notNull(),
     updatedAt: timestamp("updated_at", { withTimezone: true }).defaultNow().notNull(),
   },
@@ -87,6 +97,38 @@ export const careProfile = pgTable(
     check(
       "care_profile_caregiver_state_1_5_check",
       sql`(${t.caregiverState1_5} IS NULL OR (${t.caregiverState1_5} >= 1 AND ${t.caregiverState1_5} <= 5))`,
+    ),
+    check(
+      "care_profile_stage_questions_version_check",
+      sql`(${t.stageQuestionsVersion} IS NOT NULL AND ${t.stageQuestionsVersion} >= 0 AND ${t.stageQuestionsVersion} <= 1)`,
+    ),
+    check(
+      "care_profile_med_management_v1_check",
+      sql`(${t.medManagementV1} IS NULL OR ${t.medManagementV1} IN ('self', 'reminders', 'hands_on_help'))`,
+    ),
+    check(
+      "care_profile_driving_v1_check",
+      sql`(${t.drivingV1} IS NULL OR ${t.drivingV1} IN ('safe', 'worried', 'stopped_recent', 'stopped_long_ago', 'never_drove'))`,
+    ),
+    check(
+      "care_profile_recognition_v1_check",
+      sql`(${t.recognitionV1} IS NULL OR ${t.recognitionV1} IN ('yes_always', 'yes_usually', 'sometimes', 'rarely'))`,
+    ),
+    check(
+      "care_profile_bathing_dressing_v1_check",
+      sql`(${t.bathingDressingV1} IS NULL OR ${t.bathingDressingV1} IN ('on_own', 'with_reminders', 'hands_on_help'))`,
+    ),
+    check(
+      "care_profile_wandering_v1_check",
+      sql`(${t.wanderingV1} IS NULL OR ${t.wanderingV1} IN ('no', 'once', 'few_times', 'often'))`,
+    ),
+    check(
+      "care_profile_conversation_v1_check",
+      sql`(${t.conversationV1} IS NULL OR ${t.conversationV1} IN ('yes', 'yes_repeats', 'only_short', 'rarely_makes_sense'))`,
+    ),
+    check(
+      "care_profile_sleep_v1_check",
+      sql`(${t.sleepV1} IS NULL OR ${t.sleepV1} IN ('sleep_through', 'some_nights_hard', 'most_nights_hard'))`,
     ),
   ],
 );

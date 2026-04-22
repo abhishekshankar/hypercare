@@ -4,6 +4,7 @@ import {
   careProfile,
   careProfileChanges,
   conversationMemory,
+  conversationMemoryForgotten,
   conversations,
   lessonProgress,
   messages,
@@ -12,6 +13,7 @@ import {
   modules,
   safetyFlags,
   topics,
+  userActions,
   users,
   weeklyCheckins,
 } from "../src/schema/index.js";
@@ -26,6 +28,8 @@ test("schema infers stable row types", () => {
   }>();
 
   expectTypeOf<InferSelectModel<typeof careProfile>>().toHaveProperty("stageAnswers");
+  expectTypeOf<InferSelectModel<typeof careProfile>>().toHaveProperty("stageQuestionsVersion");
+  expectTypeOf<InferSelectModel<typeof careProfile>>().toHaveProperty("medManagementV1");
   expectTypeOf<InferSelectModel<typeof conversations>>().toHaveProperty("userId");
   expectTypeOf<InferSelectModel<typeof messages>>().toHaveProperty("retrieval");
   expectTypeOf<InferSelectModel<typeof modules>>().toHaveProperty("tier");
@@ -42,4 +46,6 @@ test("schema infers stable row types", () => {
   expectTypeOf<InferSelectModel<typeof weeklyCheckins>>().toHaveProperty("triedSomething");
   expectTypeOf<InferSelectModel<typeof careProfileChanges>>().toHaveProperty("newValue");
   expectTypeOf<InferSelectModel<typeof conversationMemory>>().toHaveProperty("sourceMessageIds");
+  expectTypeOf<InferSelectModel<typeof conversationMemoryForgotten>>().toHaveProperty("forgottenText");
+  expectTypeOf<InferSelectModel<typeof userActions>>().toHaveProperty("action");
 });

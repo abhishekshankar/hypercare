@@ -18,6 +18,7 @@ export default defineConfig({
       "src/**/*.test.ts",
       "src/**/*.test.tsx",
       "test/**/*.test.ts",
+      "test/**/*.test.tsx",
     ],
     environment: "jsdom",
     fileParallelism: false,

@@ -32,6 +32,11 @@ export default async function AppSectionLayout({
               Care profile
             </Link>
           </li>
+          <li>
+            <Link className="hover:text-foreground" href="/app/help">
+              Help &amp; feedback
+            </Link>
+          </li>
         </ul>
       </nav>
       {children}

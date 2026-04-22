@@ -97,16 +97,25 @@ export function formatChangedAtLabel(iso: string | Date): string {
 
 export function changeSummaryLine(
   part: Pick<ProfileChangePart, "section" | "field" | "oldValue" | "newValue">,
-  opts?: { relativeTime?: string },
+  opts?: {
+    relativeTime?: string;
+    /** When the viewer is not the editor (TASK-038 co-caregiver audit). */
+    editorLabel?: string;
+    viewerIsEditor?: boolean;
+  },
 ): string {
   const label = FIELD_LABELS[part.field] ?? part.field.replace(/_/g, " ");
   const oldL = fmtStageValue(part.field, part.oldValue);
   const newL = fmtStageValue(part.field, part.newValue);
   const when = opts?.relativeTime != null && opts.relativeTime.length > 0 ? `${opts.relativeTime} — ` : "";
+  const who =
+    opts?.viewerIsEditor === true
+      ? "You"
+      : (opts?.editorLabel?.trim() ?? "Another caregiver");
   if (part.oldValue == null || part.oldValue === "") {
-    return `${when}You set ${label} to “${newL}”.`;
+    return `${when}${who} set ${label} to “${newL}”.`;
   }
-  return `${when}You updated ${label} from “${oldL}” to “${newL}”.`;
+  return `${when}${who} updated ${label} from “${oldL}” to “${newL}”.`;
 }
 
 /** Short label for section headings (one-line summary helpers). */

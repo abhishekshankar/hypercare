@@ -35,9 +35,7 @@ export const safetyFlags = pgTable(
     conversationId: uuid("conversation_id").references(() => conversations.id, {
       onDelete: "cascade",
     }),
-    userId: uuid("user_id")
-      .notNull()
-      .references(() => users.id, { onDelete: "cascade" }),
+    userId: uuid("user_id").references(() => users.id, { onDelete: "set null" }),
     messageText: text("message_text").notNull(),
     category: text("category").notNull(),
     severity: text("severity").notNull(),
@@ -56,6 +54,8 @@ export const safetyFlags = pgTable(
     classifierOutput: jsonb("classifier_output"),
     escalationRendered: text("escalation_rendered"),
     createdAt: timestamp("created_at", { withTimezone: true }).defaultNow().notNull(),
+    /** Set on account delete when the row is de-identified, not hard-deleted (TASK-032). */
+    deidentifiedAt: timestamp("deidentified_at", { withTimezone: true }),
   },
   (t) => [
     check(

@@ -3,7 +3,7 @@
 - **Owner:** Cursor
 - **Depends on:** TASK-009 (RAG pipeline — Layer 5/6 is where streaming plugs in), TASK-011 (conversation UI), TASK-025 (escalation cards render atomically; streaming must not leak into that surface)
 - **Unblocks:** perceived latency; helpfulness rate on the 2am surface; any future multi-turn memory UX improvements
-- **Status:** pending
+- **Status:** in progress (core shipped — soak + E2E load test optional)
 - **ADR:** `docs/adr/0020-streaming-answers.md` (new — transport choice, streamed-vs-atomic decision per refusal kind, progressive attribution)
 
 ---

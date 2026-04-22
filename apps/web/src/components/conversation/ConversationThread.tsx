@@ -1,14 +1,26 @@
 "use client";
 
-import { useCallback, useId, useLayoutEffect, useMemo, useState } from "react";
+import {
+  useCallback,
+  useEffect,
+  useId,
+  useLayoutEffect,
+  useMemo,
+  useRef,
+  useState,
+} from "react";
 import { useRouter } from "next/navigation";
 
 import type { Citation, RefusalReason, SafetyTriageReason } from "@hypercare/rag";
+
+import { clientEnv } from "@/lib/env.client";
+import { createSseParser, parseSseDataJson } from "@/lib/sse";
 
 import { CitationChip } from "./CitationChip";
 import { CitationExpansion } from "./CitationExpansion";
 import { Composer } from "./Composer";
 import { EscalationCard } from "./EscalationCard";
+import { HelpfulnessBar } from "./HelpfulnessBar";
 import { RefusalCard } from "./RefusalCard";
 import { SaveAnswerBar, type InitialSave } from "./SaveAnswerBar";
 import { TriageCard } from "./TriageCard";
@@ -32,12 +44,25 @@ export type ThreadMessage =
       citations: Citation[];
       refusal: RefusalReason | null;
       createdAt: string;
+      rating: "up" | "down" | null;
+      ratingInvited: boolean;
     };
 
 type Pending =
   | { kind: "idle" }
   | { kind: "sending"; userText: string }
+  | {
+      kind: "streaming";
+      userText: string;
+      body: string;
+      citations: Citation[] | null;
+      reduceMotion: boolean;
+    }
   | { kind: "error"; message: string; userText: string };
+
+const clientWantsStreaming =
+  clientEnv.NEXT_PUBLIC_STREAMING_ANSWERS === "1" ||
+  clientEnv.NEXT_PUBLIC_STREAMING_ANSWERS === "true";
 
 export function ConversationThread({
   conversationId,
@@ -61,6 +86,7 @@ export function ConversationThread({
   const router = useRouter();
   const [messages, setMessages] = useState<ThreadMessage[]>(initialMessages);
   const [pending, setPending] = useState<Pending>({ kind: "idle" });
+  const fetchAbortRef = useRef<AbortController | null>(null);
   const saveByMessage = useMemo(() => {
     const m = new Map<string, { saveId: string; note: string | null }>();
     for (const s of initialSaves) {
@@ -80,31 +106,153 @@ export function ConversationThread({
     }
   }, [messages.length, conversationId]);
 
+  useEffect(() => {
+    if (pending.kind !== "sending" && pending.kind !== "streaming") return;
+    const onKey = (e: KeyboardEvent) => {
+      if (e.key === "Escape") {
+        fetchAbortRef.current?.abort();
+      }
+    };
+    window.addEventListener("keydown", onKey);
+    return () => window.removeEventListener("keydown", onKey);
+  }, [pending.kind]);
+
   const onSubmit = useCallback(
     async (text: string) => {
+      const reduceMotion =
+        typeof window !== "undefined" &&
+        window.matchMedia?.("(prefers-reduced-motion: reduce)").matches === true;
+
       setPending({ kind: "sending", userText: text });
+      const ac = new AbortController();
+      fetchAbortRef.current = ac;
+
       try {
         const res = await fetch(`/api/app/conversation/${conversationId}/message`, {
           method: "POST",
-          headers: { "content-type": "application/json" },
+          signal: ac.signal,
+          headers: {
+            "content-type": "application/json",
+            ...(clientWantsStreaming ? { Accept: "text/event-stream" } : {}),
+          },
           body: JSON.stringify({ text }),
         });
         if (!res.ok) {
           const body = await res.text().catch(() => "");
           throw new Error(`HTTP ${res.status}${body ? `: ${body.slice(0, 200)}` : ""}`);
         }
-        const data = (await res.json()) as {
-          user: ThreadMessage;
-          assistant: ThreadMessage;
-        };
-        setMessages((prev) => [...prev, data.user, data.assistant]);
-        setPending({ kind: "idle" });
-        // Refresh recent-conversations / greeting on the home screen on
-        // back-nav. No-op on the conversation route itself (cache: stale).
-        router.refresh();
+
+        const ct = res.headers.get("content-type") ?? "";
+        if (ct.includes("application/json")) {
+          const data = (await res.json()) as {
+            user: Extract<ThreadMessage, { role: "user" }>;
+            assistant: Extract<ThreadMessage, { role: "assistant" }>;
+          };
+          setMessages((prev) => [...prev, data.user, data.assistant]);
+          setPending({ kind: "idle" });
+          router.refresh();
+          return;
+        }
+
+        if (!res.body) {
+          throw new Error("Empty response body");
+        }
+
+        const reader = res.body.getReader();
+        let turnUser: Extract<ThreadMessage, { role: "user" }> | null = null;
+        let turnAssistant: Extract<ThreadMessage, { role: "assistant" }> | null = null;
+
+        const parser = createSseParser((ev) => {
+          if (ev.event === "started") {
+            void parseSseDataJson<{ messageId?: string }>(ev.data);
+            setPending({
+              kind: "streaming",
+              userText: text,
+              body: "",
+              citations: null,
+              reduceMotion,
+            });
+            return;
+          }
+          if (ev.event === "chunk") {
+            const row = parseSseDataJson<{ text?: string }>(ev.data);
+            if (row?.text) {
+              setPending((p) =>
+                p.kind === "streaming"
+                  ? { ...p, body: p.body + row.text }
+                  : p.kind === "sending"
+                    ? {
+                        kind: "streaming",
+                        userText: text,
+                        body: row.text ?? "",
+                        citations: null,
+                        reduceMotion,
+                      }
+                    : p,
+              );
+            }
+            return;
+          }
+          if (ev.event === "citations") {
+            const row = parseSseDataJson<{ citations?: Citation[] }>(ev.data);
+            if (row?.citations) {
+              setPending((p) => (p.kind === "streaming" ? { ...p, citations: row.citations! } : p));
+            }
+            return;
+          }
+          if (ev.event === "done") {
+            const row = parseSseDataJson<{
+              user?: Extract<ThreadMessage, { role: "user" }>;
+              assistant?: Extract<ThreadMessage, { role: "assistant" }>;
+            }>(ev.data);
+            if (row?.user && row.assistant) {
+              turnUser = row.user;
+              turnAssistant = row.assistant;
+            }
+            return;
+          }
+          if (ev.event === "refusal") {
+            const row = parseSseDataJson<{
+              user?: Extract<ThreadMessage, { role: "user" }>;
+              assistant?: Extract<ThreadMessage, { role: "assistant" }>;
+            }>(ev.data);
+            if (row?.user && row.assistant) {
+              turnUser = row.user;
+              turnAssistant = row.assistant;
+            }
+            return;
+          }
+          if (ev.event === "error") {
+            const row = parseSseDataJson<{ message?: string }>(ev.data);
+            throw new Error(row?.message ?? "Stream error");
+          }
+        });
+
+        for (;;) {
+          const { done, value } = await reader.read();
+          if (done) break;
+          if (value) parser.push(value);
+        }
+        parser.end();
+
+        if (turnUser && turnAssistant) {
+          setMessages((prev) => [...prev, turnUser!, turnAssistant!]);
+          setPending({ kind: "idle" });
+          router.refresh();
+          return;
+        }
+
+        throw new Error("Stream ended without a final turn");
       } catch (e) {
+        if (e instanceof Error && e.name === "AbortError") {
+          setPending({ kind: "idle" });
+          await router.refresh();
+          return;
+        }
         const message = e instanceof Error ? e.message : "Network error";
         setPending({ kind: "error", message, userText: text });
+      } finally {
+        fetchAbortRef.current = null;
       }
     },
     [conversationId, router],
@@ -120,7 +268,11 @@ export function ConversationThread({
 
   return (
     <div className="space-y-6">
-      <div className="space-y-6" data-testid="thread-messages">
+      <div
+        aria-live="polite"
+        className="space-y-6"
+        data-testid="thread-messages"
+      >
         {messages.map((m) =>
           m.role === "user" ? (
             <div
@@ -166,6 +318,59 @@ export function ConversationThread({
             <AssistantPending />
           </>
         ) : null}
+        {pending.kind === "streaming" ? (
+          <>
+            <div
+              className="scroll-mt-24"
+              data-turn="user"
+              id="message-pending-user"
+            >
+              <UserBubble
+                message={{
+                  id: "pending-user",
+                  role: "user",
+                  content: pending.userText,
+                  createdAt: new Date().toISOString(),
+                }}
+              />
+            </div>
+            <div className="space-y-4" data-testid="assistant-streaming">
+              <div
+                className="space-y-4 text-base leading-relaxed text-foreground"
+                data-role="assistant"
+              >
+                <p className="whitespace-pre-wrap">
+                  {pending.body}
+                  {pending.reduceMotion ? (
+                    <span aria-hidden className="text-accent">
+                      |
+                    </span>
+                  ) : (
+                    <span
+                      aria-hidden
+                      className="ml-0.5 inline-block w-2 animate-pulse bg-accent align-text-bottom motion-reduce:animate-none"
+                      style={{ height: "1.1em" }}
+                    />
+                  )}
+                </p>
+                {pending.citations && pending.citations.length > 0 ? (
+                  <div className="border-t border-border pt-3 text-sm text-muted-foreground">
+                    <p className="font-medium text-foreground">Sources</p>
+                    <ul className="mt-2 list-inside list-disc space-y-1">
+                      {pending.citations.map((c) => (
+                        <li key={c.chunkId}>
+                          {c.attributionLine}
+                          {c.sectionHeading ? ` · ${c.sectionHeading}` : ""}
+                        </li>
+                      ))}
+                    </ul>
+                  </div>
+                ) : null}
+              </div>
+              <p className="text-xs text-muted-foreground">Press Escape to cancel the reply.</p>
+            </div>
+          </>
+        ) : null}
         {pending.kind === "error" ? (
           <div
             className="rounded-md border border-border bg-muted/40 px-4 py-3 text-sm text-muted-foreground"
@@ -189,7 +394,7 @@ export function ConversationThread({
         <Composer
           autoSubmitText={autoSubmit}
           onSubmit={onSubmit}
-          pending={pending.kind === "sending"}
+          pending={pending.kind === "sending" || pending.kind === "streaming"}
           placeholder="Ask a follow-up…"
         />
       </div>
@@ -235,6 +440,9 @@ function AssistantBubble({
         ) : (
           <RefusalCard reason={message.refusal} />
         )}
+        {message.ratingInvited ? (
+          <HelpfulnessBar initial={message.rating} invited={message.ratingInvited} messageId={message.id} />
+        ) : null}
       </div>
     );
   }
@@ -243,7 +451,7 @@ function AssistantBubble({
       citations={message.citations}
       content={message.content}
       initialSave={initialSave}
-      messageId={message.id}
+      message={message}
       onSaveMutate={onSaveMutate}
     />
   );
@@ -252,13 +460,13 @@ function AssistantBubble({
 function AnsweredAssistant({
   content,
   citations,
-  messageId,
+  message,
   initialSave,
   onSaveMutate,
 }: Readonly<{
   content: string;
   citations: Citation[];
-  messageId: string;
+  message: Extract<ThreadMessage, { role: "assistant" }>;
   initialSave: { saveId: string; note: string | null } | null;
   onSaveMutate: () => void;
 }>) {
@@ -278,7 +486,10 @@ function AnsweredAssistant({
       {paragraphs.map((para, i) => (
         <ParagraphBlock key={i} citations={citations} paragraph={para} />
       ))}
-      <SaveAnswerBar initial={initial} messageId={messageId} onMutate={onSaveMutate} />
+      <SaveAnswerBar initial={initial} messageId={message.id} onMutate={onSaveMutate} />
+      {message.ratingInvited ? (
+        <HelpfulnessBar initial={message.rating} invited={message.ratingInvited} messageId={message.id} />
+      ) : null}
     </div>
   );
 }

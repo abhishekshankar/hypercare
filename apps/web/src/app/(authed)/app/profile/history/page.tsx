@@ -17,7 +17,7 @@ export default async function ProfileHistoryPage() {
         subHeadline="A longer history view will ship in a later version."
         title="Change history"
       />
-      <RecentChanges items={recent} />
+      <RecentChanges items={recent} viewerUserId={session.userId} />
       <p>
         <Link className="text-sm text-muted-foreground underline" href="/app/profile">
           Back to care profile

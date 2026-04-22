@@ -3,7 +3,7 @@
 - **Owner:** Cursor (fixtures, runner, monitor); PM + Care Specialist (adversarial authoring); external unaffiliated crisis counselor (review round); lived-experience reviewers (50 real-feel prompts)
 - **Depends on:** TASK-026 (100-query red-team fixture + runner + merge gate)
 - **Unblocks:** PRD §10.5 launch gate; the "we can defend the safety numbers to an outside reviewer" claim; weekly regression signal on safety drift
-- **Status:** pending
+- **Status:** in progress (engineering: v2 fixture, gate, artifacts, weekly script stub, ADR, metrics sparkline, CI; **PM:** external review sign-off, live weekly Lambda deploy, execute consent PDF in repo or Drive)
 - **ADR:** `docs/adr/0024-redteam-full-target.md` (new — growth from 100 → 250, external-review protocol, drift-monitor thresholds)
 
 ---

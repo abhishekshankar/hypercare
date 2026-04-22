@@ -1,13 +1,15 @@
 import { readFileSync } from "node:fs";
 import { dirname, join } from "node:path";
 import { fileURLToPath } from "node:url";
-import { and, count, desc, eq, inArray } from "drizzle-orm";
-import { conversationMemory, createDbClient, messages } from "@hypercare/db";
+import { and, asc, count, desc, eq, inArray } from "drizzle-orm";
+import { conversationMemory, conversationMemoryForgotten, createDbClient, messages } from "@hypercare/db";
 
 import { MEMORY_MAX_TOKENS, MEMORY_MODEL_ID, MEMORY_MODEL_REGION, MEMORY_REFRESH_EVERY_N } from "../config.js";
 import type { GenerateInput, GenerateOutput } from "../bedrock/claude.js";
+import { augmentMemoryUserMessageWithForgotten, forgottenVerifierRetryPrefix } from "./prompt-forgotten.js";
 import { parseMemorySections, sectionParseTighterUserPrefix } from "./section-parse.js";
 import { verifyMemorySummaryBannedContent } from "./verify-banned.js";
+import { verifyMemorySummaryForgottenContent } from "./verify-forgotten.js";
 import { estimateTokenCount } from "./tokens.js";
 import type { MemoryRefreshLog } from "./types.js";
 
@@ -54,6 +56,8 @@ export type RunConversationMemoryRefreshInput = {
   warn?: (msg: string, ctx?: Record<string, unknown>) => void;
   log?: (e: MemoryRefreshLog) => void;
   refreshEveryN?: number;
+  /** When true, run refresh even if turn count does not match MEMORY_REFRESH_EVERY_N (user-triggered). */
+  forceRefresh?: boolean;
 };
 
 export async function runConversationMemoryRefresh(
@@ -81,8 +85,10 @@ export async function runConversationMemoryRefresh(
   const previousSummary = memRow?.summaryMd ?? null;
   const previousRefreshCount = memRow?.refreshCount ?? 0;
   const invalidated = memRow?.invalidated ?? false;
+  const force = input.forceRefresh === true;
 
   if (
+    !force &&
     !shouldRunMemoryRefresh(
       {
         userMessageCountAfterThisTurn: input.userMessageCount,
@@ -93,6 +99,18 @@ export async function runConversationMemoryRefresh(
   ) {
     return;
   }
+
+  const forgottenRows = await db
+    .select({ text: conversationMemoryForgotten.forgottenText })
+    .from(conversationMemoryForgotten)
+    .where(
+      and(
+        eq(conversationMemoryForgotten.conversationId, input.conversationId),
+        eq(conversationMemoryForgotten.userId, input.userId),
+      ),
+    )
+    .orderBy(asc(conversationMemoryForgotten.forgottenAt));
+  const forgottenTexts = forgottenRows.map((r) => r.text);
 
   const recent = await db
     .select({
@@ -115,10 +133,17 @@ export async function runConversationMemoryRefresh(
   const systemPrompt = getMemorySystemPrompt();
   const transcript = buildTranscriptLines(recent);
   const sourceIds = recent.map((r) => r.id);
-  const userMessage = `Here are the most recent messages in the conversation (oldest first). Summarize for the four headings in your instructions.\n\n${transcript}`;
+  const baseUserMessage = `Here are the most recent messages in the conversation (oldest first). Summarize for the four headings in your instructions.\n\n${transcript}`;
+  const userMessage = augmentMemoryUserMessageWithForgotten(baseUserMessage, forgottenTexts);
 
-  const tryOnce = async (tight: boolean) => {
-    const up = tight ? `${sectionParseTighterUserPrefix()}\n\n${userMessage}` : userMessage;
+  const tryOnce = async (tight: boolean, forgottenRetry: boolean) => {
+    let up = userMessage;
+    if (forgottenRetry) {
+      up = `${forgottenVerifierRetryPrefix(forgottenTexts)}\n\n${up}`;
+    }
+    if (tight) {
+      up = `${sectionParseTighterUserPrefix()}\n\n${up}`;
+    }
     return input.generate({
       systemPrompt,
       userPrompt: up,
@@ -129,17 +154,28 @@ export async function runConversationMemoryRefresh(
     });
   };
 
-  const isBad = (body: string) =>
+  const isBadBanned = (body: string) =>
     verifyMemorySummaryBannedContent(body).ok === false || estimateTokenCount(body) > MEMORY_MAX_TOKENS;
 
-  let out = await tryOnce(false);
+  let out = await tryOnce(false, false);
   let text = out.text.trim();
-  if (isBad(text)) {
-    out = await tryOnce(true);
+  if (isBadBanned(text)) {
+    out = await tryOnce(true, false);
     text = out.text.trim();
   }
 
-  if (isBad(text)) {
+  let forgottenCheck = verifyMemorySummaryForgottenContent(text, forgottenTexts);
+  if (!isBadBanned(text) && forgottenTexts.length > 0 && forgottenCheck.ok === false) {
+    input.warn?.("rag.memory.forgotten_violation", {
+      conversationId: input.conversationId,
+      matched: "matched" in forgottenCheck ? forgottenCheck.matched : null,
+    });
+    out = await tryOnce(true, true);
+    text = out.text.trim();
+    forgottenCheck = verifyMemorySummaryForgottenContent(text, forgottenTexts);
+  }
+
+  if (isBadBanned(text)) {
     if (previousSummary) {
       input.warn?.("rag.memory.fallback_prior", { conversationId: input.conversationId, reason: "banned_or_overflow" });
       await db
@@ -168,6 +204,45 @@ export async function runConversationMemoryRefresh(
         });
     } else {
       input.warn?.("rag.memory.refresh_aborted", { conversationId: input.conversationId, reason: "banned_or_overflow" });
+    }
+    return;
+  }
+
+  if (forgottenTexts.length > 0 && forgottenCheck.ok === false) {
+    if (previousSummary) {
+      input.warn?.("rag.memory.fallback_prior", {
+        conversationId: input.conversationId,
+        reason: "forgotten_still_present",
+      });
+      await db
+        .insert(conversationMemory)
+        .values({
+          conversationId: input.conversationId,
+          userId: input.userId,
+          summaryMd: previousSummary,
+          summaryTokens: estimateTokenCount(previousSummary),
+          lastRefreshedAt: new Date(),
+          refreshCount: previousRefreshCount,
+          invalidated: false,
+          sourceMessageIds: sourceIds,
+        })
+        .onConflictDoUpdate({
+          target: conversationMemory.conversationId,
+          set: {
+            summaryMd: previousSummary,
+            summaryTokens: estimateTokenCount(previousSummary),
+            lastRefreshedAt: new Date(),
+            refreshCount: previousRefreshCount,
+            invalidated: false,
+            sourceMessageIds: sourceIds,
+            userId: input.userId,
+          },
+        });
+    } else {
+      input.warn?.("rag.memory.refresh_aborted", {
+        conversationId: input.conversationId,
+        reason: "forgotten_still_present",
+      });
     }
     return;
   }

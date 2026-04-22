@@ -57,15 +57,15 @@ describe("step1Schema", () => {
 });
 
 describe("step2Schema", () => {
-  it("requires all eight answers", () => {
+  it("requires all eight v1 fields", () => {
     const r = step2Schema.safeParse({
-      manages_meds: "yes",
-      drives: "yes",
-      left_alone: "yes",
-      recognizes_you: "yes",
-      bathes_alone: "yes",
-      wandering_incidents: "no",
-      conversations: "yes",
+      med_management_v1: "self",
+      driving_v1: "safe",
+      alone_safety_v1: ["nothing"],
+      recognition_v1: "yes_usually",
+      bathing_dressing_v1: "on_own",
+      wandering_v1: "no",
+      conversation_v1: "yes",
     });
     expect(r.success).toBe(false);
   });

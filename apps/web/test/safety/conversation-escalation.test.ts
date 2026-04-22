@@ -27,9 +27,32 @@ const stubOp = {
   lastGenerationUsage: null,
 } as const;
 
-vi.mock("@/lib/env.server", () => ({
-  serverEnv: { DATABASE_URL: "postgresql://127.0.0.1:5432/hc_test" },
-}));
+vi.mock("@/lib/env.server", async (importOriginal) => {
+  const actual = await importOriginal<typeof import("@/lib/env.server")>();
+  return {
+    ...actual,
+    serverEnv: {
+      ...actual.serverEnv,
+      DATABASE_URL: "postgresql://127.0.0.1:5432/hc_test",
+    },
+  };
+});
+
+/** Route loads `routingCohort` from Drizzle; avoid real Postgres (CI may not have `hc_test`). */
+vi.mock("@hypercare/db", async (importOriginal) => {
+  const actual = await importOriginal<typeof import("@hypercare/db")>();
+  const routingRow = [{ routingCohort: null as string | null }];
+  const dbStub = {
+    select: () => dbStub,
+    from: () => dbStub,
+    where: () => dbStub,
+    limit: () => Promise.resolve(routingRow),
+  };
+  return {
+    ...actual,
+    createDbClient: () => dbStub as ReturnType<typeof actual.createDbClient>,
+  };
+});
 
 vi.mock("server-only", () => ({}));
 

@@ -9,15 +9,18 @@ import {
 } from "@/lib/onboarding/ack";
 import { isProductionCookieSecure } from "@/lib/env.server";
 import { serverEnv } from "@/lib/env.server";
+import { mapStageAnswersV0ToV1, type StageAnswersRecord } from "@hypercare/content/stage-rules";
 import {
   careProfile,
   careProfileChanges,
+  careProfileMembers,
   conversations,
   createDbClient,
   lessonProgress,
   messages,
   modules,
   safetyFlags,
+  userActions,
   userSuppression,
   users,
   weeklyCheckins,
@@ -63,6 +66,16 @@ export async function GET(request: NextRequest) {
     return new NextResponse("User upsert failed", { status: 500 });
   }
 
+  const routing = request.nextUrl.searchParams.get("routing");
+  if (routing === "treatment" || routing === "control") {
+    await db
+      .update(users)
+      .set({
+        routingCohort: routing === "treatment" ? "routing_v1_treatment" : "routing_v1_control",
+      })
+      .where(eq(users.id, userRow.id));
+  }
+
   // `mode=onboarded` seeds a fully-onboarded user (TASK-011 conversation
   // E2E spec) — avoids re-walking the wizard for every conversation test.
   // Default mode resets the user for the onboarding wizard E2E.
@@ -70,6 +83,7 @@ export async function GET(request: NextRequest) {
   const onboarded = mode === "onboarded";
 
   await db.delete(safetyFlags).where(eq(safetyFlags.userId, userRow.id));
+  await db.delete(userActions).where(eq(userActions.userId, userRow.id));
   await db.delete(userSuppression).where(eq(userSuppression.userId, userRow.id));
   await db.delete(lessonProgress).where(eq(lessonProgress.userId, userRow.id));
   await db.delete(weeklyCheckins).where(eq(weeklyCheckins.userId, userRow.id));
@@ -82,6 +96,7 @@ export async function GET(request: NextRequest) {
     .where(eq(messages.conversationId, "00000000-0000-0000-0000-000000000000"));
 
   await db.delete(careProfileChanges).where(eq(careProfileChanges.userId, userRow.id));
+  await db.delete(careProfileMembers).where(eq(careProfileMembers.userId, userRow.id));
   await db.delete(careProfile).where(eq(careProfile.userId, userRow.id));
 
   if (onboarded) {
@@ -114,6 +129,7 @@ export async function GET(request: NextRequest) {
         };
     const hardest =
       request.nextUrl.searchParams.get("hardest") ?? "Sundowning most evenings.";
+    const v1 = mapStageAnswersV0ToV1(stageAnswers as StageAnswersRecord);
     await db.insert(careProfile).values({
       userId: userRow.id,
       crFirstName: "Margaret",
@@ -121,7 +137,16 @@ export async function GET(request: NextRequest) {
       crRelationship: "parent",
       crDiagnosis: "alzheimers",
       crDiagnosisYear: 2020,
-      stageAnswers,
+      stageQuestionsVersion: 1,
+      stageAnswers: {},
+      medManagementV1: v1.medManagementV1,
+      drivingV1: v1.drivingV1,
+      aloneSafetyV1: v1.aloneSafetyV1,
+      recognitionV1: v1.recognitionV1,
+      bathingDressingV1: v1.bathingDressingV1,
+      wanderingV1: v1.wanderingV1,
+      conversationV1: v1.conversationV1,
+      sleepV1: v1.sleepV1,
       inferredStage: useEarly ? "early" : "middle",
       livingSituation: "with_caregiver",
       careNetwork: "solo",

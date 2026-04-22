@@ -1,16 +1,11 @@
+import { isAloneUnsafe } from "@hypercare/content/stage-rules";
+
+import type { CareProfileRow } from "./status";
 import type { StageAnswersRecord } from "./stage-keys";
 
-export type SummaryInput = {
+export type SummaryFromProfile = {
   displayName: string;
-  crFirstName: string;
-  crAge: number | null;
-  crRelationship: string;
-  crDiagnosis: string | null;
-  crDiagnosisYear: number | null;
-  livingSituation: string | null;
-  caregiverProximity: string | null;
-  hardestThing: string | null;
-  stageAnswers: StageAnswersRecord;
+  profile: CareProfileRow;
 };
 
 const RELATIONSHIP_PHRASE: Record<string, string> = {
@@ -46,8 +41,8 @@ const PROXIMITY_PHRASE: Record<string, string> = {
   remote: "You're caring from a distance.",
 };
 
-/** Observed behaviors for read-back (never "early/middle/late"). */
-function observedBehaviors(a: StageAnswersRecord): string[] {
+/** v0 (yes/no) — observed behaviors, never "early/middle/late". */
+function observedBehaviorsV0(a: StageAnswersRecord): string[] {
   const bits: string[] = [];
   if (a.bathes_alone === "no") {
     bits.push("needs help with bathing and dressing");
@@ -76,42 +71,97 @@ function observedBehaviors(a: StageAnswersRecord): string[] {
   return bits;
 }
 
+function observedBehaviorsV1(crFirst: string, profile: CareProfileRow): string[] {
+  const n = crFirst.trim() || "They";
+  const bits: string[] = [];
+  const m = profile.medManagementV1;
+  if (m === "reminders") {
+    bits.push(`${n} needs reminders for medications`);
+  } else if (m === "hands_on_help") {
+    bits.push(`${n} needs hands-on help with medications`);
+  }
+  const dr = profile.drivingV1;
+  if (dr === "never_drove" || dr === "stopped_long_ago" || dr === "stopped_recent") {
+    bits.push(`${n} no longer drives`);
+  } else if (dr === "worried") {
+    bits.push(`you’re worried about ${n}’s driving`);
+  }
+  if (isAloneUnsafe(profile.aloneSafetyV1)) {
+    bits.push(`you’d worry if ${n} were left alone for a few hours`);
+  }
+  const rec = profile.recognitionV1;
+  if (rec === "rarely" || rec === "sometimes") {
+    bits.push(`recognition can be inconsistent`);
+  }
+  const b = profile.bathingDressingV1;
+  if (b === "hands_on_help") {
+    bits.push(`needs help with bathing and dressing`);
+  } else if (b === "with_reminders") {
+    bits.push(`needs reminders or cueing for bathing and dressing`);
+  }
+  const w = profile.wanderingV1;
+  if (w === "once" || w === "few_times" || w === "often") {
+    bits.push(`wandering or getting lost has come up in the last year`);
+  }
+  const c = profile.conversationV1;
+  if (c === "rarely_makes_sense" || c === "only_short") {
+    bits.push(`back-and-forth conversation is hard`);
+  } else if (c === "yes_repeats") {
+    bits.push(`conversations can loop or repeat`);
+  }
+  if (profile.sleepV1 === "most_nights_hard" || profile.sleepV1 === "some_nights_hard") {
+    bits.push(`nights are often hard`);
+  }
+  return bits;
+}
+
 /**
  * One warm paragraph read-back (PRD §6.2). Template, not LLM output.
  */
-export function composeOnboardingSummary(input: SummaryInput): string {
+export function composeOnboardingSummary(input: SummaryFromProfile): string {
   const name = input.displayName.trim();
-  const cr = input.crFirstName.trim();
-  const rel = RELATIONSHIP_PHRASE[input.crRelationship] ?? "loved one";
+  const cr = input.profile.crFirstName.trim();
+  const n = cr || "them";
+  const rel = RELATIONSHIP_PHRASE[input.profile.crRelationship] ?? "loved one";
 
-  const ageBit =
-    input.crAge != null && input.crAge >= 0 && input.crAge <= 120 ? `, ${input.crAge}` : "";
+  const age =
+    input.profile.crAge != null && input.profile.crAge >= 0 && input.profile.crAge <= 120
+      ? input.profile.crAge
+      : null;
+  const ageBit = age != null ? `, ${age}` : "";
 
   let diagnosisBit = "";
-  if (input.crDiagnosis != null && input.crDiagnosis.length > 0) {
-    const label = DIAGNOSIS_LABEL[input.crDiagnosis] ?? "dementia";
+  if (input.profile.crDiagnosis != null && input.profile.crDiagnosis.length > 0) {
+    const label = DIAGNOSIS_LABEL[input.profile.crDiagnosis] ?? "dementia";
     const yearBit =
-      input.crDiagnosisYear != null ? ` (around ${input.crDiagnosisYear})` : "";
+      input.profile.crDiagnosisYear != null ? ` (around ${input.profile.crDiagnosisYear})` : "";
     diagnosisBit = ` who has ${label}${yearBit}`;
   }
 
   let livingBit = "";
-  if (input.livingSituation != null && LIVING_PHRASE[input.livingSituation]) {
-    livingBit = ` and ${LIVING_PHRASE[input.livingSituation]}`;
+  if (input.profile.livingSituation != null && LIVING_PHRASE[input.profile.livingSituation]) {
+    livingBit = ` and ${LIVING_PHRASE[input.profile.livingSituation]}`;
   }
 
   let proximityBit = "";
-  if (input.caregiverProximity != null && PROXIMITY_PHRASE[input.caregiverProximity]) {
-    proximityBit = ` ${PROXIMITY_PHRASE[input.caregiverProximity]}`;
+  if (
+    input.profile.caregiverProximity != null &&
+    PROXIMITY_PHRASE[input.profile.caregiverProximity]
+  ) {
+    proximityBit = ` ${PROXIMITY_PHRASE[input.profile.caregiverProximity]}`;
   }
 
-  const observed = observedBehaviors(input.stageAnswers);
+  const v0 = (input.profile.stageAnswers ?? {}) as StageAnswersRecord;
+  const observed =
+    (input.profile.stageQuestionsVersion ?? 0) >= 1
+      ? observedBehaviorsV1(n, input.profile)
+      : observedBehaviorsV0(v0);
   const observedBit =
     observed.length > 0
       ? ` You mentioned ${observed.slice(0, 3).join("; ")}${observed.length > 3 ? "; and more" : ""}.`
       : "";
 
-  const hardest = input.hardestThing?.trim();
+  const hardest = input.profile.hardestThing?.trim();
   const close =
     hardest != null && hardest.length > 0
       ? ` The hardest thing right now is ${hardest}. Let's start there.`

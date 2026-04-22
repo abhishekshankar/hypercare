@@ -19,7 +19,9 @@
     "start": "tsx src/cli.ts",
     "eval": "tsx src/cli.ts",
     "redteam:live": "EVAL_LIVE=1 tsx src/cli.ts -- redteam",
-    "redteam:offline": "tsx src/cli.ts -- redteam --offline"
+    "redteam:offline": "tsx src/cli.ts -- redteam --offline",
+    "redteam:v2": "tsx src/cli.ts -- redteam:v2",
+    "redteam:v2:gate": "tsx src/cli.ts -- redteam:v2 --offline --gate"
   },
   "dependencies": {
     "@hypercare/db": "workspace:*",

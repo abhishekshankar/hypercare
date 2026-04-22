@@ -32,6 +32,7 @@ export type {
   RagUsage,
   RefusalReason,
   RetrievedChunk,
+  RoutingAuditPayload,
   SafetyEscalationScript,
   SafetyTriageReason,
   Stage,
@@ -44,7 +45,14 @@ export type { RagConfig } from "./config.js";
 export { DEFAULT_CONFIG, withConfig } from "./config.js";
 export { buildDefaultDeps } from "./deps.js";
 export { invokeClaude } from "./bedrock/claude.js";
-export { runPipeline } from "./pipeline.js";
+export { runPipeline, runPipelineThroughCompose } from "./pipeline.js";
+export type { PipelineComposeReady, PipelineThroughComposeResult } from "./pipeline.js";
+export { runStreamingGeneration } from "./streaming/generation-stream.js";
+export type { StreamGenerationOptions } from "./streaming/generation-stream.js";
+export { fastPathVerifyChunk } from "./streaming/fast-path-verifier.js";
+export { findNextCommitEnd } from "./streaming/commit-buffer.js";
+export { invokeClaudeStream } from "./bedrock/claude.js";
+export type { StreamChunk } from "./bedrock/claude.js";
 export { loadConversationMemoryForAnswer } from "./memory/load.js";
 export {
   runConversationMemoryRefresh,
@@ -52,7 +60,9 @@ export {
   shouldRunMemoryRefresh,
 } from "./memory/refresh.js";
 export { parseMemorySections } from "./memory/section-parse.js";
+export { augmentMemoryUserMessageWithForgotten, forgottenVerifierRetryPrefix } from "./memory/prompt-forgotten.js";
 export { verifyMemorySummaryBannedContent } from "./memory/verify-banned.js";
+export { verifyMemorySummaryForgottenContent } from "./memory/verify-forgotten.js";
 export { estimateTokenCount } from "./memory/tokens.js";
 export { rewriteQueryWithMemory } from "./memory/query-rewrite.js";
 export type { ConversationMemoryForPrompt, MemoryRefreshLog } from "./memory/types.js";

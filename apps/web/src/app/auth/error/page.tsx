@@ -33,11 +33,12 @@ export default async function AuthErrorPage({ searchParams }: Props) {
       {process.env.NODE_ENV === "development" && reason === "invalid_state" ? (
         <p className="mt-4 text-sm text-muted-foreground">
           <strong className="text-foreground">invalid_state (dev):</strong> the PKCE cookie must be sent on the
-          same host Cognito redirects to (see <code className="text-xs">AUTH_BASE_URL</code> / callback URL). If you
-          opened <code className="text-xs">127.0.0.1</code> but Cognito uses <code className="text-xs">localhost</code>{" "}
-          (or the reverse), the cookie is missing. Use one host consistently—the app should redirect you
-          automatically—or clear site cookies and open the URL that matches <code className="text-xs">AUTH_BASE_URL</code>
-          .
+          same origin Cognito redirects to (scheme, host, and port — see{" "}
+          <code className="text-xs">AUTH_BASE_URL</code> / callback URL). Mismatches include{" "}
+          <code className="text-xs">127.0.0.1</code> vs <code className="text-xs">localhost</code>, or a different port
+          (e.g. Next used <code className="text-xs">:3001</code> while Cognito expects <code className="text-xs">:3000</code>
+          ). The app should redirect you automatically in dev; if not, clear site cookies and open the URL that matches{" "}
+          <code className="text-xs">AUTH_BASE_URL</code>.
         </p>
       ) : null}
       {process.env.NODE_ENV === "development" && reason !== "invalid_state" ? (

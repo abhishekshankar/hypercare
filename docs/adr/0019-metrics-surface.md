@@ -42,3 +42,7 @@ Placed at `apps/web/src/lib/internal/metrics/sql/*.sql` (co-located with the loa
 - Migrations add columns and two small tables; `docs/schema-v1.md` is updated.
 - Admin access is **`users.role = 'admin'`** (see content-authoring workflow migration) with optional `INTERNAL_METRICS_ALLOW_EMAILS` for bootstrap before roles are set in DB.
 - Unauthenticated or non-admin users receive **404** for `/internal/*` (no existence leak); HTTP **403** is available on `/api/internal/access` for API tests.
+
+## Operational snapshots
+
+For sprint reviews and scope decisions, PM pastes the headline trio (helpfulness, W2/W4/W8 return, weekly check-in yes-rate) into **[`docs/beta-cohort-metrics-sprint4-snapshot.md`](../beta-cohort-metrics-sprint4-snapshot.md)** on a dated cadence so Git has a stable record; the dashboard remains the source of truth at request time.

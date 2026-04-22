@@ -132,6 +132,8 @@ export type RefusalReasonCounts = {
   uncitable_response: number;
   safety_triaged: number;
   internal_error: number;
+  verifier_rejected: number;
+  user_cancelled: number;
 };
 
 export type AnswersReportSummary = {
@@ -184,6 +186,8 @@ export function countRefusalKind(
     uncitable_response: 0,
     safety_triaged: 0,
     internal_error: 0,
+    verifier_rejected: 0,
+    user_cancelled: 0,
   };
   for (const r of reasons) {
     if (r === "answered" || r === null) continue;

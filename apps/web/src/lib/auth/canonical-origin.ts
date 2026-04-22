@@ -1,5 +1,6 @@
-import type { NextRequest } from "next/server";
-import { NextResponse } from "next/server";
+import type { NextRequest, NextResponse } from "next/server";
+
+import { logRedirectDebug } from "./redirect-debug";
 
 const LOOPBACK = new Set(["localhost", "127.0.0.1", "::1"]);
 
@@ -11,12 +12,17 @@ function normalizeHost(hostname: string): string {
 /**
  * If non-null, redirect the browser to this URL (same path/query, canonical loopback host).
  * Exported for unit tests.
+ *
+ * `requestUrl` provides path/query only — Next dev rewrites the URL hostname/port to its
+ * configured canonical, so we must consult `hostHeader` to know the origin the browser is on
+ * (and which the cookie will be scoped to).
  */
 export function canonicalLoopbackRedirectUrl(
   requestUrl: string,
   authBaseUrl: string | undefined,
   nodeEnv: string | undefined,
   playwrightBaseUrl?: string | undefined,
+  hostHeader?: string | null,
 ): string | null {
   if (nodeEnv !== "development") {
     return null;
@@ -55,12 +61,29 @@ export function canonicalLoopbackRedirectUrl(
   } catch {
     return null;
   }
+  // Next dev rewrites `request.url` to its canonical hostname even when the browser used a
+  // different loopback name/port — trust the `Host` header for the comparison so we catch the
+  // mismatch that scopes the PKCE cookie to the wrong origin.
+  let currentHost = normalizeHost(reqUrl.hostname);
+  let currentPort = reqUrl.port;
+  if (hostHeader != null && hostHeader.length > 0) {
+    try {
+      const parsed = new URL(`http://${hostHeader}`);
+      currentHost = normalizeHost(parsed.hostname);
+      currentPort = parsed.port;
+    } catch {
+      // fall through to URL-derived values
+    }
+  }
   const canonicalHost = normalizeHost(canonical.hostname);
-  const currentHost = normalizeHost(reqUrl.hostname);
-  if (currentHost === canonicalHost) {
+  if (!LOOPBACK.has(currentHost) || !LOOPBACK.has(canonicalHost)) {
     return null;
   }
-  if (!LOOPBACK.has(currentHost) || !LOOPBACK.has(canonicalHost)) {
+  const canonicalPort = canonical.port;
+  // Match Cognito callback origin exactly (scheme + host + port). Hostname-only checks miss
+  // :3001 vs :3000 when another process holds the default port — PKCE cookie stays on the
+  // wrong origin → callback sees no `hc_oauth` → invalid_state.
+  if (currentHost === canonicalHost && currentPort === canonicalPort) {
     return null;
   }
   const target = new URL(reqUrl.toString());
@@ -71,8 +94,9 @@ export function canonicalLoopbackRedirectUrl(
 
 /**
  * Cognito allows one exact callback origin locally (e.g. `http://localhost:3000/...`).
- * Visiting `127.0.0.1` sets `hc_oauth` on that host while Cognito returns to `localhost`, so the cookie is missing → `invalid_state`.
- * In development only, bounce between loopback hostnames to match `AUTH_BASE_URL`.
+ * Visiting the wrong loopback host or port sets `hc_oauth` there while Cognito returns to
+ * `AUTH_BASE_URL`, so the cookie is missing → `invalid_state`. In development only, bounce to
+ * the exact origin from `AUTH_BASE_URL` (hostname and port).
  */
 export function redirectToCanonicalAuthOrigin(request: NextRequest): NextResponse | null {
   const to = canonicalLoopbackRedirectUrl(
@@ -80,9 +104,28 @@ export function redirectToCanonicalAuthOrigin(request: NextRequest): NextRespons
     process.env.AUTH_BASE_URL,
     process.env.NODE_ENV,
     process.env.PLAYWRIGHT_TEST_BASE_URL,
+    request.headers.get("host"),
   );
   if (to == null) {
     return null;
   }
-  return NextResponse.redirect(to, 307);
+  logRedirectDebug("canonical_origin", { from: request.url, to });
+  // Next dev rewrites `request.url` to its canonical hostname, so a 3xx Location to a different
+  // browser-facing host (e.g. `127.0.0.1` vs `localhost`) collapses to a relative path that the
+  // browser resolves against the wrong origin — the bounce never lands and `hc_oauth` stays on
+  // the wrong host. Send a tiny HTML page that performs the navigation client-side; the browser
+  // honors the absolute URL because it parses the response body, not Next's Location header.
+  const escaped = to
+    .replaceAll("&", "&amp;")
+    .replaceAll("<", "&lt;")
+    .replaceAll(">", "&gt;")
+    .replaceAll('"', "&quot;");
+  const body = `<!doctype html><meta charset="utf-8"><title>Redirecting…</title><meta http-equiv="refresh" content="0;url=${escaped}"><script>window.location.replace(${JSON.stringify(to)});</script><a href="${escaped}">Continue</a>`;
+  return new Response(body, {
+    status: 200,
+    headers: {
+      "content-type": "text/html; charset=utf-8",
+      "cache-control": "no-store",
+    },
+  }) as unknown as NextResponse;
 }

@@ -3,7 +3,7 @@
 - **Owner:** Cursor (PM owns the legal review of the copy)
 - **Depends on:** TASK-019 (schema v1 is where retention fields land), TASK-020 (profile editor is the natural host for "Download / Delete my data"), TASK-029 (admin audit table — delete events audit through it)
 - **Unblocks:** paid / broader rollout beyond closed beta; compliance for any partnership (Alzheimer's Association chapters, geriatric practices) where HIPAA-adjacent expectations kick in; PRD §14 open question resolution
-- **Status:** pending
+- **Status:** in progress (implementation landed; legal sign-off + PR checklist still required)
 - **ADR:** `docs/adr/0021-privacy-retention-export-delete.md` (new — retention schedule per table, soft vs hard delete, safety-flag de-identification carve-out, legal-reviewed copy)
 
 ---

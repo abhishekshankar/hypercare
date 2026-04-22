@@ -5,6 +5,7 @@ import { requireSession } from "@/lib/auth/session";
 
 import { hasOnboardingAck } from "./ack";
 import {
+  displayNameForProfileWizard,
   getFirstIncompleteStep,
   hasCompletedOnboarding,
   isWizardDataCompleteFromSnapshot,
@@ -20,9 +21,10 @@ export async function assertOnboardingStepAllowed(stepNumber: number): Promise<v
   if (await hasCompletedOnboarding(session.userId)) {
     redirect("/app");
   }
-  const { user, profile } = await loadProfileBundle(session.userId);
-  const first = getFirstIncompleteStep(profile, user.displayName);
-  const dataDone = isWizardDataCompleteFromSnapshot(profile, user.displayName);
+  const { user, profile, membership } = await loadProfileBundle(session.userId);
+  const disp = displayNameForProfileWizard(user, membership);
+  const first = getFirstIncompleteStep(profile, disp);
+  const dataDone = isWizardDataCompleteFromSnapshot(profile, disp);
   const ack = await hasOnboardingAck();
 
   if (first === null && dataDone && !ack) {

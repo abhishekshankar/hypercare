@@ -6,13 +6,14 @@ import type { z } from "zod";
 
 import { AboutYouFields } from "@/components/care-profile/about-you-fields";
 import { LivingFields } from "@/components/care-profile/living-fields";
-import { StageFields } from "@/components/care-profile/stage-fields";
+import { StageV1Fields } from "@/components/care-profile/stage-v1-fields";
 import { ScreenHeader } from "@/components/screen-header";
 import { parseStep2Form, parseStep3Form, parseStep4Form } from "@/lib/profile/collectors";
 import { redirectToLoginForNextPath } from "@/lib/profile/redirect-login";
 import { flattenFieldErrors, type Step2Input, type Step3Input, type Step4Input } from "@/lib/onboarding/schemas";
 import type { CareProfileRow } from "@/lib/onboarding/status";
-import type { StageAnswersRecord } from "@/lib/onboarding/stage-keys";
+import { getStage2DefaultsForProfile } from "@/lib/onboarding/stage2-defaults";
+import type { StageV1FormDefaults } from "@/lib/onboarding/questions-v1";
 
 type Props = {
   profile: CareProfileRow;
@@ -37,7 +38,7 @@ export function ChangedFlow({ profile, displayName }: Props) {
   const [livingData, setLivingData] = useState<Step3Input | null>(null);
   const [aboutData, setAboutData] = useState<Step4Input | null>(null);
 
-  const stageDefaults = (profile.stageAnswers ?? {}) as StageAnswersRecord;
+  const stageDefaults = getStage2DefaultsForProfile(profile);
 
   async function postFinal() {
     setRootError(null);
@@ -180,7 +181,7 @@ function Step1Stage({
   onSkip,
 }: {
   crFirstName: string;
-  stageDefaults: StageAnswersRecord;
+  stageDefaults: StageV1FormDefaults;
   onContinue: (fd: FormData) => R;
   onSkip: () => void;
 }) {
@@ -199,7 +200,7 @@ function Step1Stage({
         }
       }}
     >
-      <StageFields
+      <StageV1Fields
         crFirstName={crFirstName}
         defaults={stageDefaults}
         errors={errors}

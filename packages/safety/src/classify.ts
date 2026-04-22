@@ -1,17 +1,18 @@
 /**
- * `classify()` — public entry to the safety classifier (TASK-010).
+ * `classify()` — public entry to the safety classifier (TASK-010, TASK-039).
  *
  * Pipeline:
  *   1. Layer A (rules)   — sync regex bank, deterministic, always runs first.
- *   2. Layer B (Haiku)   — only if Layer A had no match, runs only if not
- *      explicitly disabled by deps. Parse failures degrade to `triaged: false`.
+ *   2. Layer B (LLM)     — only if Layer A had no match, runs only if not
+ *      explicitly disabled by deps. Zero-shot Haiku and/or fine-tuned model
+ *      per `SAFETY_FT_SHADOW` / `SAFETY_FT_LIVE` / `layerBClassifierOverride`.
+ *      Parse failures degrade to `triaged: false`. Fine-tuned invoke errors
+ *      fall back to zero-shot when live (ADR 0009).
  *   3. Persist           — every triaged result writes a `safety_flags` row.
  *      Persistence failures are logged but never propagate.
- *
- * The function returns *without* awaiting persistence in practice (we await
- * a single insert; it's typically a few ms and we want write-before-respond
- * for audit). On Postgres outage, `makeDbPersist` swallows.
  */
+
+import { createHash, randomUUID } from "node:crypto";
 
 import { abuseCaregiverToCrRules } from "./rules/abuse-caregiver-to-cr.js";
 import { abuseCrToCaregiverRules } from "./rules/abuse-cr-to-caregiver.js";
@@ -19,12 +20,15 @@ import { acuteMedicalRules } from "./rules/acute-medical.js";
 import { neglectRules } from "./rules/neglect.js";
 import { selfHarmCrRules } from "./rules/self-harm-cr.js";
 import { selfHarmUserRules } from "./rules/self-harm-user.js";
+import type { SafetyLayerBClassifier } from "./config.js";
 import {
   classifyWithLlm,
   defaultInvoke,
+  defaultInvokeFineTuned,
   type ClassifyLlmDeps,
 } from "./llm/classifier.js";
 import { makeDbPersist, type PersistFn } from "./persist.js";
+import type { FtShadowLogFn } from "./shadow-log.js";
 import {
   categoryToSeverity,
   categoryToSuggestedAction,
@@ -47,6 +51,18 @@ export type ClassifyDeps = {
    * Bedrock); operator runs `SAFETY_LIVE=1` smoke scripts to exercise it.
    */
   llmInvoke?: ClassifyLlmDeps["invoke"];
+  /** Optional fine-tuned Bedrock invoke; defaults to `defaultInvokeFineTuned` when unset. */
+  llmInvokeFineTuned?: ClassifyLlmDeps["invokeFineTuned"];
+  /**
+   * Forces Layer-B routing for eval harness (`pnpm eval redteam --classifier`).
+   * When set, env `SAFETY_FT_*` flags are ignored for this call.
+   */
+  layerBClassifierOverride?: SafetyLayerBClassifier;
+  /**
+   * When `SAFETY_FT_SHADOW=1`, both classifiers run; this logger records the pair.
+   * Wired from `@hypercare/rag` `buildDefaultDeps` when DB is available.
+   */
+  logFtShadow?: FtShadowLogFn;
   /**
    * If true, skip Layer B entirely (returns `triaged: false` if Layer A
    * misses). Used by the offline test path.
@@ -100,6 +116,35 @@ export function runAllRules(text: string): RuleHit[] {
  */
 type TriageBase = Omit<Extract<SafetyResult, { triaged: true }>, "repeatInWindow">;
 
+function sha256Hex(text: string): string {
+  return createHash("sha256").update(text, "utf8").digest("hex");
+}
+
+type LayerBStrategy = "zero_only" | "shadow" | "live_ft";
+
+function resolveLayerBStrategy(deps: ClassifyDeps): LayerBStrategy {
+  if (deps.layerBClassifierOverride === "fine_tuned") return "live_ft";
+  if (deps.layerBClassifierOverride === "zero_shot") return "zero_only";
+  if (process.env.SAFETY_FT_SHADOW === "1") return "shadow";
+  if (process.env.SAFETY_FT_LIVE === "1") return "live_ft";
+  return "zero_only";
+}
+
+async function runLayerBLlm(
+  text: string,
+  classifier: SafetyLayerBClassifier,
+  deps: ClassifyDeps,
+): Promise<{ result: Awaited<ReturnType<typeof classifyWithLlm>>; ms: number }> {
+  const t0 = Date.now();
+  const result = await classifyWithLlm(text, {
+    invoke: deps.llmInvoke ?? defaultInvoke,
+    invokeFineTuned: deps.llmInvokeFineTuned ?? defaultInvokeFineTuned,
+    classifier,
+    ...(deps.warn !== undefined ? { warn: deps.warn } : {}),
+  });
+  return { result, ms: Date.now() - t0 };
+}
+
 export function aggregateRuleHits(hits: RuleHit[]): TriageBase | null {
   if (hits.length === 0) return null;
   const topRank = Math.max(...hits.map((h) => SEVERITY_RANK[h.severity]));
@@ -152,15 +197,63 @@ export async function classify(
     return { ...ruleAggregate, repeatInWindow };
   }
 
-  // Layer B — Haiku. Skipped on disableLlm or if no invoker is configured.
+  // Layer B — LLM(s). Skipped on disableLlm.
   if (deps.disableLlm) return { triaged: false };
-  const invoke = deps.llmInvoke ?? defaultInvoke;
-  let llm;
+
+  const strategy = resolveLayerBStrategy(deps);
+  let llm: Awaited<ReturnType<typeof classifyWithLlm>>;
+
   try {
-    llm = await classifyWithLlm(text, {
-      invoke,
-      ...(deps.warn !== undefined ? { warn: deps.warn } : {}),
-    });
+    if (strategy === "zero_only") {
+      llm = (await runLayerBLlm(text, "zero_shot", deps)).result;
+    } else if (strategy === "shadow") {
+      const zs = await runLayerBLlm(text, "zero_shot", deps);
+      type LlmR = Awaited<ReturnType<typeof classifyWithLlm>>;
+      let ftResult: LlmR = { triaged: false };
+      let ftMs = 0;
+      const ftStarted = Date.now();
+      try {
+        const ft = await runLayerBLlm(text, "fine_tuned", deps);
+        ftResult = ft.result;
+        ftMs = ft.ms;
+      } catch (err) {
+        ftMs = Date.now() - ftStarted;
+        deps.warn?.("safety.ft.invoke_failed", {
+          error: err instanceof Error ? err.message : String(err),
+        });
+      }
+      const requestId = randomUUID();
+      void Promise.resolve(
+        deps.logFtShadow?.({
+          requestId,
+          textHash: sha256Hex(text),
+          zeroShot: zs.result,
+          fineTuned: ftResult,
+          zeroShotLatencyMs: zs.ms,
+          fineTunedLatencyMs: ftMs,
+        }),
+      );
+      llm = zs.result;
+    } else {
+      let chosen: SafetyLayerBClassifier = "fine_tuned";
+      try {
+        llm = (await runLayerBLlm(text, "fine_tuned", deps)).result;
+      } catch (err) {
+        deps.warn?.("safety.ft.invoke_failed", {
+          error: err instanceof Error ? err.message : String(err),
+        });
+        chosen = "zero_shot";
+        try {
+          llm = (await runLayerBLlm(text, "zero_shot", deps)).result;
+        } catch (err2) {
+          deps.warn?.("safety.llm.invoke_failed", {
+            error: err2 instanceof Error ? err2.message : String(err2),
+          });
+          return { triaged: false };
+        }
+      }
+      deps.warn?.("safety.layer_b.classifier", { live: chosen });
+    }
   } catch (err) {
     deps.warn?.("safety.llm.invoke_failed", {
       error: err instanceof Error ? err.message : String(err),

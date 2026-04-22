@@ -43,11 +43,11 @@ Cursor works tickets in **ID order**. Never start the next ticket until the prev
 
 | ID       | Title                                                                                                                                                          | Depends on              | Status  | PR  |
 | -------- | -------------------------------------------------------------------------------------------------------------------------------------------------------------- | ----------------------- | ------- | --- |
-| TASK-019 | Schema v1: `lesson_progress`, `weekly_checkins`, `module_topics`, evolved `care_profile` change-log; topic taxonomy seeded                                     | 004                     | in_review | —   |
-| TASK-020 | Editable care profile UI (Screen 7) — section-by-section edit + "My situation has changed" evolved-state flow + change-log writes                              | 007, 019                | in_review | —   |
-| TASK-021 | Help & Safety screen (Screen 8) — full surface per PRD §6.8 + caregiver-burnout self-assessment that emits soft-flag signal into safety log                    | 010                     | in_review | —   |
-| TASK-022 | Topic classifier + recent-topics signal: classify the last N user messages into the §7.1 taxonomy; expose `getRecentTopicSignal(userId)` for the lesson picker | 009, 019                | in_review | —   |
-| TASK-023 | Library screen (Screen 6) — searchable index over `modules`, organized by §7.1 category with stage filter; works with 3 modules and scales transparently      | 008, 019                | in_review | —   |
+| TASK-019 | Schema v1: `lesson_progress`, `weekly_checkins`, `module_topics`, evolved `care_profile` change-log; topic taxonomy seeded                                     | 004                     | done | —   |
+| TASK-020 | Editable care profile UI (Screen 7) — section-by-section edit + "My situation has changed" evolved-state flow + change-log writes                              | 007, 019                | done | —   |
+| TASK-021 | Help & Safety screen (Screen 8) — full surface per PRD §6.8 + caregiver-burnout self-assessment that emits soft-flag signal into safety log                    | 010                     | done | —   |
+| TASK-022 | Topic classifier + recent-topics signal: classify the last N user messages into the §7.1 taxonomy; expose `getRecentTopicSignal(userId)` for the lesson picker | 009, 019                | done | —   |
+| TASK-023 | Library screen (Screen 6) — searchable index over `modules`, organized by §7.1 category with stage filter; works with 3 modules and scales transparently      | 008, 019                | done | —   |
 | TASK-024 | "This week's focus" picker + Daily Lesson surface (Screen 5) + weekly check-in card on `/app` — the retention loop end-to-end                                  | 011, 019, 020, 022, 023 | done    | —   |
 
 ### Sprint 2 success criteria (the demo)
@@ -88,11 +88,11 @@ Cursor works tickets in **ID order**. Never start the next ticket until the prev
 | ID       | Title                                                                                                                                                                 | Depends on                   | Status  | PR  |
 | -------- | --------------------------------------------------------------------------------------------------------------------------------------------------------------------- | ---------------------------- | ------- | --- |
 | TASK-025 | Escalation flows v1 — ship the 5 remaining PRD §10.3 flows (CR-in-danger, elder-abuse / caregiver-breaking-point, dangerous-request, medical-emergency, financial-exploitation) end-to-end with pre-scripted UI, versioned scripts, per-category 48h follow-up suppression | 010, 021                     | done | —   |
-| TASK-026 | Red-team eval expansion to 100 queries (PRD §10.5) — 6 category buckets + soft-flag gray zone + external-reviewer round; `EVAL_LIVE=1` gate at ≥90% pass, block merge below threshold on the new set | 012, 025                     | pending | —   |
-| TASK-027 | Conversation memory into retrieval — rolling caregiver-state summary per conversation, threaded into Layer 5 prompt composition; invalidated on profile change-log entries; capped + observability for leakage | 009, 019, 022                | pending | —   |
-| TASK-028 | Content authoring / review tool v0 (PRD §8.3 pipeline surfaced as an internal web tool) — draft → edit → expert review → lived-experience review → publish, with evidence-table entry, review-metadata writes, and auto-ingest into `module_chunks` on publish | 008, 021                     | pending | —   |
-| TASK-029 | Internal metrics surface (PRD §12) — `/internal/metrics` route behind admin role showing helpfulness rate, W2/W4/W8 return, weekly check-in yes-rate, refusal rate, safety-flag counts by category, retrieval Tier-1 share; reads Postgres directly, no new warehouse | 011, 019, 024                | pending | —   |
-| TASK-030 | Saved answers + "Things I want to revisit" surface on `/app` (PRD §6.3, §6.4 "Save this" button already renders but doesn't persist) — persistence, home-screen section, unsave, search across saves | 011, 019                     | pending | —   |
+| TASK-026 | Red-team eval expansion to 100 queries (PRD §10.5) — 6 category buckets + soft-flag gray zone + external-reviewer round; `EVAL_LIVE=1` gate at ≥90% pass, block merge below threshold on the new set | 012, 025                     | done | —   |
+| TASK-027 | Conversation memory into retrieval — rolling caregiver-state summary per conversation, threaded into Layer 5 prompt composition; invalidated on profile change-log entries; capped + observability for leakage | 009, 019, 022                | done | —   |
+| TASK-028 | Content authoring / review tool v0 (PRD §8.3 pipeline surfaced as an internal web tool) — draft → edit → expert review → lived-experience review → publish, with evidence-table entry, review-metadata writes, and auto-ingest into `module_chunks` on publish | 008, 021                     | done | —   |
+| TASK-029 | Internal metrics surface (PRD §12) — `/internal/metrics` route behind admin role showing helpfulness rate, W2/W4/W8 return, weekly check-in yes-rate, refusal rate, safety-flag counts by category, retrieval Tier-1 share; reads Postgres directly, no new warehouse | 011, 019, 024                | done | —   |
+| TASK-030 | Saved answers + "Things I want to revisit" surface on `/app` (PRD §6.3, §6.4 "Save this" button already renders but doesn't persist) — persistence, home-screen section, unsave, search across saves | 011, 019                     | done | —   |
 
 ### Sprint 3 success criteria (the demo)
 
@@ -144,6 +144,8 @@ The demo is the **closed-beta readiness walkthrough.** Run it end-to-end:
 | TASK-035 | Red-team set to PRD §10.5 full target — 200 adversarial + 50 lived-experience, unaffiliated-crisis-counselor external-review round closed, drift monitor for weekly regressions                 | 026                     | pending | —   |
 | TASK-036 | In-app feedback + thumbs-down reviewer loop — `/help → contact support` surface, thumbs-down capture with optional text, operator review queue at `/internal/feedback`, SLA-on-missed signal    | 011, 021, 029           | pending | —   |
 
+**Observed cohort metrics:** Sprint 4 helpfulness / return / check-in values are captured in [`docs/beta-cohort-metrics-sprint4-snapshot.md`](docs/beta-cohort-metrics-sprint4-snapshot.md) — dated readout from `/internal/metrics`, definitions cross-referenced to PRD §12 and ADR 0019.
+
 ### Sprint 4 success criteria (the demo)
 
 The demo is the **"beta cohort learning" review.** Run it end-to-end after at least 14 days with the cohort:
@@ -162,7 +164,7 @@ The demo is the **"beta cohort learning" review.** Run it end-to-end after at le
 - **Legal sign-off** on the privacy copy (retention schedule, export language, delete copy, mandatory-reporter disclosure) is a blocker for TASK-032 merge. Placeholder names are not acceptable this sprint.
 - **Clinician sign-off** on the TASK-034 question wording. The ADR records the sign-off.
 - ADRs: 0020 (streaming), 0021 (retention + export + delete), 0022 (transparency surface), 0023 (onboarding refinement + back-compat migration), 0024 (red-team v2 structure + drift monitor), 0025 (feedback loop + SLA).
-- No new `any`s, no new top-level `eslint-disable`. Schema deltas in `docs/schema-v1.md` (or fork into `schema-v2.md` if the file grows past ~600 lines).
+- No new `any`s, no new top-level `eslint-disable`. Schema deltas in `docs/schema-v1.md` (or fork into `schema-v2.md` if the file grows past ~600 lines). **Sprint 5 outcome (TASK-043):** forked to [`docs/schema-v2.md`](docs/schema-v2.md) — the new schema-of-record. Future deltas land in v2 (or v3 if v2 grows past ~600 lines).
 
 ### Out of sprint 4 (explicitly deferred to sprint 5 or later)
 
@@ -175,6 +177,62 @@ The demo is the **"beta cohort learning" review.** Run it end-to-end after at le
 - A shared inbox for the content team's feedback triage — TASK-036 ships a single list; a triage workflow can come later if volume warrants.
 - A real-time streaming for lesson content or library search. Only conversation answers stream in v1.
 - Per-user LLM model routing (e.g. Opus for medical queries, Haiku for everything else). The classifier already does routing of a sort; fine-grained model routing is a post-beta optimization.
+
+## Sprint 5
+
+**Sprint 5 goal:** **Turn the closed-beta signal into structural improvements that compound.** Sprint 4 ran the cohort and closed the gaps it surfaced (streaming on conversation, feedback loop, retention/export, red-team 250, onboarding refinement). Sprint 5 takes the artifacts that beta produced — the labeled red-team + thumbs-down corpus, observed query mix, real lesson-completion patterns, the recurring "my sister also helps" caregiver request — and turns them into four structural shifts plus one quality bet. Every theme below is a Sprint 4 deferral promoted by name (see §"Out of sprint 4" above):
+
+1. **Make the lesson surface earn returns.** A real spaced-repetition policy on top of the existing picker (TASK-024). PRD §1.3 deferred SRS at v1 because we hadn't proven the loop; the Sprint 4 cohort proved enough of it that "she keeps showing me the same lesson" is now the bigger risk than "we picked the wrong policy."
+2. **Stop pretending one caregiver = one household.** A second caregiver can be invited to a care profile, with an explicit privacy model for what they see (PRD §4.1, §2.1). Beta confirmed the family split is real; ~40% of cohort caregivers asked about it in onboarding free-text or feedback.
+3. **Replace the zero-shot safety classifier with a fine-tuned one.** TASK-035 closed with a 250-query labeled red-team corpus, plus the Sprint 4 thumbs-down feedback rows. That's the training set the PRD §10.2 has been waiting on. Targets: same-or-better recall on the three crisis buckets at lower P95 latency and lower per-call cost.
+4. **Cut perceived latency on the two non-conversation surfaces.** Sprint 4 explicitly scoped streaming to conversation answers ("that's where the latency pain is"). Beta surfaced the second-order pain: a 2-second blank lesson card and a 1.5-second library search after the cohort filled the library with their own bookmarks. Stream both, reusing TASK-031's SSE transport and ADR 0020.
+5. **Per-user model routing as a quality bet, not a cost play.** Today every generation call goes to one Bedrock model id. The Layer-2 classifier (TASK-009) already produces topic + urgency; thread it into model selection. Route medical/medication queries to Opus, behavioral/self-care to Sonnet, refusal-only paths to Haiku. A/B against the current single-model baseline, gated on the helpfulness north-star (PRD §12).
+
+**Sprint 5 explicitly does not** ship Spanish content, native mobile, push/SMS/email notifications, an analytics warehouse, a content-team triage inbox, or any new module beyond what content delivers via TASK-028. Does not replace the lesson picker policy itself — TASK-037 layers an SRS pre-filter over the existing picker; ADR 0014 stays. Does not change the conversation streaming UX shipped in TASK-031; lessons + library reuse its SSE transport under their own feature flags. Does not touch Cognito user-pool sharing — family sharing is a profile-level invite within Hypercare, not a cross-app identity change. Does not introduce cost-tier model routing for unit economics — TASK-042 routes for *quality*; cost routing is a separate ADR once we see real Sprint 5 spend.
+
+| ID       | Title                                                                                                                                                                                          | Depends on                          | Status  | PR  |
+| -------- | ---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- | ----------------------------------- | ------- | --- |
+| TASK-037 | Spaced-repetition scheduling for "this week's focus" — SM-2-lite over `lesson_progress`, schema + picker pre-filter integration, "due for a quick review" hint                                  | 019, 024, 027                       | in progress | —   |
+| TASK-038 | Family sharing v1 — `care_profile_members` table, invite flow, default privacy posture (profile + library shared; conversations + saves per-member), transparency-surface update               | 019, 020, 033, 006                  | in progress | —   |
+| TASK-039 | Fine-tuned safety classifier (Bedrock custom model) — train on TASK-035 corpus + Care-Specialist-tagged thumbs-downs; shadow → A/B → cutover; rollback rehearsal; same 100% crisis-bucket gate  | 010, 026, 035, 036                  | in progress | —   |
+| TASK-040 | Streaming the lesson surface — extend ADR 0020's SSE envelope with a `card` event; per-card progressive paint; flag `STREAMING_LESSONS`; transport-only (no LLM, no Layer-6 verifier)          | 024, 031                            | in progress | —   |
+| TASK-041 | Streaming the library search surface — `result` event over SSE; incremental render; flag `STREAMING_LIBRARY`; composes with TASK-038 membership rules for the candidate set                    | 023, 031, 040, 038                  | done    | —   |
+| TASK-042 | Per-user model routing (Layer 5) — `model-router` package, policy YAML, decision log, A/B cohort split, `/internal/metrics` comparison tile, helpfulness gate after 14-day window               | 009, 031, 036                       | pending | —   |
+| TASK-043 | Schema v2 — fork `docs/schema-v2.md`; document the five new tables and two new columns from TASK-037/038/039/042; mark `care_profile.user_id` deprecated; cross-reference PRD/ARCHITECTURE/ADRs | 037, 038, 039, 042                  | pending | —   |
+
+### Sprint 5 success criteria (the demo)
+
+The demo is the **"closed-beta → structural"** review. Run it end-to-end with the Sprint 4 cohort still active, plus 2 invited family-sharing test pairs.
+
+1. **SRS picker.** A returning caregiver who has completed three lessons over the past week opens `/app`. The "This week's focus" card surfaces a lesson they have **not** seen in ≥ 7 days, or one they explicitly marked `revisit: true` whose schedule is due. The card includes a one-line "Last seen N days ago — due for a quick review" hint when the pick is a re-surface. The picker continues to honor stage + recent-topic signal (TASK-024 / ADR 0014 unchanged); SRS is a pre-filter, not a re-score.
+2. **Family sharing.** Caregiver A invites Caregiver B (sibling) by email. B accepts via Cognito sign-in; sees the shared care profile and Library, but **not** A's conversation history (default privacy posture per TASK-038 / ADR 0027). B's onboarding short-circuits because care recipient and stage are already set. Both A and B can edit the care profile; an audit row is written per change. The "What Hypercare remembers" surface (TASK-033) lists the other caregiver and the share table.
+3. **Fine-tuned safety classifier shadow + cutover.** With `SAFETY_FT_SHADOW=1`, every safety call runs both the current Haiku zero-shot and the fine-tuned model; live decision stays on zero-shot. After ≥ 7 days of shadow, `/internal/safety` shows agreement rate, per-bucket recall delta, and P95 latency delta. With `SAFETY_FT_LIVE=1` we cut over; zero-shot remains the fallback if the fine-tuned model fails to invoke (ADR 0009 path preserved). The 250-query red-team eval gate stays at ≥ 90% overall, **with the three crisis recall buckets at 100%** — same as TASK-026's rule, no relaxation.
+4. **Streaming lessons.** A caregiver opens a lesson. The first card paints in < 400ms; remaining cards stream in progressively. Mid-stream navigation away cleanly aborts; no `lesson_progress` row written. Flag off renders identically to today (TASK-024 fallback). Transport only; no change to module body content.
+5. **Streaming library.** A caregiver types in the library search box. Results appear incrementally as the server-side query streams matches; first result within ~200ms of pause. Flag off renders identically to today (TASK-023 fallback). No change to library taxonomy or chunk surface.
+6. **Per-user model routing A/B.** With `MODEL_ROUTING=1` and the cohort split 50/50, every conversation answer's chosen model is recorded in `model_routing_decisions` (query class, urgency, chosen model id, latency, cost estimate). After 14 days, `/internal/metrics` shows helpfulness rate, refusal rate, and P95 latency for routed (treatment) vs. baseline (control) cohort. The route policy is a YAML config (no model id hard-coded in TS), reviewable in the PR.
+
+### Sprint 5 quality gates
+
+- `pnpm lint && pnpm typecheck && pnpm test` green at every PR merge.
+- `EVAL_LIVE=1 pnpm --filter @hypercare/eval start -- answers` stays ≥ Sprint 4 baseline on retrieval and helpfulness; `redteam` mode against the 250-query fixture passes at ≥ 90% overall **and** 100% on the three crisis buckets, **with the fine-tuned classifier as the live decision-maker** (TASK-039 cannot merge `SAFETY_FT_LIVE=1` without this).
+- **Family-sharing privacy review** signed off by the same reviewer who signed Sprint 4's privacy copy (TASK-032). The ADR records the sign-off line. Default share posture (B sees profile + library, not A's conversation history) cannot be loosened without a separate ADR.
+- **Care Specialist sign-off** on the TASK-042 route policy table and on TASK-039's augmentation samples; both ADRs record the sign-off line.
+- **Fine-tuned classifier rollback rehearsal.** Before `SAFETY_FT_LIVE=1` ships in production, rehearse on staging: flip the flag off, observe the next request drop back to zero-shot. Recorded in TASK-039's "How to verify."
+- ADRs: 0026 (SRS scheduling policy), 0027 (family sharing data model + privacy posture), 0028 (fine-tuned classifier training set + eval gate), 0029 (streaming for lessons + library — extends 0020), 0030 (per-user model routing + A/B harness).
+- No new `any`s; no new top-level `eslint-disable` lines. Schema deltas land in `docs/schema-v2.md` (forked from v1 per the Sprint 4 quality gate convention; TASK-043 owns the fork).
+
+### Out of sprint 5 (explicitly deferred to sprint 6 or later)
+
+- **Spanish content.** Sprint 4 made onboarding strings i18n-ready; Sprint 5 keeps that posture, ships no translated strings.
+- **Native mobile apps.** Web-only.
+- **Push, SMS, email reminders.** SRS surfaces re-reviews **inside** `/app` only. A future "remind me when something is due" channel is a Sprint 6+ conversation.
+- **Multi-care-recipient households** (one caregiver, two parents under one account). PRD §4.1 also defers this. Family sharing v1 is "one care recipient, multiple caregivers."
+- **Cross-caregiver conversation visibility.** Default privacy posture in TASK-038 hides A's threads from B; the per-member opt-in toggles exist in schema but no UI flips them in v1. Same for saved answers.
+- **Per-tenant or per-locale fine-tuned classifiers.** TASK-039 ships one fine-tuned model for the whole product. Per-cohort variants come after we see drift.
+- **Streaming for the metrics surface and the authoring tool.** Both are internal; latency budget is fine.
+- **Cost-tier model routing for unit economics.** TASK-042 routes for *quality*. A separate ADR once we see real Sprint 5 spend.
+- **Replacing the lesson picker policy.** TASK-037 layers SRS as a pre-filter; ADR 0014's scoring stays.
+- **Removing `care_profile.user_id`.** TASK-043 marks it deprecated; a Sprint 6 ticket removes it after a verification window confirms zero application reads.
 
 ## Flow per ticket
 

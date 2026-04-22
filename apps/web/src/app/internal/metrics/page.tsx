@@ -1,4 +1,5 @@
 import { HelpfulnessSparkline } from "./HelpfulnessSparkline";
+import { SafetySparkline } from "./SafetySparkline";
 import { SqlBlock } from "./SqlBlock";
 import { WindowPicker } from "./WindowPicker";
 
@@ -91,6 +92,42 @@ export default async function InternalMetricsPage({
         </details>
       </Row>
 
+      <Row
+        title="Feedback loop health (TASK-036)"
+        hint="Triage quality for in-app feedback + thumbs-down queue."
+        sqlName="feedback_loop_health"
+      >
+        <ul className="grid gap-2 text-sm sm:grid-cols-2">
+          <li>
+            <span className="text-zinc-500">New this window</span>
+            <p className="text-xl font-medium tabular-nums">{p.feedback.newThisWeek}</p>
+          </li>
+          <li>
+            <span className="text-zinc-500">Still “new” &gt; 72h (SLA)</span>
+            <p className="text-xl font-medium tabular-nums text-amber-800">{p.feedback.staleNewOver72h}</p>
+          </li>
+          <li>
+            <span className="text-zinc-500">% triaged within 72h of submit</span>
+            <p className="text-xl font-medium tabular-nums">{pct(p.feedback.pctTriagedWithin72h)}</p>
+          </li>
+          <li>
+            <span className="text-zinc-500">Thumbs-down → needs_content_fix</span>
+            <p className="text-xl font-medium tabular-nums">{pct(p.feedback.pctThumbsToContentFix)}</p>
+          </li>
+          <li className="sm:col-span-2">
+            <span className="text-zinc-500">Median hours to triage (window)</span>
+            <p className="text-xl font-medium tabular-nums">
+              {p.feedback.medianTriageHours != null ? p.feedback.medianTriageHours.toFixed(1) : "—"}h
+            </p>
+          </li>
+        </ul>
+        <p className="mt-1 text-xs text-zinc-500">
+          <a className="text-violet-700 underline" href="/internal/feedback">
+            ↓ open feedback queue
+          </a>
+        </p>
+      </Row>
+
       <Row title="Return — cohort (PRD W2 / W4 / W8)" sqlName="return_cohort">
         <ul className="grid gap-2 text-sm sm:grid-cols-3">
           <li>
@@ -113,21 +150,28 @@ export default async function InternalMetricsPage({
       </Row>
 
       <Row title="Safety" sqlName="flag_counts_by_category">
-        <ul className="text-sm">
-          {p.flags.length === 0 ? (
-            <li className="text-zinc-500">No flags in last 14d</li>
-          ) : (
-            p.flags.map((f) => (
-              <li key={f.category}>
-                {f.category}: {f.count} (repeat sum {f.repeatSum})
-              </li>
-            ))
-          )}
-        </ul>
+        <div className="flex flex-wrap items-end gap-4">
+          <ul className="text-sm">
+            {p.flags.length === 0 ? (
+              <li className="text-zinc-500">No flags in last 14d</li>
+            ) : (
+              p.flags.map((f) => (
+                <li key={f.category}>
+                  {f.category}: {f.count} (repeat sum {f.repeatSum})
+                </li>
+              ))
+            )}
+          </ul>
+          <div className="flex items-center gap-1">
+            <span className="text-xs text-zinc-500">red-team v2</span>
+            <SafetySparkline spark={p.redteamSpark} />
+          </div>
+        </div>
         <p className="mt-1 text-sm">
           Suppression active: {p.safety.suppressionActive} · Modules w/ review due ≤30d:{" "}
           {p.safety.modulesNearingReview}
         </p>
+        <p className="mt-1 text-xs text-zinc-500">Sparkline: overall pass rate from `packages/eval/artifacts/redteam-v2-history.jsonl` (weekly run).</p>
         <a className="text-xs text-violet-700 underline" href="/internal/safety-flags">
           ↓ safety flags table
         </a>
@@ -171,11 +215,141 @@ export default async function InternalMetricsPage({
         </details>
       </Row>
 
+      <Row
+        title="Streaming lessons (TASK-040)"
+        hint="GET → first card / `done` from `lesson_stream_telemetry` (SSE on when both STREAMING flags are on)."
+        sqlName="lesson_stream_latency"
+      >
+        <ul className="grid gap-2 text-sm sm:grid-cols-2">
+          <li>
+            <span className="text-zinc-500">p50 first card</span>
+            <p className="text-xl font-medium tabular-nums">
+              {p.lessonStream.count > 0 ? `${p.lessonStream.p50FirstCardMs.toFixed(0)}ms` : "—"}
+            </p>
+          </li>
+          <li>
+            <span className="text-zinc-500">p95 first card</span>
+            <p className="text-xl font-medium tabular-nums">
+              {p.lessonStream.count > 0 ? `${p.lessonStream.p95FirstCardMs.toFixed(0)}ms` : "—"}
+            </p>
+          </li>
+          <li>
+            <span className="text-zinc-500">p50 stream done</span>
+            <p className="text-xl font-medium tabular-nums">
+              {p.lessonStream.count > 0 ? `${p.lessonStream.p50DoneMs.toFixed(0)}ms` : "—"}
+            </p>
+          </li>
+          <li>
+            <span className="text-zinc-500">p95 stream done</span>
+            <p className="text-xl font-medium tabular-nums">
+              {p.lessonStream.count > 0 ? `${p.lessonStream.p95DoneMs.toFixed(0)}ms` : "—"}
+            </p>
+          </li>
+        </ul>
+        <p className="mt-2 text-sm text-zinc-600">Streams in window: {p.lessonStream.count}</p>
+      </Row>
+
+      <Row
+        title="Library search streaming (TASK-041)"
+        hint="POST `/api/app/library/search` → first `result` / `done` from `library_search_streams` (no query text stored)."
+        sqlName="library_search_latency"
+      >
+        <ul className="grid gap-2 text-sm sm:grid-cols-2">
+          <li>
+            <span className="text-zinc-500">p50 first result</span>
+            <p className="text-xl font-medium tabular-nums">
+              {p.librarySearch.withFirstResult > 0 ? `${p.librarySearch.p50FirstResultMs.toFixed(0)}ms` : "—"}
+            </p>
+          </li>
+          <li>
+            <span className="text-zinc-500">p95 first result</span>
+            <p className="text-xl font-medium tabular-nums">
+              {p.librarySearch.withFirstResult > 0 ? `${p.librarySearch.p95FirstResultMs.toFixed(0)}ms` : "—"}
+            </p>
+          </li>
+          <li>
+            <span className="text-zinc-500">p50 stream done</span>
+            <p className="text-xl font-medium tabular-nums">
+              {p.librarySearch.count > 0 ? `${p.librarySearch.p50DoneMs.toFixed(0)}ms` : "—"}
+            </p>
+          </li>
+          <li>
+            <span className="text-zinc-500">p95 stream done</span>
+            <p className="text-xl font-medium tabular-nums">
+              {p.librarySearch.count > 0 ? `${p.librarySearch.p95DoneMs.toFixed(0)}ms` : "—"}
+            </p>
+          </li>
+        </ul>
+        <p className="mt-2 text-sm text-zinc-600">
+          Completed streams: {p.librarySearch.count} · With ≥1 result: {p.librarySearch.withFirstResult}
+        </p>
+      </Row>
+
+      <Row
+        title="Streaming answers (TASK-031)"
+        hint="POST → first committed chunk. Refusal-after-stream counts rows with stream metrics + refusal (excludes user_cancelled)."
+        sqlName="streaming_latency"
+      >
+        <ul className="grid gap-2 text-sm sm:grid-cols-2">
+          <li>
+            <span className="text-zinc-500">p50 first chunk</span>
+            <p className="text-xl font-medium tabular-nums">
+              {p.streaming.answerCount > 0 ? `${p.streaming.p50FirstChunkMs.toFixed(0)}ms` : "—"}
+            </p>
+          </li>
+          <li>
+            <span className="text-zinc-500">p95 first chunk</span>
+            <p className="text-xl font-medium tabular-nums">
+              {p.streaming.answerCount > 0 ? `${p.streaming.p95FirstChunkMs.toFixed(0)}ms` : "—"}
+            </p>
+          </li>
+        </ul>
+        <p className="mt-2 text-sm text-zinc-600">
+          Streaming assistant rows in window: {p.streaming.answerCount} · Refusal after stream started:{" "}
+          {p.streaming.refusalAfterStream}
+        </p>
+      </Row>
+
       <Row title="Cost (Bedrock, last 24h, sanity only)" sqlName="cost_last_day">
         <p className="text-sm">
           ≈${p.cost.usd.toFixed(2)} (tokens in/out: {p.cost.inputTokens} / {p.cost.outputTokens})
         </p>
         <p className="text-xs text-zinc-500">Constants in lib/internal/metrics/bedrock-pricing.ts</p>
+      </Row>
+
+      <Row
+        title="Model routing A/B (TASK-042)"
+        hint="Requires `MODEL_ROUTING=1` + migration `0021_model_routing.sql`. Compares treatment vs control on logged decisions."
+        sqlName="routing_ab_comparison"
+      >
+        {p.routingAb.length === 0 ? (
+          <p className="text-sm text-zinc-500">No `model_routing_decisions` rows in this window.</p>
+        ) : (
+          <ul className="grid gap-2 text-sm sm:grid-cols-2">
+            {p.routingAb.map((r) => (
+              <li key={r.cohort}>
+                <span className="text-zinc-500">{r.cohort}</span>
+                <p className="text-xl font-medium tabular-nums">
+                  helpful {r.helpfulPct != null ? `${r.helpfulPct.toFixed(1)}%` : "—"}
+                </p>
+                <p className="text-xs text-zinc-500">
+                  rated {r.rated} · decisions {r.decisions} · avg latency{" "}
+                  {r.avgLatencyMs != null ? `${r.avgLatencyMs.toFixed(0)}ms` : "—"} · est. cost sum $
+                  {r.sumCostUsd.toFixed(4)}
+                </p>
+              </li>
+            ))}
+          </ul>
+        )}
+      </Row>
+
+      <Row
+        title="Transparency — “Forget this” taps"
+        hint="High counts may mean memory bullets feel wrong or too personal. TASK-033."
+        sqlName="transparency_forget_taps"
+      >
+        <p className="text-3xl font-semibold tabular-nums">{p.transparency.forgetTapsInWindow}</p>
+        <p className="text-xs text-zinc-500">User-initiated forget actions in the selected window</p>
       </Row>
     </div>
   );

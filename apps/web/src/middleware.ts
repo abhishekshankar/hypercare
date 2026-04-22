@@ -1,6 +1,7 @@
 import { NextRequest, NextResponse } from "next/server";
 
 import { redirectToCanonicalAuthOrigin } from "@/lib/auth/canonical-origin";
+import { logRedirectDebug } from "@/lib/auth/redirect-debug";
 import { isSessionCookieValid, SESSION_COOKIE_NAME } from "@/lib/auth/middleware-edge";
 
 const SESSION_SECRET = process.env.SESSION_COOKIE_SECRET;
@@ -51,6 +52,13 @@ export async function middleware(request: NextRequest) {
   if (ok) {
     return NextResponse.next({ request: { headers: requestHeaders } });
   }
+  logRedirectDebug("middleware", {
+    action: "redirect_to_login",
+    pathname,
+    fullPath,
+    hadSessionCookie: Boolean(raw?.length),
+    edgeSessionOk: false,
+  });
   const login = new URL("/api/auth/login", request.nextUrl.origin);
   login.searchParams.set("next", fullPath);
   return NextResponse.redirect(login);

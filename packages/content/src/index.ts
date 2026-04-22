@@ -34,3 +34,4 @@ export {
   type DraftStatus,
 } from "./workflow.js";
 export { replaceModuleChunkRowsInTx } from "./upsert.js";
+export * from "./stage-rules/index.js";

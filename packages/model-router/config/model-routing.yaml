@@ -1,0 +1,37 @@
+# TASK-042 — Layer-5 model routing policy. Care Specialist sign-off required before
+# changing topic→model mappings (ADR 0030).
+policy_version: 1
+default_model_id: us.anthropic.claude-haiku-4-5-20251001-v1:0
+routes:
+  - match:
+      topic: medical
+    model_id: us.anthropic.claude-3-5-sonnet-20240620-v1:0
+    reason: "tone + specificity on medical questions (Opus-class slot — use account-supported id)"
+  - match:
+      topic: medication
+    model_id: us.anthropic.claude-3-5-sonnet-20240620-v1:0
+    reason: "dosage / interaction questions need higher tier"
+  - match:
+      topic: behavioral
+    model_id: us.anthropic.claude-haiku-4-5-20251001-v1:0
+    reason: "default tier — Sprint 4 cohort signal was strong here"
+  - match:
+      topic: self_care
+    model_id: us.anthropic.claude-haiku-4-5-20251001-v1:0
+    reason: "default tier"
+  - match:
+      topic: logistics
+    model_id: us.anthropic.claude-haiku-4-5-20251001-v1:0
+    reason: "default tier"
+  - match:
+      topic: other
+    model_id: us.anthropic.claude-haiku-4-5-20251001-v1:0
+    reason: "default tier"
+  # Keep refusal-template last so topic-specific tiers win when both apply.
+  - match:
+      is_refusal_template: true
+    model_id: us.anthropic.claude-haiku-4-5-20251001-v1:0
+    reason: "scripted output; no generation tier needed"
+ab_overrides:
+  - cohort: routing_v1_treatment
+    note: "treatment cohort runs the policy above; control runs default for everything"

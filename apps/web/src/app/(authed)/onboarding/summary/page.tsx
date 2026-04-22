@@ -7,12 +7,12 @@ import { OnboardingProgress } from "@/components/onboarding/onboarding-progress"
 import { requireSession } from "@/lib/auth/session";
 import { composeOnboardingSummary } from "@/lib/onboarding/summary";
 import {
+  displayNameForProfileWizard,
   getFirstIncompleteStep,
   hasCompletedOnboarding,
   isWizardDataCompleteFromSnapshot,
   loadProfileBundle,
 } from "@/lib/onboarding/status";
-import type { StageAnswersRecord } from "@/lib/onboarding/stage-keys";
 
 import { confirmOnboardingSummary } from "../_actions";
 
@@ -25,23 +25,16 @@ export default async function OnboardingSummaryPage() {
   if (await hasCompletedOnboarding(session.userId)) {
     redirect("/app");
   }
-  const { user, profile } = await loadProfileBundle(session.userId);
-  if (!isWizardDataCompleteFromSnapshot(profile, user.displayName)) {
-    const step = getFirstIncompleteStep(profile, user.displayName) ?? 1;
+  const { user, profile, membership } = await loadProfileBundle(session.userId);
+  const disp = displayNameForProfileWizard(user, membership);
+  if (!isWizardDataCompleteFromSnapshot(profile, disp)) {
+    const step = getFirstIncompleteStep(profile, disp) ?? 1;
     redirect(`/onboarding/step/${step}`);
   }
 
   const paragraph = composeOnboardingSummary({
-    displayName: user.displayName ?? "",
-    crFirstName: profile!.crFirstName,
-    crAge: profile!.crAge,
-    crRelationship: profile!.crRelationship,
-    crDiagnosis: profile!.crDiagnosis,
-    crDiagnosisYear: profile!.crDiagnosisYear,
-    livingSituation: profile!.livingSituation,
-    caregiverProximity: profile!.caregiverProximity,
-    hardestThing: profile!.hardestThing,
-    stageAnswers: (profile!.stageAnswers as StageAnswersRecord) ?? {},
+    displayName: disp ?? "",
+    profile: profile!,
   });
 
   return (

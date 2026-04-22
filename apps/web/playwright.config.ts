@@ -40,6 +40,9 @@ export default defineConfig({
       ...(process.env.DATABASE_URL != null && process.env.DATABASE_URL.length > 0
         ? { DATABASE_URL: process.env.DATABASE_URL }
         : {}),
+      ...(process.env.E2E_STREAMING_LIBRARY === "1"
+        ? { STREAMING_LIBRARY: "1", NEXT_PUBLIC_STREAMING_LIBRARY: "1" }
+        : {}),
       NODE_ENV: "test",
       // TASK-013: signal the canonical-origin middleware to skip the loopback
       // bounce (next dev forces NODE_ENV="development" in Edge middleware

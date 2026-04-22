@@ -6,6 +6,8 @@ import { serverEnv } from "@/lib/env.server";
 import { CATEGORY_SECTION_TITLES, type LibraryCategory } from "./constants";
 
 export type ModulePagePayload = {
+  /** `modules.id` (TASK-040: SSE `started` + stream telemetry). */
+  id: string;
   slug: string;
   title: string;
   bodyMd: string;
@@ -48,6 +50,7 @@ export async function loadModuleBySlug(
         : (m.reviewDate as Date).toISOString().slice(0, 10);
 
   return {
+    id: m.id,
     slug: m.slug,
     title: m.title,
     bodyMd: m.bodyMd,

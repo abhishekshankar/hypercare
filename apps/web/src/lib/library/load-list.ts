@@ -1,3 +1,5 @@
+import "server-only";
+
 import { and, eq, ne } from "drizzle-orm";
 import { createDbClient, moduleTopics, modules, topics } from "@hypercare/db";
 

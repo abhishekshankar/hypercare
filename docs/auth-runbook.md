@@ -67,8 +67,16 @@ If TASK-007 is enabled, `/app` may redirect into onboarding first; session + `us
 
 - `pnpm --filter web test:e2e` uses committed placeholder env in `apps/web/test/e2e/e2e-server-env.json` to boot Next and assert PKCE and middleware redirects. It does **not** perform a real Cognito sign-in; full Hosted UI sign-in is the manual checklist above.
 
+## Co-caregiver invites (TASK-038)
+
+Family sharing uses **the same Cognito pool and Hosted UI** as today: an invited person signs up or signs in, then completes **invite acceptance** in-app (token from email or copy-link flow — product wiring in the ticket). **Do not** create a second Hypercare-specific identity system.
+
+- **Email delivery:** strawman is the pool’s **transactional / Cognito-backed** path (no new SMTP infra in v1). Until that is wired, dev can mint tokens via API and paste an accept URL; see [ADR 0027](adr/0027-family-sharing-data-model-and-privacy.md) § “Transactional email”.
+- **Acceptance:** requires a valid `hc_session` for the **same email** as the pending `care_profile_members.invitee_email` row (normalized lowercase). Schema: `docs/schema-v1.md` § `care_profile_members` / `invite_tokens`.
+
 ## See also
 
 - [`auth-contract.md`](auth-contract.md) — pool ID, app client, Hosted UI domain, JWKS URL.
 - [ADR 0001](adr/0001-shared-cognito-with-main-project.md) — shared pool decision.
 - [ADR 0004](adr/0004-auth-session-model.md) — session cookie, PKCE, middleware scope.
+- [ADR 0027](adr/0027-family-sharing-data-model-and-privacy.md) — family sharing data model + default privacy.

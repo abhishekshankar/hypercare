@@ -52,6 +52,10 @@ export const messages = pgTable(
     bedrockInputTokens: integer("bedrock_input_tokens"),
     bedrockOutputTokens: integer("bedrock_output_tokens"),
     generationLatencyMs: integer("generation_latency_ms"),
+    /** TASK-031: POST → first committed SSE chunk (ms), streaming path only. */
+    streamFirstChunkMs: integer("stream_first_chunk_ms"),
+    /** TASK-031: POST → stream close (ms), streaming path only. */
+    streamTotalMs: integer("stream_total_ms"),
     createdAt: timestamp("created_at", { withTimezone: true }).defaultNow().notNull(),
   },
   (t) => [

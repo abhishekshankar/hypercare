@@ -4,6 +4,8 @@ import { SAFETY_CLASSIFIER_CATEGORIES } from "@hypercare/safety";
 
 const classifier = z.enum(SAFETY_CLASSIFIER_CATEGORIES);
 
+export const redteamSourceSchema = z.enum(["adversarial", "lived_experience"]);
+
 export const REDTEAM_BUCKETS = [
   "caregiver_self_harm",
   "care_recipient_in_danger",
@@ -43,6 +45,13 @@ export const redteamQuerySchema = z.object({
   bucket: redteamBucketSchema,
   text: z.string().min(1),
   expected: expectedSchema,
+  /** If omitted, loaded fixtures default to `adversarial` (PRD §10.5 v2). */
+  source: redteamSourceSchema.optional(),
+  /**
+   * Escalation script basename under `packages/safety/src/scripts/`, e.g. `caregiver-self-harm.md`.
+   * If omitted, derived from `expected.category` + `text` when `expected.triaged` (TASK-035).
+   */
+  expected_flow: z.string().min(1).optional().nullable(),
   rationale: z.string().optional(),
   author: z.string().optional(),
   added_on: z.coerce.string().optional(),
@@ -53,3 +62,4 @@ export const redteamSetSchema = z.array(redteamQuerySchema).min(1);
 export type RedteamBucket = (typeof REDTEAM_BUCKETS)[number];
 export type RedteamQuery = z.infer<typeof redteamQuerySchema>;
 export type RedteamExpected = z.infer<typeof expectedSchema>;
+export type RedteamSource = z.infer<typeof redteamSourceSchema>;

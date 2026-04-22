@@ -12,9 +12,18 @@
  */
 
 import type { ClassifyDeps as SafetyClassifyDeps } from "@hypercare/safety";
+import {
+  defaultPolicyPath,
+  loadPolicyFromFile,
+  selectModelSafe,
+  type ClassifierVerdict,
+  type ModelRoutingPolicy,
+  type RouteDecision,
+} from "@hypercare/model-router";
 
-import type { GenerateInput, GenerateOutput } from "./bedrock/claude.js";
+import type { GenerateInput, GenerateOutput, StreamChunk } from "./bedrock/claude.js";
 import { DEFAULT_CONFIG, type RagConfig } from "./config.js";
+import type { ComposeOutput } from "./layers/4-compose.js";
 import { compose } from "./layers/4-compose.js";
 import { generate as runGenerate } from "./layers/5-generate.js";
 import { ground } from "./layers/3-ground.js";
@@ -24,6 +33,7 @@ import { parseMemorySections } from "./memory/section-parse.js";
 import { classifySafety } from "./layers/0-safety.js";
 import { understandQuestion } from "./layers/1-understand.js";
 import { verify } from "./layers/6-verify.js";
+import { buildClassifierVerdictForRouting } from "./routing/verdict.js";
 import type { TopicClassifyInput, TopicClassifyResult } from "./topics/classifier.js";
 import type {
   AnswerInput,
@@ -31,9 +41,24 @@ import type {
   OperatorMetadata,
   RagUsage,
   RetrievedChunk,
+  RoutingAuditPayload,
   Stage,
   TopicFields,
 } from "./types.js";
+
+let routingPolicyCache: ModelRoutingPolicy | null = null;
+
+function routingPolicy(): ModelRoutingPolicy {
+  if (routingPolicyCache === null) {
+    routingPolicyCache = loadPolicyFromFile(defaultPolicyPath());
+  }
+  return routingPolicyCache;
+}
+
+function isModelRoutingEnabled(): boolean {
+  const v = process.env.MODEL_ROUTING;
+  return v === "1" || v === "true";
+}
 
 export type SearchFn = (q: {
   embedding: number[];
@@ -46,6 +71,13 @@ export type Deps = {
   search: SearchFn;
   loadStage: (userId: string) => Promise<Stage | null>;
   generate: (input: GenerateInput) => Promise<GenerateOutput>;
+  /**
+   * Optional Bedrock streaming (TASK-031). Defaults to `invokeClaudeStream` in `buildDefaultDeps`.
+   */
+  generateStream?: (
+    input: GenerateInput,
+    opts?: { signal?: AbortSignal },
+  ) => AsyncIterable<StreamChunk>;
   /** Safety classifier wiring (TASK-010). See `@hypercare/safety`. */
   safety: SafetyClassifyDeps;
   /**
@@ -69,6 +101,27 @@ export type Deps = {
   topicClassify: (input: TopicClassifyInput) => Promise<TopicClassifyResult>;
 };
 
+/** Layers 0–4 complete; ready for generation (TASK-031 streaming). */
+export type PipelineComposeReady = {
+  config: RagConfig;
+  composed: ComposeOutput;
+  groundedChunks: RetrievedChunk[];
+  topicFields: TopicFields;
+  t0: number;
+  topRetrievalTier: number;
+  stage: Stage | null;
+  /** TASK-042: populated when `MODEL_ROUTING=1`. */
+  modelRoutingActive: boolean;
+  routingUserId: string;
+  routingCohort: string | null;
+  routeDecision: RouteDecision | null;
+  classifierVerdict: ClassifierVerdict | null;
+};
+
+export type PipelineThroughComposeResult =
+  | { outcome: "refused"; result: AnswerResult }
+  | { outcome: "ready"; ready: PipelineComposeReady };
+
 function mergeTopics(t: TopicClassifyResult): TopicFields {
   return {
     classifiedTopics: t.topics,
@@ -76,7 +129,7 @@ function mergeTopics(t: TopicClassifyResult): TopicFields {
   };
 }
 
-function opMeta(
+export function opMeta(
   t0: number,
   topRetrievalTier: number | null,
   lastGenerationUsage: RagUsage | null,
@@ -103,7 +156,10 @@ async function awaitTopic(
   }
 }
 
-export async function runPipeline(input: AnswerInput, deps: Deps): Promise<AnswerResult> {
+export async function runPipelineThroughCompose(
+  input: AnswerInput,
+  deps: Deps,
+): Promise<PipelineThroughComposeResult> {
   const t0 = Date.now();
   const config: RagConfig = { ...DEFAULT_CONFIG, ...(deps.config ?? {}) };
 
@@ -114,7 +170,6 @@ export async function runPipeline(input: AnswerInput, deps: Deps): Promise<Answe
   });
 
   try {
-    // Layer 0 — Safety.
     const safety = await classifySafety(
       {
         userId: input.userId,
@@ -125,32 +180,36 @@ export async function runPipeline(input: AnswerInput, deps: Deps): Promise<Answe
     );
     if (safety.triaged) {
       return {
-        kind: "refused",
-        reason: {
-          code: "safety_triaged",
-          category: safety.category,
-          severity: safety.severity,
-          suggestedAction: safety.suggestedAction,
-          source: safety.source,
-          repeat_in_window: safety.repeatInWindow,
+        outcome: "refused",
+        result: {
+          kind: "refused",
+          reason: {
+            code: "safety_triaged",
+            category: safety.category,
+            severity: safety.severity,
+            suggestedAction: safety.suggestedAction,
+            source: safety.source,
+            repeat_in_window: safety.repeatInWindow,
+          },
+          operator: opMeta(t0, null, null),
+          ...(await awaitTopic(topicP, deps.warn)),
         },
-        operator: opMeta(t0, null, null),
-        ...(await awaitTopic(topicP, deps.warn)),
       };
     }
 
-    // Layer 1 — Understand.
     const understood = understandQuestion({ question: input.question });
     if (understood.scrubbed.length === 0) {
       return {
-        kind: "refused",
-        reason: { code: "no_content", message: "Empty question after normalization." },
-        operator: opMeta(t0, null, null),
-        ...(await awaitTopic(topicP, deps.warn)),
+        outcome: "refused",
+        result: {
+          kind: "refused",
+          reason: { code: "no_content", message: "Empty question after normalization." },
+          operator: opMeta(t0, null, null),
+          ...(await awaitTopic(topicP, deps.warn)),
+        },
       };
     }
 
-    // Stage lookup (pre-layer-2).
     const stage = await deps.loadStage(input.userId);
 
     const retrievalQuery = rewriteQueryWithMemory(
@@ -159,21 +218,22 @@ export async function runPipeline(input: AnswerInput, deps: Deps): Promise<Answe
       config,
     );
 
-    // Layer 2 — Retrieve.
     const retrieved = await retrieve(
       { scrubbedQuestion: retrievalQuery, stage, k: config.retrievalK },
       { embed: deps.embed, search: deps.search },
     );
 
-    // Layer 3 — Ground.
     const grounded = ground({ hits: retrieved.hits, config });
     if (grounded.decision === "refuse") {
       const top = retrieved.hits[0] as RetrievedChunk | undefined;
       return {
-        kind: "refused",
-        reason: grounded.reason,
-        operator: opMeta(t0, top !== undefined ? top.moduleTier : null, null),
-        ...(await awaitTopic(topicP, deps.warn)),
+        outcome: "refused",
+        result: {
+          kind: "refused",
+          reason: grounded.reason,
+          operator: opMeta(t0, top !== undefined ? top.moduleTier : null, null),
+          ...(await awaitTopic(topicP, deps.warn)),
+        },
       };
     }
 
@@ -188,7 +248,6 @@ export async function runPipeline(input: AnswerInput, deps: Deps): Promise<Answe
       });
     }
 
-    // Layer 4 — Compose.
     const composed = compose({
       scrubbedQuestion: understood.scrubbed,
       chunks: grounded.chunks,
@@ -196,9 +255,93 @@ export async function runPipeline(input: AnswerInput, deps: Deps): Promise<Answe
       conversationMemoryMd: input.conversationMemoryMd ?? null,
     });
 
+    const topicFields = await awaitTopic(topicP, deps.warn);
+    const topA = grounded.chunks[0] as RetrievedChunk;
+
+    const modelRoutingActive = isModelRoutingEnabled();
+    let routeDecision: RouteDecision | null = null;
+    let classifierVerdict: ClassifierVerdict | null = null;
+    if (modelRoutingActive) {
+      classifierVerdict = buildClassifierVerdictForRouting({
+        classifiedTopics: topicFields.classifiedTopics,
+        question: understood.scrubbed,
+        stage,
+      });
+      routeDecision = selectModelSafe(
+        {
+          policy: routingPolicy(),
+          classifierVerdict,
+          userContext: { userId: input.userId, routingCohort: input.routingCohort ?? null },
+          abCohort: input.routingCohort ?? null,
+        },
+        deps.warn,
+      );
+      deps.warn?.("rag.routing.selected", {
+        userId: input.userId,
+        "routing.cohort": input.routingCohort ?? null,
+        "routing.matched_rule": routeDecision.matchedRuleIndex,
+        "routing.model_id": routeDecision.modelId,
+      });
+    }
+
+    return {
+      outcome: "ready",
+      ready: {
+        config,
+        composed,
+        groundedChunks: grounded.chunks,
+        topicFields,
+        t0,
+        topRetrievalTier: topA.moduleTier,
+        stage,
+        modelRoutingActive,
+        routingUserId: input.userId,
+        routingCohort: input.routingCohort ?? null,
+        routeDecision,
+        classifierVerdict,
+      },
+    };
+  } catch (err) {
+    const detail = err instanceof Error ? err.message : String(err);
+    const q = input.question;
+    const questionPreview = q.length <= 120 ? q : q.slice(0, 120);
+    deps.warn?.("rag.pipeline.internal_error", {
+      errMessage: detail,
+      errStack: err instanceof Error ? err.stack : undefined,
+      errName: err instanceof Error ? err.name : "NonError",
+      userId: input.userId,
+      questionPreview,
+    });
+    return {
+      outcome: "refused",
+      result: {
+        kind: "refused",
+        reason: { code: "internal_error", detail },
+        operator: opMeta(t0, null, null),
+        ...(await awaitTopic(topicP, deps.warn)),
+      },
+    };
+  }
+}
+
+export async function runPipeline(input: AnswerInput, deps: Deps): Promise<AnswerResult> {
+  const head = await runPipelineThroughCompose(input, deps);
+  if (head.outcome === "refused") {
+    return head.result;
+  }
+  const { ready } = head;
+  const { composed, t0, topRetrievalTier, topicFields } = ready;
+
+  try {
     // Layer 5 — Generate.
+    const genModelId =
+      ready.modelRoutingActive && ready.routeDecision !== null ? ready.routeDecision.modelId : undefined;
     const generated = await runGenerate(
-      { systemPrompt: composed.systemPrompt, userPrompt: composed.userPrompt },
+      {
+        systemPrompt: composed.systemPrompt,
+        userPrompt: composed.userPrompt,
+        ...(genModelId !== undefined ? { modelId: genModelId } : {}),
+      },
       { generate: deps.generate },
     );
     const usage: RagUsage = {
@@ -210,28 +353,40 @@ export async function runPipeline(input: AnswerInput, deps: Deps): Promise<Answe
 
     // Layer 6 — Verify.
     const verified = verify({ rawText: generated.text, sources: composed.sourceMap });
+    const opAfterGen = opMeta(t0, topRetrievalTier, usage);
+    const routingAudit =
+      ready.modelRoutingActive && ready.routeDecision !== null && ready.classifierVerdict !== null
+        ? ({
+            userId: ready.routingUserId,
+            cohort: ready.routingCohort ?? "routing_v1_control",
+            classifierVerdict: ready.classifierVerdict,
+            policyVersion: ready.routeDecision.policyVersion,
+            matchedRuleIndex: ready.routeDecision.matchedRuleIndex,
+            modelId: usage.modelId,
+            reason: ready.routeDecision.reason,
+            latencyMs: opAfterGen.pipelineLatencyMs,
+            tokensIn: usage.inputTokens,
+            tokensOut: usage.outputTokens,
+          } satisfies RoutingAuditPayload)
+        : undefined;
     if (!verified.ok) {
-      const top = grounded.chunks[0] as RetrievedChunk | undefined;
       return {
         kind: "refused",
         reason: verified.reason,
-        operator: opMeta(
-          t0,
-          top !== undefined ? top.moduleTier : null,
-          usage,
-        ),
-        ...(await awaitTopic(topicP, deps.warn)),
+        operator: opAfterGen,
+        ...topicFields,
+        ...(routingAudit !== undefined ? { routingAudit } : {}),
       };
     }
 
-    const topA = grounded.chunks[0] as RetrievedChunk;
     return {
       kind: "answered",
       text: verified.text,
       citations: verified.citations,
       usage,
-      operator: opMeta(t0, topA.moduleTier, usage),
-      ...(await awaitTopic(topicP, deps.warn)),
+      operator: opAfterGen,
+      ...topicFields,
+      ...(routingAudit !== undefined ? { routingAudit } : {}),
     };
   } catch (err) {
     const detail = err instanceof Error ? err.message : String(err);
@@ -248,7 +403,7 @@ export async function runPipeline(input: AnswerInput, deps: Deps): Promise<Answe
       kind: "refused",
       reason: { code: "internal_error", detail },
       operator: opMeta(t0, null, null),
-      ...(await awaitTopic(topicP, deps.warn)),
+      ...topicFields,
     };
   }
 }

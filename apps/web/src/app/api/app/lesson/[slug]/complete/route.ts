@@ -34,8 +34,11 @@ export async function POST(request: Request) {
     progressId: parsed.data.progressId,
     revisit: parsed.data.revisit,
   });
-  if (r === "not_found") {
+  if (r.status === "not_found") {
     return NextResponse.json({ error: "Not found" }, { status: 404 });
+  }
+  if ("revisitAck" in r && r.revisitAck != null) {
+    return NextResponse.json({ ok: true as const, revisitAck: r.revisitAck });
   }
   return NextResponse.json({ ok: true as const });
 }

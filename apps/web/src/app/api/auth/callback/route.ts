@@ -138,10 +138,14 @@ export async function GET(request: NextRequest) {
     path: "/",
     maxAge: 0,
   });
-  await applySessionToResponse(res, {
-    userId: user.id,
-    cognitoSub: user.cognitoSub,
-    email: user.email,
-  });
+  await applySessionToResponse(
+    res,
+    {
+      userId: user.id,
+      cognitoSub: user.cognitoSub,
+      email: user.email,
+    },
+    { countryCode: request.headers.get("x-vercel-ip-country") },
+  );
   return res;
 }

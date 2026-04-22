@@ -52,6 +52,8 @@ export function createDbClient(databaseUrl: string) {
   const client = postgres(databaseUrl, {
     max: 1,
     prepare: false,
+    /** Avoid hanging SSR (e.g. `/app/library`) when the tunnel drops after a recent reachability probe. */
+    connect_timeout: 15,
     ...(shouldRequireSsl(databaseUrl) ? { ssl: "require" as const } : {}),
   });
   return drizzle(client, { schema });

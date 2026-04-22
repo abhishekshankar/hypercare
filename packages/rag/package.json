@@ -23,6 +23,7 @@
     "@aws-sdk/client-bedrock-runtime": "^3.1034.0",
     "@hypercare/content": "workspace:*",
     "@hypercare/db": "workspace:*",
+    "@hypercare/model-router": "workspace:*",
     "@hypercare/safety": "workspace:*",
     "drizzle-orm": "^0.45.2",
     "zod": "^4.3.6"

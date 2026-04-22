@@ -55,6 +55,16 @@ psql "postgres://hypercare_admin:<password-from-secrets-manager>@localhost:15432
 
 Expect `\l` to list `hypercare_dev` and `hypercare_prod`, and `\dx` on each DB to include `vector` after the bootstrap custom resource succeeds.
 
+### Retention cron (TASK-032)
+
+After deploy, run a **dry run** against the target database (from a machine with `DATABASE_URL`):
+
+```bash
+pnpm --filter @hypercare/db retention:cron -- --dry-run
+```
+
+Review the per-table counts, then enable a **daily** schedule (recommended: EventBridge rule → Lambda invoking the same script without `--dry-run`). First non-dry run should be executed manually by PM after verification. CloudWatch: log lines use the `retention.rows_deleted{table=…}` pattern for metric filters.
+
 Notes:
 
 - First deploy can take **15–25 minutes** (Aurora creation).
