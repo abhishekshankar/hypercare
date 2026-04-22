@@ -9,10 +9,16 @@ export default defineConfig({
   resolve: {
     alias: {
       "@": path.resolve(__dirname, "./src"),
+      "server-only": path.resolve(__dirname, "test/mocks/server-only.ts"),
     },
   },
   test: {
-    include: ["src/**/*.test.ts", "src/**/*.test.tsx"],
+    setupFiles: ["./test/setupEnv.ts"],
+    include: [
+      "src/**/*.test.ts",
+      "src/**/*.test.tsx",
+      "test/**/*.test.ts",
+    ],
     environment: "jsdom",
     fileParallelism: false,
     hookTimeout: 120_000,

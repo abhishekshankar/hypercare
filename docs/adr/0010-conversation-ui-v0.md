@@ -44,7 +44,7 @@ The `RefusalCard` is a labeled `<div role="region">` with a heading per code, co
 
 The persistent `<CrisisStrip />` lives in the *root* (server) layout — wrapping it in a Provider would force the entire app tree into a client component. We use a tiny pub-sub (`components/crisis-strip-pulse.tsx`) with a ref-counted module-global so:
 
-- Multiple TriageCards mounting simultaneously keep the pulse on; it only flips off when the last one unmounts.
+- The latest assistant turn is the one that may drive the strip; a historical `TriageCard` in the thread does not re-pulse after a non-triaged follow-up. Ref-counting still coalesces if multiple active registrations ever apply.
 - The CrisisStrip subscribes via `useState` + `addEventListener`; no Provider required.
 - The strip itself becomes a client component — a one-line additive change consistent with the ticket's "minimum additive change" guidance.
 
@@ -108,4 +108,4 @@ Sprint-1 home shows up to 5 most-recent conversations as a flat list (first user
 
 ## Known issues (local dev)
 
-- **Canonical-origin redirect + Playwright against `next dev`:** In some setups the app’s canonical-URL / origin middleware can loop when the Playwright `webServer` uses a `PLAYWRIGHT_TEST_BASE_URL` that does not match what middleware considers canonical. E2E specs that need a stable base URL already avoid the loop the same way `onboarding.spec.ts` does; acceptance criteria for TASK-011 are unchanged. A targeted fix (no-op middleware when `PLAYWRIGHT_TEST_BASE_URL` is set) is tracked in `tasks/TASK-013-playwright-canonical-redirect.md`.
+- **Canonical-origin redirect + Playwright (resolved in TASK-013):** `playwright.config.ts` sets `PLAYWRIGHT_TEST_BASE_URL` for the dev server; `canonicalLoopbackRedirectUrl` no-ops the dev-only loopback bounce when that var is set (and never in production). See `tasks/TASK-013-playwright-canonical-redirect.md`.

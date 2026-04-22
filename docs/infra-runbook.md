@@ -136,6 +136,46 @@ Non-binding estimate in `ca-central-1`:
 
 Turn off or destroy the stack when not actively developing to avoid NAT and Aurora charges.
 
+## Application database role (`hypercare_app`) — TASK-004
+
+The Aurora admin user `hypercare_admin` is for operators and migrations only. The web app and workers should connect as a least-privilege role.
+
+**Do not** generate or log passwords in automation. The PM (or delegate) performs these steps:
+
+1. Start the SSM tunnel (`./scripts/db-tunnel.sh`) and connect with `hypercare_admin` as today.
+2. Create the role and set a strong password (use your password manager; paste only into the session):
+
+   ```sql
+   CREATE ROLE hypercare_app LOGIN PASSWORD '<pm-provided>';
+   ```
+
+3. Run `packages/db/scripts/bootstrap-app-role.sql` **twice** — once with `psql` connected to `hypercare_dev`, and once connected to `hypercare_prod` (same file; grants are idempotent across runs).
+
+4. Store the password in **AWS Secrets Manager** as a **new** secret dedicated to `hypercare_app` (separate from the CDK admin secret). Use `aws secretsmanager describe-secret` to confirm creation; do not print secret values (see `PROJECT_BRIEF.md` §8).
+
+5. Record the new secret **ARN** in internal environment documentation. In `.env.example`, `DATABASE_URL` is commented to remind developers that the app connection string should use `hypercare_app` + the tunneled host/port once that secret is available.
+
+**Verify:** as `hypercare_app`, `SELECT 1 FROM users LIMIT 1;` should succeed after migrations; `DROP TABLE users;` should fail with a permission error.
+
+## `DATABASE_URL_ADMIN` (content loader) — TASK-008
+
+The **content loader** (`@hypercare/content`, `pnpm --filter @hypercare/content load`) is an **operator** tool, not the web app. It seeds `modules` and `module_chunks` (including embeddings) and is allowed to use the **Aurora admin** user, same as ad-hoc `psql` and migration runs.
+
+- **Variable:** set `DATABASE_URL_ADMIN` in your environment to a `postgres://` or `postgresql://` URL (same shape as a normal `DATABASE_URL`).
+- **Example (with tunnel):** after `./scripts/db-tunnel.sh`, the host is `127.0.0.1` and the local port (often `15432` per this runbook) maps to the cluster. The **username** is `hypercare_admin`. The **password** is the JSON field `password` in the **CDK `SecretArn`** for the data stack, retrieved only through your own session (e.g. AWS Console, AWS CLI) — do **not** log it, print it in automation, or commit it. The **database** name is typically `hypercare_dev` or `hypercare_prod` from stack outputs.
+- **If `DATABASE_URL_ADMIN` is unset:** the loader prints a short error and exits; it does **not** read Secrets Manager for you. Paste the URL from your password manager or shell `export` after you have opened the tunnel and copied the password securely.
+
+## Seeding content (pilot modules)
+
+1. Ensure migrations have been applied to the target database (`packages/db`).
+2. Start the SSM port forward (`./scripts/db-tunnel.sh`), then export `DATABASE_URL_ADMIN` (see above).
+3. Set AWS credentials in `ca-central-1` (e.g. `aws sso login`) and enable model access in Bedrock for **Titan Text Embeddings V2** if your account requires it.
+4. From the **repository root**:
+   ```bash
+   pnpm --filter @hypercare/content load
+   ```
+5. The loader reads `content/modules/*.md`, validates front matter, chunks, calls Bedrock, and upserts. A **second** run is idempotent (hash-based embedding skips) — see `docs/adr/0006-content-pipeline-v0.md`.
+
 ## Troubleshooting
 
 - **`cdk deploy` cannot assume lookup role**: Ensure the account/region matches where you bootstrapped, and credentials are for the same account.

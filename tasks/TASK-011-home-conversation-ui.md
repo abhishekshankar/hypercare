@@ -2,8 +2,9 @@
 
 - **Owner:** Cursor
 - **Depends on:** TASK-005 (route skeleton, CrisisStrip), TASK-006 (session), TASK-007 (care_profile for greeting), TASK-009 (`answer()`), TASK-010 (safety classifier + refusal shape)
-- **Status:** in_review
+- **Status:** done
 - **ADR:** `docs/adr/0010-conversation-ui-v0.md`
+- **Eyeball pass (2026-04-22):** Passed on the four E2E flows (starter → grounded answer + citation, crisis → triage + strip pulse, off-topic refusal, reload thread). The `tsc --noEmit` blocker on `env.test-runtime.test.ts` cleared in TASK-015 (switched to `vi.stubEnv` / `vi.unstubAllEnvs`). Cosmetic nits only: TriageCard uses “See more resources” vs ticket “See resources”, and `Composer` streaming TODO cites TASK-013 instead of a future streaming task — both deferred to a polish pass.
 
 ---
 

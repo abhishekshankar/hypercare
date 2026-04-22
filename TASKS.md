@@ -24,9 +24,16 @@ Cursor works tickets in **ID order**. Never start the next ticket until the prev
 | TASK-008 | Content loader: ingest 3 seeded pilot modules (PRD §7.4), chunk, embed, store in pgvector                                                                                            | 003, 004   | done    | —   |
 | TASK-009 | RAG pipeline v0: query classifier (Layer 2) + retrieval (Layer 3) + grounding check (Layer 4) + prompt composition (Layer 5) + post-gen verification (Layer 6) + refusal path (§9.3) | 008        | done    | —   |
 | TASK-010 | Safety classifier stub + one escalation flow (caregiver self-harm, PRD §10.3) end-to-end                                                                                             | 009        | done    | —   |
-| TASK-011 | Home screen + Ask-anything input + Conversation screen rendering the §6.4 response scaffold + source attribution                                                                     | 009, 010   | in_review | —   |
-| TASK-012 | Eval harness v0: golden-set scoring for retrieval, safety, and end-to-end answers (see `tasks/TASK-012-eval-harness.md`, ADR 0011)                                                      | 009, 010   | in_review | —   |
-| TASK-013 | Playwright: no-op canonical-origin redirect in middleware when `PLAYWRIGHT_TEST_BASE_URL` is set (avoids `next dev` loop); see `tasks/TASK-013-playwright-canonical-redirect.md` | —          | open      | —   |
+| TASK-011 | Home screen + Ask-anything input + Conversation screen rendering the §6.4 response scaffold + source attribution                                                                     | 009, 010   | done    | —   |
+| TASK-012 | Eval harness v0: golden-set scoring for retrieval, safety, and end-to-end answers (see `tasks/TASK-012-eval-harness.md`, ADR 0011)                                                      | 009, 010   | done    | —   |
+| TASK-013 | Playwright: no-op canonical-origin redirect in middleware when `PLAYWRIGHT_TEST_BASE_URL` is set (avoids `next dev` loop); see `tasks/TASK-013-playwright-canonical-redirect.md` | —          | done      | —   |
+| TASK-014 | Onboarding E2E: diagnosis `<select>` spec aligned with `step-1-form.tsx` (no TASK-013 coupling); see `tasks/TASK-014-onboarding-e2e-diagnosis-alignment.md` | —          | open      | —   |
+| TASK-015 | Web: `tsc --noEmit` green — fix `env.test-runtime.test.ts` mutating readonly `process.env` / `delete` (see `tasks/TASK-015-web-env-test-typecheck.md`)                              | —          | done    | —   |
+| TASK-016 | RAG: surface underlying cause on `internal_error` to operator log + eval report (warn hook in `runPipeline` catch; `reason_detail` in answers eval) — see `tasks/TASK-016-rag-internal-error-observability.md` | —          | pending   | —   |
+| TASK-017 | RAG: thread Bedrock `usage` (input/output tokens) through `runPipeline.AnswerResult` so eval and chat-route can surface real token counts (currently nulled in live mode) — see `tasks/TASK-017-rag-usage-tokens.md` | —          | pending   | —   |
+| TASK-018 | Safety: short-circuit Layer B classifier on empty/whitespace text (eliminates spurious `safety.llm.invoke_failed` warns) — see `tasks/TASK-018-safety-empty-text-shortcircuit.md` | —          | pending   | —   |
+
+**Sprint 1 vertical slice (TASK-001 → TASK-015) is done.** Open follow-ups (TASK-014, TASK-016, TASK-017, TASK-018) are scoped, ticketed, and not blocking the slice.
 
 ## Out of sprint 1 (explicitly deferred)
 

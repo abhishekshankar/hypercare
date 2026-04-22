@@ -99,3 +99,8 @@ Delegated-auth rules (see `prd.md` / PRD §4):
 | Callback / sign-out URLs | Done — see [Callback and sign-out URLs](#callback-and-sign-out-urls-as-configured-in-cognito). |
 | Custom attributes | Done — [none](#custom-attributes). |
 | Public client (no secret) | **Optional, not blocking** — current confidential client + server-side secret + PKCE is acceptable; see [Hypercare app client](#hypercare-app-client). |
+
+## Operations
+
+- [Auth runbook](auth-runbook.md) — env vars, per-environment `AUTH_BASE_URL` / `AUTH_SIGNOUT_URL`, secret rotation, local dev, Playwright scope.
+- [ADR 0004 — session model](adr/0004-auth-session-model.md) — why opaque session cookie, no silent refresh in v1, PKCE with confidential client, middleware scope.

@@ -1,0 +1,27 @@
+{
+  "version": "7",
+  "dialect": "postgresql",
+  "entries": [
+    {
+      "idx": 0,
+      "version": "7",
+      "when": 1776807800667,
+      "tag": "0000_lush_quentin_quire",
+      "breakpoints": true
+    },
+    {
+      "idx": 1,
+      "version": "7",
+      "when": 1776824955529,
+      "tag": "0001_safety_flags_constraints",
+      "breakpoints": true
+    },
+    {
+      "idx": 2,
+      "version": "7",
+      "when": 1776826778043,
+      "tag": "0002_messages_citations_refusal",
+      "breakpoints": true
+    }
+  ]
+}

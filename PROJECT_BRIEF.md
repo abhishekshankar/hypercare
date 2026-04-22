@@ -63,6 +63,17 @@ Cognito handoff for TASK-002 is **documented in `docs/auth-contract.md`** (pool 
 
 Implementation: `aws-amplify` v6 with the `auth` category configured against the existing pool. Server-side session validation via the Cognito JWKS. **No password fields in the Hypercare UI** — sign-in routes through the shared Hosted UI (or a token bridge if the main project provides one). If the main project hands off via a redirect with a Cognito session cookie or a one-time code, the auth ticket will detail that flow when implemented.
 
+**Session model (entry point):** PKCE authorization code flow, token exchange and JWKS verification on the server, **`hc_session` opaque HMAC cookie** (not a browser-visible Cognito JWT) — see [`docs/adr/0004-auth-session-model.md`](docs/adr/0004-auth-session-model.md).
+
+### Environment variables (runtime vs operator)
+
+- **`DATABASE_URL`**: Postgres URL for the **`hypercare_app`** role; used by the Next.js app and app-owned jobs. Required for auth callback user upsert and any DB-backed route.
+- **`DATABASE_URL_ADMIN`**: Optional **operator/bootstrap** URL (admin or migration role) for tunnels, `drizzle-kit`, and one-off DBA tasks. **Do not** point the web app or `env.server.ts` at this; keep app traffic on the least-privileged role. Details: `docs/infra-runbook.md`.
+- **`BEDROCK_ANSWER_MODEL_ID`**: Optional override for the RAG answering model (Claude on Bedrock). Default is the Haiku 4.5 `us.*` system inference profile id in `packages/rag` config; set this if your account exposes a different profile id. See `docs/adr/0008-rag-pipeline-v0.md` §4.
+- **`BEDROCK_CLASSIFIER_MODEL_ID`**: Optional override for the safety classifier’s Layer B model (same default family / inference-profile pattern as the answerer). Default in `packages/safety/src/config.ts`; see `docs/adr/0008-rag-pipeline-v0.md` §4 and `docs/adr/0009-safety-classifier-v0.md` §5.
+- **`EVAL_LIVE`**: Set to `1` to run the `@hypercare/eval` harness against **real** Postgres (`DATABASE_URL`) and Bedrock (unset = offline fixtures, deterministic). See `docs/adr/0011-eval-harness-v0.md`.
+- **`EVAL_USER_ID`**: Optional; when set with `EVAL_LIVE=1`, passed through as the `userId` in answer eval so `loadStage` can resolve a real `care_profile` (defaults to a synthetic `eval-answers:…` id if unset).
+
 ## 5. Conventions
 
 - **Language**: TypeScript everywhere. `strict: true`. No `any` without a `// eslint-disable-next-line` and a comment.
@@ -128,9 +139,14 @@ If any acceptance criterion is unchecked, the status line is `blocked: <reason>`
 - Add a dependency that duplicates something already chosen.
 - Edit a shipped migration.
 - Commit secrets, even temporarily.
+- **Fetch, print, or log any value from AWS Secrets Manager, Parameter Store, or any other secret store** — including "just to test that it works." Reading Aurora admin credentials, Cognito client secrets, Bedrock keys, or any other sensitive material is a **PM/operator activity**, not a Cursor activity. If a ticket needs the presence of a secret verified, verify it by its ARN and metadata (`aws secretsmanager describe-secret`), never its value. If a ticket genuinely needs a secret value at runtime (e.g. a Lambda), the code retrieves it at runtime from Secrets Manager at the deployed runtime's identity — it never flows through Cursor's shell.
 - Mark a ticket complete with failing tests.
 - Skip the safety / refusal / verification layers when wiring the RAG pipeline. PRD §9 and §10 are non-negotiable.
 - Generate medical content. All content is sourced and reviewed (PRD §7, §8). The pipeline only retrieves and renders.
+
+### If Cursor accidentally exposes a secret
+
+Stop. Report it in the next message, clearly, with a one-line "SECURITY: <what leaked, where>" at the top. Do not try to clean it up silently. The PM will rotate and document. A leaked secret reported is a near-miss; a leaked secret hidden is an incident.
 
 ## 9. Where to look first
 

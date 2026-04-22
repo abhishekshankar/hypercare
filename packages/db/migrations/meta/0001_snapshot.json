@@ -1,0 +1,973 @@
+{
+  "id": "6a92a93f-7035-4f86-ada5-38eada6d5e38",
+  "prevId": "0d248e98-e502-455b-8d5a-b83fdd04c993",
+  "version": "7",
+  "dialect": "postgresql",
+  "tables": {
+    "public.care_profile": {
+      "name": "care_profile",
+      "schema": "",
+      "columns": {
+        "id": {
+          "name": "id",
+          "type": "uuid",
+          "primaryKey": true,
+          "notNull": true,
+          "default": "gen_random_uuid()"
+        },
+        "user_id": {
+          "name": "user_id",
+          "type": "uuid",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "cr_first_name": {
+          "name": "cr_first_name",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "cr_age": {
+          "name": "cr_age",
+          "type": "integer",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "cr_relationship": {
+          "name": "cr_relationship",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "cr_diagnosis": {
+          "name": "cr_diagnosis",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "cr_diagnosis_year": {
+          "name": "cr_diagnosis_year",
+          "type": "integer",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "stage_answers": {
+          "name": "stage_answers",
+          "type": "jsonb",
+          "primaryKey": false,
+          "notNull": true,
+          "default": "'{}'::jsonb"
+        },
+        "inferred_stage": {
+          "name": "inferred_stage",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "living_situation": {
+          "name": "living_situation",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "care_network": {
+          "name": "care_network",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "care_hours_per_week": {
+          "name": "care_hours_per_week",
+          "type": "integer",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "caregiver_proximity": {
+          "name": "caregiver_proximity",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "caregiver_age_bracket": {
+          "name": "caregiver_age_bracket",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "caregiver_work_status": {
+          "name": "caregiver_work_status",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "caregiver_state_1_5": {
+          "name": "caregiver_state_1_5",
+          "type": "integer",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "hardest_thing": {
+          "name": "hardest_thing",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "cr_background": {
+          "name": "cr_background",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "cr_joy": {
+          "name": "cr_joy",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "cr_personality_notes": {
+          "name": "cr_personality_notes",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "created_at": {
+          "name": "created_at",
+          "type": "timestamp with time zone",
+          "primaryKey": false,
+          "notNull": true,
+          "default": "now()"
+        },
+        "updated_at": {
+          "name": "updated_at",
+          "type": "timestamp with time zone",
+          "primaryKey": false,
+          "notNull": true,
+          "default": "now()"
+        }
+      },
+      "indexes": {},
+      "foreignKeys": {
+        "care_profile_user_id_users_id_fk": {
+          "name": "care_profile_user_id_users_id_fk",
+          "tableFrom": "care_profile",
+          "tableTo": "users",
+          "columnsFrom": [
+            "user_id"
+          ],
+          "columnsTo": [
+            "id"
+          ],
+          "onDelete": "cascade",
+          "onUpdate": "no action"
+        }
+      },
+      "compositePrimaryKeys": {},
+      "uniqueConstraints": {
+        "care_profile_user_id_unique": {
+          "name": "care_profile_user_id_unique",
+          "nullsNotDistinct": false,
+          "columns": [
+            "user_id"
+          ]
+        }
+      },
+      "policies": {},
+      "checkConstraints": {
+        "care_profile_cr_relationship_check": {
+          "name": "care_profile_cr_relationship_check",
+          "value": "\"care_profile\".\"cr_relationship\" IN ('parent', 'spouse', 'sibling', 'in_law', 'other')"
+        },
+        "care_profile_cr_diagnosis_check": {
+          "name": "care_profile_cr_diagnosis_check",
+          "value": "(\"care_profile\".\"cr_diagnosis\" IS NULL OR \"care_profile\".\"cr_diagnosis\" IN (\n        'alzheimers', 'vascular', 'lewy_body', 'frontotemporal', 'mixed',\n        'unknown_type', 'suspected_undiagnosed'\n      ))"
+        },
+        "care_profile_inferred_stage_check": {
+          "name": "care_profile_inferred_stage_check",
+          "value": "(\"care_profile\".\"inferred_stage\" IS NULL OR \"care_profile\".\"inferred_stage\" IN ('early', 'middle', 'late', 'unknown'))"
+        },
+        "care_profile_living_situation_check": {
+          "name": "care_profile_living_situation_check",
+          "value": "(\"care_profile\".\"living_situation\" IS NULL OR \"care_profile\".\"living_situation\" IN (\n        'with_caregiver', 'alone', 'with_other_family', 'assisted_living',\n        'memory_care', 'nursing_home'\n      ))"
+        },
+        "care_profile_care_network_check": {
+          "name": "care_profile_care_network_check",
+          "value": "(\"care_profile\".\"care_network\" IS NULL OR \"care_profile\".\"care_network\" IN (\n        'solo', 'siblings_helping', 'paid_help', 'spouse_of_cr'\n      ))"
+        },
+        "care_profile_caregiver_proximity_check": {
+          "name": "care_profile_caregiver_proximity_check",
+          "value": "(\"care_profile\".\"caregiver_proximity\" IS NULL OR \"care_profile\".\"caregiver_proximity\" IN (\n        'same_home', 'same_city', 'remote'\n      ))"
+        },
+        "care_profile_caregiver_age_bracket_check": {
+          "name": "care_profile_caregiver_age_bracket_check",
+          "value": "(\"care_profile\".\"caregiver_age_bracket\" IS NULL OR \"care_profile\".\"caregiver_age_bracket\" IN (\n        'under_40', '40_54', '55_64', '65_74', '75_plus'\n      ))"
+        },
+        "care_profile_caregiver_work_status_check": {
+          "name": "care_profile_caregiver_work_status_check",
+          "value": "(\"care_profile\".\"caregiver_work_status\" IS NULL OR \"care_profile\".\"caregiver_work_status\" IN ('working', 'retired', 'other'))"
+        },
+        "care_profile_caregiver_state_1_5_check": {
+          "name": "care_profile_caregiver_state_1_5_check",
+          "value": "(\"care_profile\".\"caregiver_state_1_5\" IS NULL OR (\"care_profile\".\"caregiver_state_1_5\" >= 1 AND \"care_profile\".\"caregiver_state_1_5\" <= 5))"
+        }
+      },
+      "isRLSEnabled": false
+    },
+    "public.conversations": {
+      "name": "conversations",
+      "schema": "",
+      "columns": {
+        "id": {
+          "name": "id",
+          "type": "uuid",
+          "primaryKey": true,
+          "notNull": true,
+          "default": "gen_random_uuid()"
+        },
+        "user_id": {
+          "name": "user_id",
+          "type": "uuid",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "title": {
+          "name": "title",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "created_at": {
+          "name": "created_at",
+          "type": "timestamp with time zone",
+          "primaryKey": false,
+          "notNull": true,
+          "default": "now()"
+        },
+        "updated_at": {
+          "name": "updated_at",
+          "type": "timestamp with time zone",
+          "primaryKey": false,
+          "notNull": true,
+          "default": "now()"
+        }
+      },
+      "indexes": {
+        "conversations_user_id_updated_at_idx": {
+          "name": "conversations_user_id_updated_at_idx",
+          "columns": [
+            {
+              "expression": "user_id",
+              "isExpression": false,
+              "asc": true,
+              "nulls": "last"
+            },
+            {
+              "expression": "updated_at",
+              "isExpression": false,
+              "asc": false,
+              "nulls": "last"
+            }
+          ],
+          "isUnique": false,
+          "concurrently": false,
+          "method": "btree",
+          "with": {}
+        }
+      },
+      "foreignKeys": {
+        "conversations_user_id_users_id_fk": {
+          "name": "conversations_user_id_users_id_fk",
+          "tableFrom": "conversations",
+          "tableTo": "users",
+          "columnsFrom": [
+            "user_id"
+          ],
+          "columnsTo": [
+            "id"
+          ],
+          "onDelete": "cascade",
+          "onUpdate": "no action"
+        }
+      },
+      "compositePrimaryKeys": {},
+      "uniqueConstraints": {},
+      "policies": {},
+      "checkConstraints": {},
+      "isRLSEnabled": false
+    },
+    "public.messages": {
+      "name": "messages",
+      "schema": "",
+      "columns": {
+        "id": {
+          "name": "id",
+          "type": "uuid",
+          "primaryKey": true,
+          "notNull": true,
+          "default": "gen_random_uuid()"
+        },
+        "conversation_id": {
+          "name": "conversation_id",
+          "type": "uuid",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "role": {
+          "name": "role",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "content": {
+          "name": "content",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "response_kind": {
+          "name": "response_kind",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "retrieval": {
+          "name": "retrieval",
+          "type": "jsonb",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "classifier": {
+          "name": "classifier",
+          "type": "jsonb",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "verification": {
+          "name": "verification",
+          "type": "jsonb",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "model_id": {
+          "name": "model_id",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "created_at": {
+          "name": "created_at",
+          "type": "timestamp with time zone",
+          "primaryKey": false,
+          "notNull": true,
+          "default": "now()"
+        }
+      },
+      "indexes": {
+        "messages_conversation_id_created_at_idx": {
+          "name": "messages_conversation_id_created_at_idx",
+          "columns": [
+            {
+              "expression": "conversation_id",
+              "isExpression": false,
+              "asc": true,
+              "nulls": "last"
+            },
+            {
+              "expression": "created_at",
+              "isExpression": false,
+              "asc": true,
+              "nulls": "last"
+            }
+          ],
+          "isUnique": false,
+          "concurrently": false,
+          "method": "btree",
+          "with": {}
+        }
+      },
+      "foreignKeys": {
+        "messages_conversation_id_conversations_id_fk": {
+          "name": "messages_conversation_id_conversations_id_fk",
+          "tableFrom": "messages",
+          "tableTo": "conversations",
+          "columnsFrom": [
+            "conversation_id"
+          ],
+          "columnsTo": [
+            "id"
+          ],
+          "onDelete": "cascade",
+          "onUpdate": "no action"
+        }
+      },
+      "compositePrimaryKeys": {},
+      "uniqueConstraints": {},
+      "policies": {},
+      "checkConstraints": {
+        "messages_role_check": {
+          "name": "messages_role_check",
+          "value": "\"messages\".\"role\" IN ('user', 'assistant', 'system')"
+        },
+        "messages_response_kind_check": {
+          "name": "messages_response_kind_check",
+          "value": "(\"messages\".\"response_kind\" IS NULL OR \"messages\".\"response_kind\" IN ('answer', 'refusal', 'safety_script'))"
+        }
+      },
+      "isRLSEnabled": false
+    },
+    "public.module_chunks": {
+      "name": "module_chunks",
+      "schema": "",
+      "columns": {
+        "id": {
+          "name": "id",
+          "type": "uuid",
+          "primaryKey": true,
+          "notNull": true,
+          "default": "gen_random_uuid()"
+        },
+        "module_id": {
+          "name": "module_id",
+          "type": "uuid",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "chunk_index": {
+          "name": "chunk_index",
+          "type": "integer",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "content": {
+          "name": "content",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "token_count": {
+          "name": "token_count",
+          "type": "integer",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "embedding": {
+          "name": "embedding",
+          "type": "vector(1024)",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "metadata": {
+          "name": "metadata",
+          "type": "jsonb",
+          "primaryKey": false,
+          "notNull": true,
+          "default": "'{}'::jsonb"
+        },
+        "created_at": {
+          "name": "created_at",
+          "type": "timestamp with time zone",
+          "primaryKey": false,
+          "notNull": true,
+          "default": "now()"
+        }
+      },
+      "indexes": {
+        "module_chunks_module_id_idx": {
+          "name": "module_chunks_module_id_idx",
+          "columns": [
+            {
+              "expression": "module_id",
+              "isExpression": false,
+              "asc": true,
+              "nulls": "last"
+            }
+          ],
+          "isUnique": false,
+          "concurrently": false,
+          "method": "btree",
+          "with": {}
+        },
+        "module_chunks_metadata_gin": {
+          "name": "module_chunks_metadata_gin",
+          "columns": [
+            {
+              "expression": "metadata",
+              "isExpression": false,
+              "asc": true,
+              "nulls": "last"
+            }
+          ],
+          "isUnique": false,
+          "concurrently": false,
+          "method": "gin",
+          "with": {}
+        },
+        "module_chunks_embedding_hnsw": {
+          "name": "module_chunks_embedding_hnsw",
+          "columns": [
+            {
+              "expression": "embedding",
+              "isExpression": false,
+              "asc": true,
+              "nulls": "last",
+              "opclass": "vector_cosine_ops"
+            }
+          ],
+          "isUnique": false,
+          "concurrently": false,
+          "method": "hnsw",
+          "with": {
+            "m": 16,
+            "ef_construction": 64
+          }
+        }
+      },
+      "foreignKeys": {
+        "module_chunks_module_id_modules_id_fk": {
+          "name": "module_chunks_module_id_modules_id_fk",
+          "tableFrom": "module_chunks",
+          "tableTo": "modules",
+          "columnsFrom": [
+            "module_id"
+          ],
+          "columnsTo": [
+            "id"
+          ],
+          "onDelete": "cascade",
+          "onUpdate": "no action"
+        }
+      },
+      "compositePrimaryKeys": {},
+      "uniqueConstraints": {
+        "module_chunks_module_id_chunk_index_unique": {
+          "name": "module_chunks_module_id_chunk_index_unique",
+          "nullsNotDistinct": false,
+          "columns": [
+            "module_id",
+            "chunk_index"
+          ]
+        }
+      },
+      "policies": {},
+      "checkConstraints": {},
+      "isRLSEnabled": false
+    },
+    "public.modules": {
+      "name": "modules",
+      "schema": "",
+      "columns": {
+        "id": {
+          "name": "id",
+          "type": "uuid",
+          "primaryKey": true,
+          "notNull": true,
+          "default": "gen_random_uuid()"
+        },
+        "slug": {
+          "name": "slug",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "title": {
+          "name": "title",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "category": {
+          "name": "category",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "stage_relevance": {
+          "name": "stage_relevance",
+          "type": "text[]",
+          "primaryKey": false,
+          "notNull": true,
+          "default": "'{}'::text[]"
+        },
+        "tier": {
+          "name": "tier",
+          "type": "integer",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "summary": {
+          "name": "summary",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "body_md": {
+          "name": "body_md",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "attribution_line": {
+          "name": "attribution_line",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "expert_reviewer": {
+          "name": "expert_reviewer",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "review_date": {
+          "name": "review_date",
+          "type": "date",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "next_review_due": {
+          "name": "next_review_due",
+          "type": "date",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "published": {
+          "name": "published",
+          "type": "boolean",
+          "primaryKey": false,
+          "notNull": true,
+          "default": false
+        },
+        "created_at": {
+          "name": "created_at",
+          "type": "timestamp with time zone",
+          "primaryKey": false,
+          "notNull": true,
+          "default": "now()"
+        },
+        "updated_at": {
+          "name": "updated_at",
+          "type": "timestamp with time zone",
+          "primaryKey": false,
+          "notNull": true,
+          "default": "now()"
+        }
+      },
+      "indexes": {
+        "modules_category_tier_published_idx": {
+          "name": "modules_category_tier_published_idx",
+          "columns": [
+            {
+              "expression": "category",
+              "isExpression": false,
+              "asc": true,
+              "nulls": "last"
+            },
+            {
+              "expression": "tier",
+              "isExpression": false,
+              "asc": true,
+              "nulls": "last"
+            },
+            {
+              "expression": "published",
+              "isExpression": false,
+              "asc": true,
+              "nulls": "last"
+            }
+          ],
+          "isUnique": false,
+          "concurrently": false,
+          "method": "btree",
+          "with": {}
+        }
+      },
+      "foreignKeys": {},
+      "compositePrimaryKeys": {},
+      "uniqueConstraints": {
+        "modules_slug_unique": {
+          "name": "modules_slug_unique",
+          "nullsNotDistinct": false,
+          "columns": [
+            "slug"
+          ]
+        }
+      },
+      "policies": {},
+      "checkConstraints": {
+        "modules_category_check": {
+          "name": "modules_category_check",
+          "value": "\"modules\".\"category\" IN (\n        'behaviors', 'daily_care', 'communication', 'medical', 'legal_financial',\n        'transitions', 'caring_for_yourself'\n      )"
+        },
+        "modules_tier_check": {
+          "name": "modules_tier_check",
+          "value": "\"modules\".\"tier\" IN (1, 2, 3)"
+        }
+      },
+      "isRLSEnabled": false
+    },
+    "public.safety_flags": {
+      "name": "safety_flags",
+      "schema": "",
+      "columns": {
+        "id": {
+          "name": "id",
+          "type": "uuid",
+          "primaryKey": true,
+          "notNull": true,
+          "default": "gen_random_uuid()"
+        },
+        "message_id": {
+          "name": "message_id",
+          "type": "uuid",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "conversation_id": {
+          "name": "conversation_id",
+          "type": "uuid",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "user_id": {
+          "name": "user_id",
+          "type": "uuid",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "message_text": {
+          "name": "message_text",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "category": {
+          "name": "category",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "severity": {
+          "name": "severity",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "source": {
+          "name": "source",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "matched_signals": {
+          "name": "matched_signals",
+          "type": "jsonb",
+          "primaryKey": false,
+          "notNull": true,
+          "default": "'[]'::jsonb"
+        },
+        "confidence": {
+          "name": "confidence",
+          "type": "numeric(3, 2)",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "classifier_output": {
+          "name": "classifier_output",
+          "type": "jsonb",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "escalation_rendered": {
+          "name": "escalation_rendered",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "created_at": {
+          "name": "created_at",
+          "type": "timestamp with time zone",
+          "primaryKey": false,
+          "notNull": true,
+          "default": "now()"
+        }
+      },
+      "indexes": {
+        "safety_flags_user_id_created_at_idx": {
+          "name": "safety_flags_user_id_created_at_idx",
+          "columns": [
+            {
+              "expression": "user_id",
+              "isExpression": false,
+              "asc": true,
+              "nulls": "last"
+            },
+            {
+              "expression": "created_at",
+              "isExpression": false,
+              "asc": false,
+              "nulls": "last"
+            }
+          ],
+          "isUnique": false,
+          "concurrently": false,
+          "method": "btree",
+          "with": {}
+        },
+        "safety_flags_category_created_at_idx": {
+          "name": "safety_flags_category_created_at_idx",
+          "columns": [
+            {
+              "expression": "category",
+              "isExpression": false,
+              "asc": true,
+              "nulls": "last"
+            },
+            {
+              "expression": "created_at",
+              "isExpression": false,
+              "asc": false,
+              "nulls": "last"
+            }
+          ],
+          "isUnique": false,
+          "concurrently": false,
+          "method": "btree",
+          "with": {}
+        }
+      },
+      "foreignKeys": {
+        "safety_flags_message_id_messages_id_fk": {
+          "name": "safety_flags_message_id_messages_id_fk",
+          "tableFrom": "safety_flags",
+          "tableTo": "messages",
+          "columnsFrom": [
+            "message_id"
+          ],
+          "columnsTo": [
+            "id"
+          ],
+          "onDelete": "cascade",
+          "onUpdate": "no action"
+        },
+        "safety_flags_conversation_id_conversations_id_fk": {
+          "name": "safety_flags_conversation_id_conversations_id_fk",
+          "tableFrom": "safety_flags",
+          "tableTo": "conversations",
+          "columnsFrom": [
+            "conversation_id"
+          ],
+          "columnsTo": [
+            "id"
+          ],
+          "onDelete": "cascade",
+          "onUpdate": "no action"
+        },
+        "safety_flags_user_id_users_id_fk": {
+          "name": "safety_flags_user_id_users_id_fk",
+          "tableFrom": "safety_flags",
+          "tableTo": "users",
+          "columnsFrom": [
+            "user_id"
+          ],
+          "columnsTo": [
+            "id"
+          ],
+          "onDelete": "cascade",
+          "onUpdate": "no action"
+        }
+      },
+      "compositePrimaryKeys": {},
+      "uniqueConstraints": {},
+      "policies": {},
+      "checkConstraints": {
+        "safety_flags_category_check": {
+          "name": "safety_flags_category_check",
+          "value": "\"safety_flags\".\"category\" IN (\n        'self_harm_user', 'self_harm_cr', 'acute_medical',\n        'abuse_cr_to_caregiver', 'abuse_caregiver_to_cr', 'neglect'\n      )"
+        },
+        "safety_flags_severity_check": {
+          "name": "safety_flags_severity_check",
+          "value": "\"safety_flags\".\"severity\" IN ('high', 'medium')"
+        },
+        "safety_flags_source_check": {
+          "name": "safety_flags_source_check",
+          "value": "\"safety_flags\".\"source\" IN ('rule', 'llm')"
+        },
+        "safety_flags_confidence_check": {
+          "name": "safety_flags_confidence_check",
+          "value": "\"safety_flags\".\"confidence\" IS NULL OR (\"safety_flags\".\"confidence\" >= 0 AND \"safety_flags\".\"confidence\" <= 1)"
+        }
+      },
+      "isRLSEnabled": false
+    },
+    "public.users": {
+      "name": "users",
+      "schema": "",
+      "columns": {
+        "id": {
+          "name": "id",
+          "type": "uuid",
+          "primaryKey": true,
+          "notNull": true,
+          "default": "gen_random_uuid()"
+        },
+        "cognito_sub": {
+          "name": "cognito_sub",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "email": {
+          "name": "email",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "display_name": {
+          "name": "display_name",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "created_at": {
+          "name": "created_at",
+          "type": "timestamp with time zone",
+          "primaryKey": false,
+          "notNull": true,
+          "default": "now()"
+        },
+        "updated_at": {
+          "name": "updated_at",
+          "type": "timestamp with time zone",
+          "primaryKey": false,
+          "notNull": true,
+          "default": "now()"
+        }
+      },
+      "indexes": {},
+      "foreignKeys": {},
+      "compositePrimaryKeys": {},
+      "uniqueConstraints": {
+        "users_cognito_sub_unique": {
+          "name": "users_cognito_sub_unique",
+          "nullsNotDistinct": false,
+          "columns": [
+            "cognito_sub"
+          ]
+        }
+      },
+      "policies": {},
+      "checkConstraints": {},
+      "isRLSEnabled": false
+    }
+  },
+  "enums": {},
+  "schemas": {},
+  "sequences": {},
+  "roles": {},
+  "policies": {},
+  "views": {},
+  "_meta": {
+    "columns": {},
+    "schemas": {},
+    "tables": {}
+  }
+}

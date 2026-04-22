@@ -1,5 +1,5 @@
 import { spawn } from "node:child_process";
-import { existsSync } from "node:fs";
+import { existsSync, readFileSync } from "node:fs";
 import path from "node:path";
 import { fileURLToPath } from "node:url";
 
@@ -7,6 +7,10 @@ import { afterAll, beforeAll, expect, test } from "vitest";
 
 const webRoot = path.resolve(path.dirname(fileURLToPath(import.meta.url)), "..");
 const buildIdPath = path.join(webRoot, ".next", "BUILD_ID");
+
+const smokeEnv = JSON.parse(
+  readFileSync(path.join(webRoot, "test/e2e/e2e-server-env.json"), "utf8"),
+) as Record<string, string>;
 
 const paths = [
   "/",
@@ -48,10 +52,18 @@ beforeAll(async () => {
 
   const port = 3100 + (process.pid % 1000);
   baseUrl = `http://127.0.0.1:${port}`;
+  const serverEnv = {
+    ...process.env,
+    ...smokeEnv,
+    PORT: String(port),
+    NODE_ENV: "production" as const,
+    AUTH_BASE_URL: baseUrl,
+    AUTH_SIGNOUT_URL: baseUrl,
+  } satisfies NodeJS.ProcessEnv;
 
   child = spawn("pnpm", ["exec", "next", "start", "-p", String(port)], {
     cwd: webRoot,
-    env: { ...process.env, PORT: String(port) },
+    env: serverEnv,
     stdio: "pipe",
   });
 
@@ -65,8 +77,20 @@ afterAll(async () => {
   }
 });
 
-test.each(paths)("GET %s includes crisis strip phone", async (pathname) => {
+test.each(paths)("GET %s has expected response", async (pathname) => {
   const res = await fetch(`${baseUrl}${pathname}`, { redirect: "manual" });
+  if (
+    pathname === "/app" ||
+    pathname.startsWith("/app/") ||
+    pathname === "/onboarding" ||
+    pathname.startsWith("/onboarding/")
+  ) {
+    expect([301, 302, 303, 307, 308]).toContain(res.status);
+    const loc = res.headers.get("location");
+    expect(loc).toBeTruthy();
+    expect(loc).toMatch(/api\/auth\/login/);
+    return;
+  }
   expect(res.status).toBe(200);
   const html = await res.text();
   expect(html).toContain("800-272-3900");

@@ -35,5 +35,14 @@ jobs:
       - name: Build all workspaces
         run: pnpm -r run build
 
+      - name: Verify web client bundle (no RAG/Bedrock in client JS)
+        run: pnpm --filter web run check:client-bundle
+
       - name: Test
         run: pnpm test
+
+      - name: Install Playwright (Chromium only)
+        run: pnpm --filter web exec playwright install chromium --with-deps
+
+      - name: E2E auth smoke (login redirect, error page)
+        run: pnpm --filter web test:e2e:auth

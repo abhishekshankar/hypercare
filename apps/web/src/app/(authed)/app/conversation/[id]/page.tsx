@@ -1,19 +1,37 @@
-import { PlaceholderCard } from "@/components/placeholder-card";
-import { ScreenHeader } from "@/components/screen-header";
+import { notFound } from "next/navigation";
+
+import { requireSession } from "@/lib/auth/session";
+import { loadThread } from "@/lib/conversation/load";
+import { ConversationThread } from "@/components/conversation/ConversationThread";
 
 export default async function ConversationPage({
   params,
+  searchParams,
 }: Readonly<{
   params: Promise<{ id: string }>;
+  searchParams: Promise<Record<string, string | string[] | undefined>>;
 }>) {
+  const session = await requireSession();
   const { id } = await params;
+  const { q } = await searchParams;
+
+  const thread = await loadThread(id, session.userId);
+  if (!thread) {
+    notFound();
+  }
+
+  // `q` carries the prefill text from `/app` when the user clicked a
+  // starter chip or used the home composer. It auto-submits exactly once
+  // (see `Composer`) so a back/forward navigation doesn't double-send.
+  const autoSubmit = typeof q === "string" && thread.messages.length === 0 ? q : undefined;
+
   return (
-    <>
-      <ScreenHeader
-        subHeadline={`Conversation ${id} (stub) — the answer scaffold ships in TASK-011.`}
-        title="Conversation"
+    <div className="space-y-6">
+      <ConversationThread
+        autoSubmit={autoSubmit}
+        conversationId={thread.id}
+        initialMessages={thread.messages}
       />
-      <PlaceholderCard ticket="TASK-011" />
-    </>
+    </div>
   );
 }

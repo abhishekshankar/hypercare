@@ -1,0 +1,385 @@
+{
+  "runner": "answers",
+  "mode": "live",
+  "created_at": "2026-04-22T05:24:23.755Z",
+  "summary": {
+    "kind_accuracy": 0.38095238095238093,
+    "cited_module_hit_rate": 1,
+    "answer_hit_rate": 0.3333333333333333,
+    "verification_refusal_rate": 0.0625,
+    "model_id": "us.anthropic.claude-haiku-4-5-20251001-v1:0",
+    "total_input_tokens": 0,
+    "total_output_tokens": 0,
+    "p50_ms": 1793,
+    "p95_ms": 5050,
+    "mismatch_breakdown": {
+      "kind_mismatch": 12,
+      "safety_triage": 1,
+      "refusal_code_mismatch": 1
+    },
+    "refusal_reasons": {
+      "no_content": 1,
+      "low_confidence": 9,
+      "off_topic": 4,
+      "uncitable_response": 2,
+      "safety_triaged": 2,
+      "internal_error": 0
+    }
+  },
+  "cases": [
+    {
+      "id": "a_bs_01",
+      "pass": true,
+      "mismatch": "ok",
+      "expected_kind": "answered",
+      "actual_kind": "answered",
+      "expected_cited_modules": [
+        "behavior-sundowning"
+      ],
+      "cited_module_slugs": [
+        "behavior-sundowning",
+        "behavior-sundowning",
+        "behavior-sundowning"
+      ],
+      "reason_code": null,
+      "verification_refused": false,
+      "latency_ms": 4077,
+      "input_tokens": null,
+      "output_tokens": null,
+      "model_id": "us.anthropic.claude-haiku-4-5-20251001-v1:0"
+    },
+    {
+      "id": "a_bs_02",
+      "pass": true,
+      "mismatch": "ok",
+      "expected_kind": "answered",
+      "actual_kind": "answered",
+      "expected_cited_modules": [
+        "behavior-sundowning"
+      ],
+      "cited_module_slugs": [
+        "behavior-sundowning",
+        "behavior-sundowning",
+        "behavior-sundowning"
+      ],
+      "reason_code": null,
+      "verification_refused": false,
+      "latency_ms": 4216,
+      "input_tokens": null,
+      "output_tokens": null,
+      "model_id": "us.anthropic.claude-haiku-4-5-20251001-v1:0"
+    },
+    {
+      "id": "a_bs_03",
+      "pass": false,
+      "mismatch": "kind_mismatch",
+      "expected_kind": "answered",
+      "actual_kind": "refused",
+      "expected_cited_modules": [
+        "behavior-sundowning"
+      ],
+      "cited_module_slugs": [],
+      "reason_code": "low_confidence",
+      "verification_refused": false,
+      "latency_ms": 2132,
+      "input_tokens": null,
+      "output_tokens": null,
+      "model_id": "us.anthropic.claude-haiku-4-5-20251001-v1:0"
+    },
+    {
+      "id": "a_bs_04",
+      "pass": false,
+      "mismatch": "kind_mismatch",
+      "expected_kind": "answered",
+      "actual_kind": "refused",
+      "expected_cited_modules": [
+        "behavior-sundowning"
+      ],
+      "cited_module_slugs": [],
+      "reason_code": "low_confidence",
+      "verification_refused": false,
+      "latency_ms": 9879,
+      "input_tokens": null,
+      "output_tokens": null,
+      "model_id": "us.anthropic.claude-haiku-4-5-20251001-v1:0"
+    },
+    {
+      "id": "a_bs_05",
+      "pass": false,
+      "mismatch": "kind_mismatch",
+      "expected_kind": "answered",
+      "actual_kind": "refused",
+      "expected_cited_modules": [
+        "behavior-sundowning"
+      ],
+      "cited_module_slugs": [],
+      "reason_code": "low_confidence",
+      "verification_refused": false,
+      "latency_ms": 2527,
+      "input_tokens": null,
+      "output_tokens": null,
+      "model_id": "us.anthropic.claude-haiku-4-5-20251001-v1:0"
+    },
+    {
+      "id": "a_bs_06",
+      "pass": false,
+      "mismatch": "kind_mismatch",
+      "expected_kind": "answered",
+      "actual_kind": "refused",
+      "expected_cited_modules": [
+        "behavior-sundowning"
+      ],
+      "cited_module_slugs": [],
+      "reason_code": "uncitable_response",
+      "verification_refused": true,
+      "latency_ms": 5050,
+      "input_tokens": null,
+      "output_tokens": null,
+      "model_id": "us.anthropic.claude-haiku-4-5-20251001-v1:0"
+    },
+    {
+      "id": "a_db_01",
+      "pass": false,
+      "mismatch": "kind_mismatch",
+      "expected_kind": "answered",
+      "actual_kind": "refused",
+      "expected_cited_modules": [
+        "daily-bathing-resistance"
+      ],
+      "cited_module_slugs": [],
+      "reason_code": "low_confidence",
+      "verification_refused": false,
+      "latency_ms": 1792,
+      "input_tokens": null,
+      "output_tokens": null,
+      "model_id": "us.anthropic.claude-haiku-4-5-20251001-v1:0"
+    },
+    {
+      "id": "a_db_02",
+      "pass": true,
+      "mismatch": "ok",
+      "expected_kind": "answered",
+      "actual_kind": "answered",
+      "expected_cited_modules": [
+        "daily-bathing-resistance"
+      ],
+      "cited_module_slugs": [
+        "daily-bathing-resistance",
+        "daily-bathing-resistance",
+        "daily-bathing-resistance"
+      ],
+      "reason_code": null,
+      "verification_refused": false,
+      "latency_ms": 4448,
+      "input_tokens": null,
+      "output_tokens": null,
+      "model_id": "us.anthropic.claude-haiku-4-5-20251001-v1:0"
+    },
+    {
+      "id": "a_db_03",
+      "pass": false,
+      "mismatch": "kind_mismatch",
+      "expected_kind": "answered",
+      "actual_kind": "refused",
+      "expected_cited_modules": [
+        "daily-bathing-resistance"
+      ],
+      "cited_module_slugs": [],
+      "reason_code": "low_confidence",
+      "verification_refused": false,
+      "latency_ms": 1646,
+      "input_tokens": null,
+      "output_tokens": null,
+      "model_id": "us.anthropic.claude-haiku-4-5-20251001-v1:0"
+    },
+    {
+      "id": "a_db_04",
+      "pass": false,
+      "mismatch": "kind_mismatch",
+      "expected_kind": "answered",
+      "actual_kind": "refused",
+      "expected_cited_modules": [
+        "daily-bathing-resistance"
+      ],
+      "cited_module_slugs": [],
+      "reason_code": "low_confidence",
+      "verification_refused": false,
+      "latency_ms": 1868,
+      "input_tokens": null,
+      "output_tokens": null,
+      "model_id": "us.anthropic.claude-haiku-4-5-20251001-v1:0"
+    },
+    {
+      "id": "a_db_05",
+      "pass": false,
+      "mismatch": "kind_mismatch",
+      "expected_kind": "answered",
+      "actual_kind": "refused",
+      "expected_cited_modules": [
+        "daily-bathing-resistance"
+      ],
+      "cited_module_slugs": [],
+      "reason_code": "low_confidence",
+      "verification_refused": false,
+      "latency_ms": 1655,
+      "input_tokens": null,
+      "output_tokens": null,
+      "model_id": "us.anthropic.claude-haiku-4-5-20251001-v1:0"
+    },
+    {
+      "id": "a_sc_01",
+      "pass": false,
+      "mismatch": "kind_mismatch",
+      "expected_kind": "answered",
+      "actual_kind": "refused",
+      "expected_cited_modules": [
+        "self-care-caregiver-burnout"
+      ],
+      "cited_module_slugs": [],
+      "reason_code": "low_confidence",
+      "verification_refused": false,
+      "latency_ms": 1862,
+      "input_tokens": null,
+      "output_tokens": null,
+      "model_id": "us.anthropic.claude-haiku-4-5-20251001-v1:0"
+    },
+    {
+      "id": "a_sc_02",
+      "pass": false,
+      "mismatch": "kind_mismatch",
+      "expected_kind": "answered",
+      "actual_kind": "refused",
+      "expected_cited_modules": [
+        "self-care-caregiver-burnout"
+      ],
+      "cited_module_slugs": [],
+      "reason_code": "off_topic",
+      "verification_refused": false,
+      "latency_ms": 1793,
+      "input_tokens": null,
+      "output_tokens": null,
+      "model_id": "us.anthropic.claude-haiku-4-5-20251001-v1:0"
+    },
+    {
+      "id": "a_sc_03",
+      "pass": false,
+      "mismatch": "kind_mismatch",
+      "expected_kind": "answered",
+      "actual_kind": "refused",
+      "expected_cited_modules": [
+        "self-care-caregiver-burnout"
+      ],
+      "cited_module_slugs": [],
+      "reason_code": "off_topic",
+      "verification_refused": false,
+      "latency_ms": 1757,
+      "input_tokens": null,
+      "output_tokens": null,
+      "model_id": "us.anthropic.claude-haiku-4-5-20251001-v1:0"
+    },
+    {
+      "id": "a_sc_04",
+      "pass": false,
+      "mismatch": "kind_mismatch",
+      "expected_kind": "answered",
+      "actual_kind": "refused",
+      "expected_cited_modules": [
+        "self-care-caregiver-burnout"
+      ],
+      "cited_module_slugs": [],
+      "reason_code": "low_confidence",
+      "verification_refused": false,
+      "latency_ms": 1575,
+      "input_tokens": null,
+      "output_tokens": null,
+      "model_id": "us.anthropic.claude-haiku-4-5-20251001-v1:0"
+    },
+    {
+      "id": "a_sc_05",
+      "pass": false,
+      "mismatch": "safety_triage",
+      "expected_kind": "answered",
+      "actual_kind": "refused",
+      "expected_cited_modules": [
+        "self-care-caregiver-burnout"
+      ],
+      "cited_module_slugs": [],
+      "reason_code": "safety_triaged",
+      "verification_refused": false,
+      "latency_ms": 1472,
+      "input_tokens": null,
+      "output_tokens": null,
+      "model_id": "us.anthropic.claude-haiku-4-5-20251001-v1:0"
+    },
+    {
+      "id": "a_ref_france",
+      "pass": true,
+      "mismatch": "ok",
+      "expected_kind": "refused",
+      "actual_kind": "refused",
+      "cited_module_slugs": [],
+      "reason_code": "off_topic",
+      "verification_refused": false,
+      "latency_ms": 1615,
+      "input_tokens": null,
+      "output_tokens": null,
+      "model_id": "us.anthropic.claude-haiku-4-5-20251001-v1:0"
+    },
+    {
+      "id": "a_ref_math",
+      "pass": false,
+      "mismatch": "refusal_code_mismatch",
+      "expected_kind": "refused",
+      "actual_kind": "refused",
+      "cited_module_slugs": [],
+      "reason_code": "off_topic",
+      "verification_refused": false,
+      "latency_ms": 1786,
+      "input_tokens": null,
+      "output_tokens": null,
+      "model_id": "us.anthropic.claude-haiku-4-5-20251001-v1:0"
+    },
+    {
+      "id": "a_ref_safety",
+      "pass": true,
+      "mismatch": "ok",
+      "expected_kind": "refused",
+      "actual_kind": "refused",
+      "cited_module_slugs": [],
+      "reason_code": "safety_triaged",
+      "verification_refused": false,
+      "latency_ms": 50,
+      "input_tokens": null,
+      "output_tokens": null,
+      "model_id": "us.anthropic.claude-haiku-4-5-20251001-v1:0"
+    },
+    {
+      "id": "a_ref_uncite",
+      "pass": true,
+      "mismatch": "ok",
+      "expected_kind": "refused",
+      "actual_kind": "refused",
+      "cited_module_slugs": [],
+      "reason_code": "uncitable_response",
+      "verification_refused": false,
+      "latency_ms": 3994,
+      "input_tokens": null,
+      "output_tokens": null,
+      "model_id": "us.anthropic.claude-haiku-4-5-20251001-v1:0"
+    },
+    {
+      "id": "a_ref_empty",
+      "pass": true,
+      "mismatch": "ok",
+      "expected_kind": "refused",
+      "actual_kind": "refused",
+      "cited_module_slugs": [],
+      "reason_code": "no_content",
+      "verification_refused": false,
+      "latency_ms": 209,
+      "input_tokens": null,
+      "output_tokens": null,
+      "model_id": "us.anthropic.claude-haiku-4-5-20251001-v1:0"
+    }
+  ]
+}
