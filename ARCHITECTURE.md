@@ -23,6 +23,12 @@ High-level product and stack context stay in `PROJECT_BRIEF.md` and `prd.md`. Th
 | `POST` | `/api/app/conversation/start` | Create `conversations` row; client redirects to thread |
 | `GET` | `/api/app/conversation/[id]` | JSON thread (messages) for reload / tests |
 | `POST` | `/api/app/conversation/[id]/message` | User turn + `rag.answer()` + persist assistant turn |
+| `POST` `GET` | `/api/app/this-weeks-focus` | Run `pickThisWeeksFocus` (TASK-024) |
+| `POST` | `/api/app/lesson/[slug]/start` | Insert `lesson_progress` row, return `progressId` |
+| `POST` | `/api/app/lesson/[slug]/complete` | Set `completed_at` + `revisit` on `lesson_progress` |
+| `POST` | `/api/app/checkin` | Answer weekly check-in (`tried_something`, optional `what_helped`) |
+| `POST` | `/api/app/checkin/skip` | Stamp `prompted_at` only (skipped) |
+| `GET` | `/api/app/checkin/should-show` | Cadence + soft-flag elevation for the home card |
 
 Unauthenticated calls to these handlers return **401** JSON (session middleware does not redirect `/api/app/*` to the login page so `fetch` and tests see a proper status).
 
@@ -35,3 +41,17 @@ All RAG and safety orchestration run on the **server** (Route Handlers and `serv
 ## Schema note (TASK-011)
 
 `messages` carries `citations` and `refusal` as **jsonb** (see `packages/db` migrations). Application code treats them as `Citation[]` and optional refusal payloads at the type layer; see ADR 0010 §7.
+
+## Retention loop (TASK-024)
+
+`packages/picker` (`@hypercare/picker`) is a pure, server-only module that returns one `PickerResult` for "This week's focus". Policy order, in priority sequence:
+
+1. **Profile change in last 7d** — `care_profile_changes.field == "hardest_thing"` mapped to a `topics.slug` via `mapHardestTextToTopicSlug`, or an `inferred_stage` flip.
+2. **Recent topic signal in last 14d** — `getRecentTopicSignal` (TASK-022) chooses the top topic; pick a stage-relevant module tagged with it.
+3. **Stage baseline** — round-robin a stage-relevant published module by `modules.created_at`.
+
+A 14-day **anti-repeat** rule excludes recently-completed modules unless every stage-baseline candidate has been seen, in which case a `no_pick` is returned and the home card prompts the library. ADR `docs/adr/0014-weeks-focus-picker-and-lesson-surface.md` is the full rationale.
+
+The **Daily Lesson** at `/app/lesson/[slug]` slices `modules.body_md` on `##` headings into a fixed 6-card flow (setup → 3 core → try this today → close), pads with `summary` if fewer than three sections exist, and writes `lesson_progress` (`source ∈ weekly_focus | library_browse | search | conversation_link`; `revisit` set when the user picks "I want to revisit this").
+
+The **Weekly check-in** card on `/app` shows when no `weekly_checkins` row exists in the last 7 days, **elevated** to 3 days when 2 or more soft `safety_flags` (category `self_care_burnout`) were recorded in the last 7d. Cadence logic lives in `apps/web/src/lib/home/checkin-cadence.ts` (`shouldShowCheckinFromLastPrompt` is pure).

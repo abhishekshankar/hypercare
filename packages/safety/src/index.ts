@@ -4,8 +4,10 @@ export {
   categoryToSeverity,
   categoryToSuggestedAction,
   SAFETY_CATEGORIES,
+  SAFETY_CLASSIFIER_CATEGORIES,
 } from "./types.js";
 export type {
+  SafetyClassifierCategory,
   SafetyCategory,
   SafetyInput,
   SafetyResult,

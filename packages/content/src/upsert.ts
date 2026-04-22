@@ -1,6 +1,6 @@
 import { createHash } from "node:crypto";
 import { and, eq, gte, sql } from "drizzle-orm";
-import { createDbClient, moduleChunks, modules } from "@hypercare/db";
+import { createDbClient, moduleChunks, moduleTopics, modules } from "@hypercare/db";
 import { buildEmbeddingText, embedTitanV2 } from "./embed.js";
 import type { ModuleFrontMatter } from "./schema.js";
 import type { TextChunk } from "./chunk.js";
@@ -133,6 +133,7 @@ export async function upsertModuleWithChunks(
         expertReviewer: front.expert_reviewer,
         reviewDate: front.review_date,
         nextReviewDue: null,
+        tryThisToday: front.try_this_today ?? null,
         published: true,
       })
       .onConflictDoUpdate({
@@ -148,6 +149,7 @@ export async function upsertModuleWithChunks(
           expertReviewer: sql`excluded."expert_reviewer"`,
           reviewDate: sql`excluded."review_date"`,
           nextReviewDue: sql`excluded."next_review_due"`,
+          tryThisToday: sql`excluded."try_this_today"`,
           published: sql`excluded."published"`,
         },
       })
@@ -156,6 +158,12 @@ export async function upsertModuleWithChunks(
       throw new Error("Upsert module returned no row");
     }
     const moduleId = row.id;
+    await tx.delete(moduleTopics).where(eq(moduleTopics.moduleId, moduleId));
+    if (front.topics.length > 0) {
+      await tx.insert(moduleTopics).values(
+        front.topics.map((topicSlug) => ({ moduleId, topicSlug })),
+      );
+    }
     if (chunks.length === 0) {
       await tx.delete(moduleChunks).where(eq(moduleChunks.moduleId, moduleId));
       return { moduleId, chunkCount: 0 };

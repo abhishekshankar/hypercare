@@ -137,7 +137,11 @@ This keeps the orchestrator surface flat (no second return type). The chat UI in
 - We accept that Layer A patterns will need revision; each addition is a one-line PR plus a test case.
 - We accept that the LLM prompt will need revision; the eval harness (TASK-012) is the discipline that catches drift.
 - `safety_flags.message_text` is sensitive. Production access to that column should be brokered (read-only role for review, full row visible only to the on-call clinician + Content Lead). That access policy is a TASK-014 (post-v1) item.
-- A future "soft-flag" path (PRD §10.4) — yellow-flag patterns that get a normal answer plus a warm appendix — is **not** in this task. The classifier's contract is binary (triaged or not). When we add yellow flags, we'll likely extend `SafetyResult` rather than adding a separate function.
+- A **separate** soft-flag path (PRD §10.4) for *chat* answers — yellow-flag patterns that get a normal answer plus a warm appendix — is not the Layer A/B contract; the message classifier’s output remains binary (triaged or not). The caregiver **burnout self-check** (TASK-021) writes soft `safety_flags` rows without going through `classify()`; see §11 above. When we add chat-based yellow flags, we’ll likely extend `SafetyResult` rather than adding a separate function.
+
+### 11. Addendum (TASK-021): soft flag from caregiver burnout self-assessment
+
+The Help & Safety screen’s **caregiver burnout self-check** (`/help/burnout-check`) can write rows to the same `safety_flags` table with `category = 'self_care_burnout'`, `source = 'burnout_self_assessment'`, and `severity` of `'low'` (scores 15–21) or `'medium'` (scores 22–28 on the 0–28 sum). This is **not** produced by Layer A/B of the message classifier, does **not** set `safety_triaged` on a chat turn, and does **not** change crisis-strip behavior — it is a **yellow / soft** signal (PRD §10.4) for downstream features (e.g. home-screen check-in card elevation in TASK-024). The **numeric band and item responses are not stored** longitudinally in v0; only the optional flag row exists for product signals. Wording of the seven questions is v0; a Caregiver-Support Clinician pass is planned for a later sprint.
 
 ## References
 

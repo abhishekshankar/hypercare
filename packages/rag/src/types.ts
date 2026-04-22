@@ -5,6 +5,16 @@ export type Stage = "early" | "middle" | "late";
 export type AnswerInput = {
   question: string;
   userId: string;
+  /** Optional last user line for short-followup topic disambiguation (TASK-022). */
+  priorUserTurn?: string | null;
+};
+
+/** Carried on every `AnswerResult` for persistence on the user `messages` row. */
+export type TopicFields = {
+  /** 0–3 `topics.slug` values (empty for assistant / errors). */
+  classifiedTopics: string[];
+  /** Model confidence in [0,1] when `classifiedTopics` is non-empty; else null. */
+  topicConfidence: number | null;
 };
 
 /** A chunk row joined with its parent module — the unit retrieval and verification operate on. */
@@ -65,6 +75,20 @@ export type RefusalReason =
   | SafetyTriageReason
   | { code: "internal_error"; detail: string };
 
+/**
+ * Bedrock-reported token counts from the generation step (layer 5), for
+ * operator-facing cost/telemetry. Only present on `kind: "answered"`.
+ * Refusals that occur before generation, or `refused` after generation, do
+ * not carry this field (use `deps.onUsage` if you need post-generation
+ * token counts on refusal paths such as `uncitable_response` or
+ * `low_confidence` from `INSUFFICIENT_CONTEXT`).
+ */
+export type RagUsage = {
+  inputTokens: number | null;
+  outputTokens: number | null;
+  modelId: string;
+};
+
 export type AnswerResult =
-  | { kind: "answered"; text: string; citations: Citation[] }
-  | { kind: "refused"; reason: RefusalReason };
+  | ({ kind: "answered"; text: string; citations: Citation[]; usage: RagUsage } & TopicFields)
+  | ({ kind: "refused"; reason: RefusalReason } & TopicFields);

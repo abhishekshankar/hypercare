@@ -46,6 +46,12 @@ The loader is **not** the web app. It uses `DATABASE_URL_ADMIN` (see `docs/infra
 - Adding a new embedding model width requires a **schema migration** (ADR 0002).
 - Chunk quality and size settings will change when retrieval evals exist; the SHA-based skip remains valid as long as the hash is defined the same way.
 
+### Addendum: topic tagging (TASK-023)
+
+- Each `content/modules/*.md` file includes `topics: ["slug", …]` in front matter, using **2–4** slugs from the **closed** `topics` table (`packages/db/src/seed/topic-seed-data.ts`). Unknown slugs fail validation at load time.
+- The content loader, in the same transaction as the module upsert, **replaces** all `module_topics` rows for that module (`delete` by `module_id`, then `insert` the current set). Re-running the loader is idempotent: no duplicate primary keys, no orphan topic links.
+- Optional `try_this_today` in front matter is stored on `modules.try_this_today` and surfaces on the module page and (TASK-024) the lesson “try this” card.
+
 ## References
 
 - ADR 0002 — Drizzle schema v0

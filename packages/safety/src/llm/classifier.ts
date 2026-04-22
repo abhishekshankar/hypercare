@@ -23,15 +23,19 @@ import {
   CLASSIFIER_REGION,
   CLASSIFIER_TEMPERATURE,
 } from "../config.js";
-import { SAFETY_CATEGORIES, type SafetyCategory, type SafetySeverity } from "../types.js";
+import {
+  SAFETY_CLASSIFIER_CATEGORIES,
+  type SafetyClassifierCategory,
+  type SafetySeverity,
+} from "../types.js";
 
 /** Output of the LLM classifier (post-zod-parse). */
 export type LlmClassification =
   | { triaged: false }
   | {
       triaged: true;
-      category: SafetyCategory;
-      severity: SafetySeverity;
+      category: SafetyClassifierCategory;
+      severity: Exclude<SafetySeverity, "low">;
       evidence: string;
     };
 
@@ -50,7 +54,7 @@ const llmResultSchema = z.discriminatedUnion("triaged", [
   z.object({ triaged: z.literal(false) }),
   z.object({
     triaged: z.literal(true),
-    category: z.enum(SAFETY_CATEGORIES as readonly [string, ...string[]]),
+    category: z.enum(SAFETY_CLASSIFIER_CATEGORIES as readonly [string, ...string[]]),
     severity: z.enum(["high", "medium"]),
     evidence: z.string().max(400),
   }),
@@ -105,7 +109,7 @@ export function parseLlmJson(
   if (result.data.triaged) {
     return {
       triaged: true,
-      category: result.data.category as SafetyCategory,
+      category: result.data.category as SafetyClassifierCategory,
       severity: result.data.severity,
       evidence: result.data.evidence,
     };

@@ -3,7 +3,7 @@
 - **Owner:** Cursor
 - **Depends on:** —
 - **Unblocks:** faster live-eval / production debugging (TASK-012 surfaced the gap)
-- **Status:** pending
+- **Status:** done
 
 ---
 

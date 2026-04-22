@@ -2,7 +2,7 @@ import "server-only";
 import { and, eq } from "drizzle-orm";
 
 import { conversations, createDbClient, messages } from "@hypercare/db";
-import type { AnswerResult, Citation, RefusalReason } from "@hypercare/rag";
+import type { AnswerResult, Citation, RefusalReason, TopicFields } from "@hypercare/rag";
 
 import { serverEnv } from "@/lib/env.server";
 
@@ -76,6 +76,7 @@ export async function persistTurn(args: {
   result: AnswerResult;
 }): Promise<PersistedTurn> {
   const db = createDbClient(serverEnv.DATABASE_URL);
+  const { classifiedTopics, topicConfidence } = args.result as TopicFields;
 
   const [userRow] = await db
     .insert(messages)
@@ -83,6 +84,8 @@ export async function persistTurn(args: {
       conversationId: args.conversationId,
       role: "user",
       content: args.userText,
+      classifiedTopics,
+      topicConfidence,
     })
     .returning({
       id: messages.id,

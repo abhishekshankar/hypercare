@@ -3,7 +3,7 @@
 - **Owner:** Cursor
 - **Depends on:** —
 - **Unblocks:** real per-run cost in `packages/eval/reports/answers/latest.json`; per-user cost attribution in `/api/app/conversation/**` later.
-- **Status:** pending
+- **Status:** done
 
 ---
 

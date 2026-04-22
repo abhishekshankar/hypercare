@@ -30,7 +30,8 @@ test("onboarding: full wizard, summary, home, then /onboarding redirects to /app
   await page.getByLabel("Their first name").fill("Margaret");
   await page.getByLabel(/Their age/i).fill("78");
   await page.getByRole("radio", { name: "Parent" }).check();
-  await page.getByLabel(/Diagnosis/i).selectOption("alzheimers");
+  // cr_diagnosis <option value> list: apps/web/src/components/onboarding/step-1-form.tsx
+  await page.getByLabel(/Diagnosis/i).selectOption({ value: "alzheimers" });
   await page.getByLabel(/Year of diagnosis/i).fill("2020");
   await page.getByRole("button", { name: "Continue" }).click();
 

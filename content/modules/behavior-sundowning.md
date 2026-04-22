@@ -8,6 +8,8 @@ summary: "Sundowning is increased confusion, restlessness, or agitation in the l
 attribution_line: "Adapted from the Alzheimer's Association caregiver guide, 2024."
 expert_reviewer: null
 review_date: null
+topics: ["sundowning", "agitation-aggression", "sleep-problems", "repetitive-questions"]
+try_this_today: "Turn on an extra lamp before the room goes dim, and offer a small snack and water before the hardest hour."
 ---
 
 > **TODO(PM):** Replace placeholder narrative with organization-approved, clinically reviewed text before tier-1 launch.

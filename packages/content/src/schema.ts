@@ -1,6 +1,24 @@
 import { z } from "zod";
+import { TOPICS_V0 } from "@hypercare/db";
 
 const kebab = /^[a-z0-9]+(?:-[a-z0-9]+)*$/u;
+
+const validTopicSlugs = new Set(TOPICS_V0.map((t) => t.slug));
+
+const topicSlugListSchema = z
+  .array(z.string())
+  .min(2, "topics: at least 2 slugs (closed vocabulary)")
+  .max(4, "topics: at most 4 slugs in v0")
+  .superRefine((slugs, ctx) => {
+    for (const s of slugs) {
+      if (!validTopicSlugs.has(s)) {
+        ctx.addIssue({
+          code: z.ZodIssueCode.custom,
+          message: `Unknown topic slug "${s}". Use only slugs from the seeded topics table (see packages/db/src/seed/topic-seed-data.ts).`,
+        });
+      }
+    }
+  });
 
 const categories = z.enum([
   "behaviors",
@@ -30,6 +48,8 @@ export const moduleFrontMatterSchema = z
     review_date: z
       .union([z.string().regex(/^\d{4}-\d{2}-\d{2}$/u), z.null()])
       .default(null),
+    topics: topicSlugListSchema,
+    try_this_today: z.string().min(1).optional(),
   })
   .strict();
 

@@ -8,6 +8,8 @@ summary: "Burnout is a response to long load, not a personal weakness. This modu
 attribution_line: "Adapted from the Alzheimer's Association caregiver guide, 2024."
 expert_reviewer: null
 review_date: null
+topics: ["caregiver-burnout", "guilt-and-grief", "asking-for-help", "sleep-problems"]
+try_this_today: "Name one small boundary you can set this week—one meal, one text, or one hour of sleep—and line up one person who can help hold it with you."
 ---
 
 > **TODO(PM):** Replace placeholder narrative with organization-approved, clinically reviewed text before tier-1 launch.

@@ -1,8 +1,21 @@
 import { redirect } from "next/navigation";
 
+import { createDbClient } from "@hypercare/db";
+import { pickThisWeeksFocus } from "@hypercare/picker";
+
+import { CheckinCard } from "@/components/home/CheckinCard";
+import { HomeAsk } from "@/components/home/StarterChips";
+import { RecentConversations } from "@/components/home/RecentConversations";
+import { SavedLessonBanner } from "@/components/home/SavedLessonBanner";
+import { WeeksFocusCard } from "@/components/home/WeeksFocusCard";
+import { loadRecentConversations } from "@/lib/conversation/load";
+import { startersForStage } from "@/lib/conversation/starters";
+import { serverEnv } from "@/lib/env.server";
+import { greetingForLocalHour } from "@/lib/greeting";
+import { refineFocusSubtitle } from "@/lib/home/focus-subtitle";
+import { shouldShowWeeklyCheckin } from "@/lib/home/checkin-cadence";
 import { requireSession } from "@/lib/auth/session";
 import { hasOnboardingAck } from "@/lib/onboarding/ack";
-import { greetingForLocalHour } from "@/lib/greeting";
 import {
   getFirstIncompleteStep,
   hasCompletedOnboarding,
@@ -11,10 +24,6 @@ import {
 } from "@/lib/onboarding/status";
 import { inferStage } from "@/lib/onboarding/stage";
 import type { StageAnswersRecord } from "@/lib/onboarding/stage-keys";
-import { startersForStage } from "@/lib/conversation/starters";
-import { loadRecentConversations } from "@/lib/conversation/load";
-import { HomeAsk } from "@/components/home/StarterChips";
-import { RecentConversations } from "@/components/home/RecentConversations";
 
 export default async function AppHomePage() {
   const session = await requireSession();
@@ -40,6 +49,14 @@ export default async function AppHomePage() {
   const starters = startersForStage(stage);
   const recent = await loadRecentConversations(session.userId, 5);
 
+  const db = createDbClient(serverEnv.DATABASE_URL);
+  const now = () => new Date();
+  const [focus, checkin] = await Promise.all([
+    pickThisWeeksFocus({ userId: session.userId }, { db, now }),
+    shouldShowWeeklyCheckin(session.userId, { db, now }),
+  ]);
+  const focusSubtitle = refineFocusSubtitle(focus, profile?.hardestThing ?? null);
+
   return (
     <div className="space-y-10">
       <header className="space-y-1">
@@ -48,6 +65,9 @@ export default async function AppHomePage() {
         </p>
         <p className="text-base text-foreground">Caring for {crName}.</p>
       </header>
+      <SavedLessonBanner />
+      <WeeksFocusCard result={focus} subtitle={focusSubtitle} />
+      {checkin.show ? <CheckinCard /> : null}
       <HomeAsk starters={starters} />
       <RecentConversations items={recent} />
     </div>

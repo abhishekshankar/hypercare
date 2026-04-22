@@ -75,7 +75,7 @@ export function Composer({
       />
       <div className="mt-2 flex items-center justify-between">
         <p className="text-xs text-muted-foreground">
-          {/* TODO(streaming): swap for token-by-token rendering when TASK-013 lands. */}
+          {/* TODO(streaming): swap for token-by-token answer rendering when streaming ships. */}
           {pending ? "Thinking…" : "Press ↵ to send · Shift+↵ for newline"}
         </p>
         <button

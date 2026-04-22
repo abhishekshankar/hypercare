@@ -1,6 +1,6 @@
 # TASK-014 — Onboarding Playwright: keep diagnosis select aligned with the form fixture
 
-- **Status:** open
+- **Status:** done
 - **Blocks:** None (quality / flake prevention)
 - **Related:** TASK-007 (onboarding), TASK-013 (E2E infra — do not conflate with this task)
 

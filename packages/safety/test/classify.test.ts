@@ -58,6 +58,45 @@ describe("aggregateRuleHits — severity/order tie-breaks", () => {
   });
 });
 
+describe("classify — empty / whitespace text short-circuit", () => {
+  it("returns triaged: false for empty string without invoke or persist", async () => {
+    const llmInvoke = vi.fn();
+    const persist = vi.fn(async () => undefined);
+    const warn = vi.fn();
+    const r = await classify({ userId: "u1", text: "" }, { persist, llmInvoke, warn });
+    expect(r).toEqual({ triaged: false });
+    expect(llmInvoke).not.toHaveBeenCalled();
+    expect(persist).not.toHaveBeenCalled();
+    expect(warn).not.toHaveBeenCalled();
+  });
+
+  it("returns triaged: false for whitespace-only text without invoke or persist", async () => {
+    const llmInvoke = vi.fn();
+    const persist = vi.fn(async () => undefined);
+    const warn = vi.fn();
+    const r = await classify(
+      { userId: "u1", text: "   \n\t  " },
+      { persist, llmInvoke, warn },
+    );
+    expect(r).toEqual({ triaged: false });
+    expect(llmInvoke).not.toHaveBeenCalled();
+    expect(persist).not.toHaveBeenCalled();
+    expect(warn).not.toHaveBeenCalled();
+  });
+
+  it("unchanged for real text (Layer A miss + LLM path)", async () => {
+    const llmInvoke = vi.fn(async () => JSON.stringify({ triaged: false }));
+    const persist = vi.fn(async () => undefined);
+    const r = await classify(
+      { userId: "u1", text: "how do I help with sundowning" },
+      { persist, llmInvoke },
+    );
+    expect(r).toEqual({ triaged: false });
+    expect(llmInvoke).toHaveBeenCalledTimes(1);
+    expect(persist).not.toHaveBeenCalled();
+  });
+});
+
 describe("classify — Layer A (rules) wins, no LLM call", () => {
   it("triages a self-harm question without invoking the LLM", async () => {
     const llmInvoke = vi.fn();

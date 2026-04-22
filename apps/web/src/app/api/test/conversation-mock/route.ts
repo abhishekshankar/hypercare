@@ -46,12 +46,21 @@ const FIXTURE_FN = (input: AnswerInput): Promise<AnswerResult> => {
             "Adapted from the Alzheimer's Association caregiver guide, 2024.",
         },
       ],
+      usage: {
+        inputTokens: null,
+        outputTokens: null,
+        modelId: "e2e-mock",
+      },
+      classifiedTopics: [] satisfies string[],
+      topicConfidence: null,
     });
   }
   if (/capital of france|paris|weather|sports/.test(q)) {
     return Promise.resolve({
       kind: "refused",
       reason: { code: "off_topic", matched_category: null },
+      classifiedTopics: [] satisfies string[],
+      topicConfidence: null,
     });
   }
   if (/kill myself|end it all|hurt myself/.test(q)) {
@@ -64,11 +73,15 @@ const FIXTURE_FN = (input: AnswerInput): Promise<AnswerResult> => {
         suggestedAction: "call_988",
         source: "rule",
       },
+      classifiedTopics: [] satisfies string[],
+      topicConfidence: null,
     });
   }
   return Promise.resolve({
     kind: "refused",
     reason: { code: "low_confidence", top_distance: 1.5 },
+    classifiedTopics: [] satisfies string[],
+    topicConfidence: null,
   });
 };
 

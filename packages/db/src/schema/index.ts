@@ -1,7 +1,12 @@
 export { careProfile } from "./care-profile.js";
+export { careProfileChanges } from "./care-profile-changes.js";
 export { conversations } from "./conversations.js";
+export { lessonProgress } from "./lesson-progress.js";
 export { messages } from "./messages.js";
 export { moduleChunks } from "./module-chunks.js";
+export { moduleTopics } from "./module-topics.js";
 export { modules } from "./modules.js";
 export { safetyFlags } from "./safety-flags.js";
+export { topics } from "./topics.js";
 export { users } from "./users.js";
+export { weeklyCheckins } from "./weekly-checkins.js";

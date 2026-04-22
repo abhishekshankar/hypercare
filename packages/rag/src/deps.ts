@@ -11,12 +11,13 @@
 
 import { createDbClient } from "@hypercare/db";
 import { embedTitanV2 } from "@hypercare/content";
-import { makeDbPersist } from "@hypercare/safety";
+import { defaultInvoke, makeDbPersist } from "@hypercare/safety";
 
 import { invokeClaude } from "./bedrock/claude.js";
 import { loadStageForUser } from "./care/profile.js";
 import { searchChunks } from "./db/search.js";
 import type { Deps } from "./pipeline.js";
+import { classifyTopics } from "./topics/classifier.js";
 
 export type BuildDepsOptions = {
   databaseUrl: string;
@@ -31,15 +32,18 @@ export function buildDefaultDeps(opts: BuildDepsOptions): Deps {
     db: safetyDb,
     warn: (msg, ctx) => console.warn(msg, ctx ?? {}),
   });
+  const warn = (msg: string, ctx?: Record<string, unknown>) => console.warn(msg, ctx ?? {});
   return {
     embed: (text) => embedTitanV2(text),
     search: ({ embedding, stage, k }) =>
       searchChunks({ databaseUrl: opts.databaseUrl, embedding, stage, k }),
     loadStage: (userId) => loadStageForUser(opts.databaseUrl, userId),
     generate: (input) => invokeClaude(input),
+    warn,
     safety: {
       persist: safetyPersist,
-      warn: (msg, ctx) => console.warn(msg, ctx ?? {}),
+      warn,
     },
+    topicClassify: (input) => classifyTopics(input, { invoke: defaultInvoke, warn }),
   };
 }

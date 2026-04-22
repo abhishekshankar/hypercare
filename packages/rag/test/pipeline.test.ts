@@ -13,9 +13,15 @@ const offlineSafety: ClassifyDeps = {
   disableLlm: true,
 };
 
+const offlineTopicClassify: Deps["topicClassify"] = async () => ({
+  topics: [],
+  confidence: 0,
+});
+
 function buildDeps(over: Partial<Deps> = {}): Deps {
-  const { config: configOverride, ...rest } = over;
+  const { config: configOverride, warn, onUsage, ...rest } = over;
   return {
+    topicClassify: rest.topicClassify ?? offlineTopicClassify,
     embed: rest.embed ?? vi.fn(async (_t: string): Promise<number[]> => fakeEmbedding()),
     search:
       rest.search ??
@@ -38,6 +44,8 @@ function buildDeps(over: Partial<Deps> = {}): Deps {
       ),
     safety: rest.safety ?? offlineSafety,
     ...(configOverride !== undefined ? { config: configOverride } : {}),
+    ...(warn !== undefined ? { warn } : {}),
+    ...(onUsage !== undefined ? { onUsage } : {}),
   };
 }
 
@@ -53,7 +61,58 @@ describe("pipeline orchestrator (end-to-end, all mocks)", () => {
       expect(r.text).toContain("[1]");
       expect(r.citations).toHaveLength(1);
       expect(r.citations[0]!.chunkId).toBe("a");
+      expect(r.usage.inputTokens).toBe(50);
+      expect(r.usage.outputTokens).toBe(25);
+      expect(r.usage.modelId).toBe("test-model");
     }
+  });
+
+  it("threads Bedrock usage into answered usage (TASK-017)", async () => {
+    const deps = buildDeps({
+      generate: vi.fn(
+        async (_in: GenerateInput): Promise<GenerateOutput> => ({
+          text: "Sundowning is a late-day pattern of agitation that often eases with routine [1].",
+          modelId: "us.test.model",
+          inputTokens: 123,
+          outputTokens: 45,
+          stopReason: "end_turn",
+        }),
+      ),
+    });
+    const r = await runPipeline(
+      { question: "my mom gets agitated every afternoon, what do i do?", userId: "u1" },
+      deps,
+    );
+    expect(r.kind).toBe("answered");
+    if (r.kind === "answered") {
+      expect(r.usage.inputTokens).toBe(123);
+      expect(r.usage.outputTokens).toBe(45);
+      expect(r.usage.modelId).toBe("us.test.model");
+    }
+  });
+
+  it("invokes onUsage after generation (including when layer 6 refuses)", async () => {
+    const onUsage = vi.fn();
+    const deps = buildDeps({
+      onUsage,
+      generate: vi.fn(
+        async (_in: GenerateInput): Promise<GenerateOutput> => ({
+          text: "Sundowning is a late-day pattern that often eases with routine.",
+          modelId: "m",
+          inputTokens: 10,
+          outputTokens: 20,
+          stopReason: null,
+        }),
+      ),
+    });
+    const r = await runPipeline({ question: "agitation help", userId: "u1" }, deps);
+    expect(r.kind).toBe("refused");
+    if (r.kind === "refused") expect(r.reason.code).toBe("uncitable_response");
+    expect(onUsage).toHaveBeenCalledWith({
+      inputTokens: 10,
+      outputTokens: 20,
+      modelId: "m",
+    });
   });
 
   it("refuses with no_content when retrieval returns nothing", async () => {
@@ -168,6 +227,38 @@ describe("pipeline orchestrator (end-to-end, all mocks)", () => {
     const r = await runPipeline({ question: "x", userId: "u1" }, deps);
     expect(r.kind).toBe("refused");
     if (r.kind === "refused") expect(r.reason.code).toBe("internal_error");
+  });
+
+  it("calls warn with structured context when loadStage throws (internal_error)", async () => {
+    const err = new Error("invalid uuid");
+    const warn = vi.fn();
+    const deps = buildDeps({
+      warn,
+      loadStage: vi.fn(async () => {
+        throw err;
+      }),
+    });
+    const r = await runPipeline(
+      { question: "a".repeat(200), userId: "user-id-for-eval" },
+      deps,
+    );
+    expect(r.kind).toBe("refused");
+    if (r.kind === "refused") {
+      expect(r.reason.code).toBe("internal_error");
+      if (r.reason.code === "internal_error") {
+        expect(r.reason.detail).toBe(err.message);
+      }
+    }
+    expect(warn).toHaveBeenCalledOnce();
+    const [msg, ctx] = warn.mock.calls[0]!;
+    expect(msg).toBe("rag.pipeline.internal_error");
+    expect(ctx).toMatchObject({
+      errMessage: err.message,
+      errStack: err.stack,
+      errName: err.name,
+      userId: "user-id-for-eval",
+      questionPreview: "a".repeat(120),
+    });
   });
 
   it("short-circuits with safety_triaged on a Layer-A crisis match — never reaches retrieval", async () => {

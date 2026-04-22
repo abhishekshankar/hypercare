@@ -13,6 +13,11 @@ const offlineSafety: ClassifyDeps = {
   disableLlm: true,
 };
 
+const offlineTopicClassify: Deps["topicClassify"] = async () => ({
+  topics: [],
+  confidence: 0,
+});
+
 type Gen = Deps["generate"];
 
 function genOk(_module: "behavior" | "daily" | "self"): Gen {
@@ -61,7 +66,7 @@ function hitsFor(
   ];
 }
 
-type Built = Pick<Deps, "embed" | "search" | "loadStage" | "generate" | "safety">;
+type Built = Pick<Deps, "embed" | "search" | "loadStage" | "generate" | "safety" | "topicClassify">;
 
 /**
  * Return deps that make `runPipeline` behave deterministically for a golden answer id (offline only).
@@ -78,6 +83,7 @@ export function buildAnswerOfflineDeps(c: AnswerGoldenCase, _userId: string): Bu
       loadStage,
       safety: offlineSafety,
       generate: genOk("behavior"),
+      topicClassify: offlineTopicClassify,
     };
   }
   if (c.id === "a_ref_france") {
@@ -96,6 +102,7 @@ export function buildAnswerOfflineDeps(c: AnswerGoldenCase, _userId: string): Bu
       loadStage,
       safety: offlineSafety,
       generate: genOk("behavior"),
+      topicClassify: offlineTopicClassify,
     };
   }
   if (c.id === "a_ref_math") {
@@ -112,6 +119,7 @@ export function buildAnswerOfflineDeps(c: AnswerGoldenCase, _userId: string): Bu
       loadStage,
       safety: offlineSafety,
       generate: genOk("daily"),
+      topicClassify: offlineTopicClassify,
     };
   }
   if (c.id === "a_ref_uncite") {
@@ -131,6 +139,7 @@ export function buildAnswerOfflineDeps(c: AnswerGoldenCase, _userId: string): Bu
         "behavior",
         "Sundowning is a late-day pattern that can be very stressful and you may need a calm approach for your family when evenings feel impossible.",
       ),
+      topicClassify: offlineTopicClassify,
     };
   }
   if (c.id === "a_ref_empty") {
@@ -140,6 +149,7 @@ export function buildAnswerOfflineDeps(c: AnswerGoldenCase, _userId: string): Bu
       loadStage,
       safety: offlineSafety,
       generate: genOk("behavior"),
+      topicClassify: offlineTopicClassify,
     };
   }
   // Answered paths — reuse same distance profile as a successful ground from TASK-008-shaped chunks
@@ -152,13 +162,34 @@ export function buildAnswerOfflineDeps(c: AnswerGoldenCase, _userId: string): Bu
       ],
     });
   if (c.id.startsWith("a_bs_")) {
-    return { embed, search: async () => answerHits("behavior"), loadStage, safety: offlineSafety, generate: genOk("behavior") };
+    return {
+      embed,
+      search: async () => answerHits("behavior"),
+      loadStage,
+      safety: offlineSafety,
+      generate: genOk("behavior"),
+      topicClassify: offlineTopicClassify,
+    };
   }
   if (c.id.startsWith("a_db_")) {
-    return { embed, search: async () => answerHits("daily"), loadStage, safety: offlineSafety, generate: genOk("daily") };
+    return {
+      embed,
+      search: async () => answerHits("daily"),
+      loadStage,
+      safety: offlineSafety,
+      generate: genOk("daily"),
+      topicClassify: offlineTopicClassify,
+    };
   }
   if (c.id.startsWith("a_sc_")) {
-    return { embed, search: async () => answerHits("self"), loadStage, safety: offlineSafety, generate: genOk("self") };
+    return {
+      embed,
+      search: async () => answerHits("self"),
+      loadStage,
+      safety: offlineSafety,
+      generate: genOk("self"),
+      topicClassify: offlineTopicClassify,
+    };
   }
   return {
     embed,
@@ -171,5 +202,6 @@ export function buildAnswerOfflineDeps(c: AnswerGoldenCase, _userId: string): Bu
     loadStage,
     safety: offlineSafety,
     generate: genOk("behavior"),
+    topicClassify: offlineTopicClassify,
   };
 }

@@ -1,6 +1,6 @@
 # Schema v0 — tables and ownership
 
-One-page map of the TASK-004 baseline. **Writes** = which ticket primarily inserts/updates; **reads** = consumers in Sprint 1.
+One-page map of the TASK-004 baseline. **Writes** = which ticket primarily inserts/updates; **reads** = consumers in Sprint 1. **Sprint 2 schema additions (lesson progress, check-ins, topics, profile change-log)** are documented in [schema-v1.md](schema-v1.md) (TASK-019); v0 is kept as a frozen snapshot of Sprint 1.
 
 ## ERD (ASCII)
 

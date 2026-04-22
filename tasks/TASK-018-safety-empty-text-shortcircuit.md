@@ -2,7 +2,7 @@
 
 - **Owner:** Cursor
 - **Depends on:** —
-- **Status:** pending
+- **Status:** done
 
 ---
 

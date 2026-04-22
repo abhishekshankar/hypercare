@@ -8,6 +8,8 @@ summary: "Resistance to bathing is common. This module offers ways to lower tens
 attribution_line: "Adapted from the Alzheimer's Association caregiver guide, 2024."
 expert_reviewer: null
 review_date: null
+topics: ["bathing-resistance", "refusal-of-care", "agitation-aggression", "sleep-problems"]
+try_this_today: "Pick one day this week to warm the bathroom first, explain the next step before you do it, and flex the goal to hair and skin if a full bath is a fight."
 ---
 
 > **TODO(PM):** Replace placeholder narrative with organization-approved, clinically reviewed text before tier-1 launch.

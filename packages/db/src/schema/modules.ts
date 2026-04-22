@@ -26,6 +26,8 @@ export const modules = pgTable(
     expertReviewer: text("expert_reviewer"),
     reviewDate: date("review_date"),
     nextReviewDue: date("next_review_due"),
+    /** One-line prompt for lesson "try this" card; from front-matter, optional (TASK-023). */
+    tryThisToday: text("try_this_today"),
     published: boolean("published").notNull().default(false),
     createdAt: timestamp("created_at", { withTimezone: true }).defaultNow().notNull(),
     updatedAt: timestamp("updated_at", { withTimezone: true }).defaultNow().notNull(),

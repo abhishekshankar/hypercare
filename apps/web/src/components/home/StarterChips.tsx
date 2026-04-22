@@ -5,11 +5,7 @@ import { useRouter } from "next/navigation";
 
 import { Composer } from "@/components/conversation/Composer";
 
-export function HomeAsk({
-  starters,
-}: Readonly<{
-  starters: readonly string[];
-}>) {
+function useStartConversation() {
   const router = useRouter();
   const [pending, setPending] = useState(false);
   const [error, setError] = useState<string | null>(null);
@@ -35,23 +31,32 @@ export function HomeAsk({
     }
   }
 
+  return { startConversation, pending, error, setError };
+}
+
+export function HomeAsk({
+  starters,
+}: Readonly<{
+  starters: readonly string[];
+}>) {
+  const { startConversation, pending, error } = useStartConversation();
   return (
-    <section aria-label="Ask Hypercare a question" className="space-y-4">
-      <Composer
-        onSubmit={startConversation}
-        pending={pending}
-        placeholder="Ask anything about today, this week, or what comes next…"
-        size="md"
-      />
-      {error ? (
-        <p className="text-sm text-red-700" data-testid="home-error" role="alert">
-          Couldn’t start that conversation — {error}.
-        </p>
-      ) : null}
+    <div className="space-y-4" data-testid="home-ask-block">
+      <section aria-label="Ask Hypercare a question" className="space-y-3">
+        <Composer
+          onSubmit={startConversation}
+          pending={pending}
+          placeholder="Ask anything about today, this week, or what comes next…"
+          size="md"
+        />
+        {error ? (
+          <p className="text-sm text-red-700" data-testid="home-error" role="alert">
+            Couldn’t start that conversation — {error}.
+          </p>
+        ) : null}
+      </section>
       <div>
-        <p className="mb-2 text-xs uppercase tracking-wide text-muted-foreground">
-          Or start with…
-        </p>
+        <p className="mb-2 text-xs uppercase tracking-wide text-muted-foreground">Or start with…</p>
         <ul className="flex flex-wrap gap-2" data-testid="starter-chips">
           {starters.map((text) => (
             <li key={text}>
@@ -68,6 +73,6 @@ export function HomeAsk({
           ))}
         </ul>
       </div>
-    </section>
+    </div>
   );
 }

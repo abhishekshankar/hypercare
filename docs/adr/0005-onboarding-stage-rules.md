@@ -39,3 +39,8 @@ The cookie is cleared on **new login** (`/api/auth/callback`) and **logout** so 
 
 - Care Specialist can revise stage rules in sprint 2 without migrations; TASK-008+ can rely on stable `stage_answers` keys.
 - E2E and local dev need a reachable `DATABASE_URL` for wizard tests; Playwright uses `GET /api/test/e2e-session` (NODE_ENV=test + `E2E_SETUP_SECRET`) to mint a session and reset the stable test user’s profile.
+
+## Update (TASK-020) — after onboarding
+
+- **Section-by-section profile edits** on `/app/profile` re-run `inferStage()` on **stage** (§5.2) saves; a `care_profile_changes` row with `trigger = 'system_inferred'` is written **only** when the inferred label actually changes, so the log does not fill with no-op inferences.
+- The **"My situation has changed"** flow (`/app/profile/changed`) applies the same inference rule on save, with user-facing changes mostly tagged `evolved_state_flow` in the change-log.

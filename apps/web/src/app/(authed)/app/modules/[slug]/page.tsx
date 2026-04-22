@@ -1,41 +1,80 @@
 import Link from "next/link";
+import { notFound } from "next/navigation";
 
-import { requireSession } from "@/lib/auth/session";
-import { ScreenHeader } from "@/components/screen-header";
+import { ModuleArticle } from "@/components/modules/ModuleArticle";
+import { loadModuleBySlug } from "@/lib/library/load-module";
 
-/**
- * v0 stub for "Read the full module →" links from citation expansions.
- * Real module browse ships post-v1; this placeholder is intentionally
- * minimal so the citation UX is testable end-to-end without coupling to
- * a content browse implementation.
- */
-export default async function ModuleStubPage({
+function labelStage(s: string): string {
+  if (s === "early" || s === "middle" || s === "late") {
+    return s.charAt(0).toUpperCase() + s.slice(1);
+  }
+  return s;
+}
+
+export default async function ModulePage({
   params,
 }: Readonly<{
   params: Promise<{ slug: string }>;
 }>) {
-  await requireSession();
   const { slug } = await params;
-  const human = slug
-    .split(/[-/]/)
-    .filter((s) => s.length > 0)
-    .map((s) => s.charAt(0).toUpperCase() + s.slice(1))
-    .join(" — ");
+  const mod = await loadModuleBySlug(slug);
+  if (!mod) {
+    notFound();
+  }
 
   return (
-    <div className="space-y-4" data-testid="module-stub">
-      <ScreenHeader subHeadline={`Module: ${human}`} title="Full module browse coming soon" />
-      <p className="text-base leading-relaxed text-foreground">
-        We’ll surface the full caregiver guide for <span className="font-medium">{human}</span> in
-        a future release. For now, citations on your conversations show the source heading and
-        attribution inline so you know where each suggestion came from.
+    <div className="space-y-8" data-testid="module-page">
+      <div className="space-y-3">
+        <h1 className="font-serif text-3xl font-normal leading-tight tracking-tight text-foreground">
+          {mod.title}
+        </h1>
+        <ul className="flex flex-wrap gap-2" aria-label="Module tags">
+          {mod.stageRelevance.map((s) => (
+            <li
+              key={s}
+              className="rounded-full bg-muted/80 px-2.5 py-1 text-xs text-muted-foreground"
+            >
+              {labelStage(s)}
+            </li>
+          ))}
+          <li className="rounded-full border border-border px-2.5 py-1 text-xs text-muted-foreground">
+            {mod.categoryLabel}
+          </li>
+        </ul>
+      </div>
+      <ModuleArticle markdown={mod.bodyMd} />
+      <p className="text-sm text-muted-foreground" data-testid="module-attribution">
+        {mod.attributionLine}
       </p>
-      <Link
-        className="inline-block text-accent underline-offset-2 hover:underline focus-visible:ring-2 focus-visible:ring-accent"
-        href="/app"
-      >
-        ← Back to home
-      </Link>
+      {mod.expertReviewer && mod.reviewDate ? (
+        <p className="text-sm text-muted-foreground">
+          Reviewed by {mod.expertReviewer} on {mod.reviewDate}.
+        </p>
+      ) : null}
+      {mod.tryThisToday ? (
+        <aside
+          className="rounded-lg border border-border bg-muted/30 px-4 py-3 text-base leading-relaxed text-foreground"
+          data-testid="module-try-this-today"
+        >
+          <p className="text-sm font-medium text-muted-foreground">Try this today</p>
+          <p className="mt-1">{mod.tryThisToday}</p>
+        </aside>
+      ) : null}
+      <div className="flex flex-col gap-3 sm:flex-row sm:items-center sm:gap-4">
+        <Link
+          className="inline-flex justify-center rounded-md border border-accent bg-accent px-4 py-2.5 text-sm font-medium text-accent-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-accent"
+          data-testid="module-cta-lesson"
+          href={`/app/lesson/${mod.slug}?source=library_browse`}
+        >
+          Take this as a 5-minute lesson
+        </Link>
+        <Link
+          className="text-center text-sm text-accent underline-offset-2 hover:underline sm:text-left"
+          href="/app/library"
+        >
+          Back to library
+        </Link>
+      </div>
     </div>
   );
 }

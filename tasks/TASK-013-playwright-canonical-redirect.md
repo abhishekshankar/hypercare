@@ -24,6 +24,6 @@ When running Playwright against `next dev`, the middleware that enforces canonic
 
 ## Verification (done)
 
-- `canonical-origin.test.ts` covers Playwright no-op and production + `PLAYWRIGHT_TEST_BASE_URL` (no effect in prod).
+- `canonical-origin.test.ts` covers Playwright no-op; production early-return; and a `vi.stubEnv("NODE_ENV", "production")` case proving the inner belt does not Playwright no-op when `process.env.NODE_ENV === "production"` even if a refactored caller passed a mismatched `nodeEnv` argument.
 - `isE2ETestRuntime()` returns `false` in production even if `PLAYWRIGHT_TEST_BASE_URL` is set (`test/lib/env.test-runtime.test.ts`).
 - No `NEXT_PUBLIC_*` disable flag.

@@ -1,15 +1,14 @@
 /**
- * Public types for the safety classifier (TASK-010).
+ * Public types for the safety classifier (TASK-010) and safety-flag persistence.
  *
- * The category set is intentionally small (6) and matches the CHECK constraint
- * on `safety_flags.category`. Anything outside this set is a bug — including
- * any tag the LLM might invent in Layer B.
+ * Classifier categories are the six crisis sets; `self_care_burnout` is DB-only
+ * (TASK-021 burnout self-assessment soft flag — not produced by Layer A/B).
  *
- * Severity is a coarse two-state field (`high` / `medium`) so the UI can pick
- * a treatment without per-category logic; mapping lives in `categoryToSeverity`.
+ * Severity: `high` / `medium` for classifier triage; `low` for soft yellow flags.
  */
 
-export const SAFETY_CATEGORIES = [
+/** The six Layer A/B categories (schema + CHECK constraint includes one more). */
+export const SAFETY_CLASSIFIER_CATEGORIES = [
   "self_harm_user",
   "self_harm_cr",
   "acute_medical",
@@ -18,9 +17,14 @@ export const SAFETY_CATEGORIES = [
   "neglect",
 ] as const;
 
+export type SafetyClassifierCategory = (typeof SAFETY_CLASSIFIER_CATEGORIES)[number];
+
+/** All values allowed in `safety_flags.category` (classifier + soft-flag sources). */
+export const SAFETY_CATEGORIES = [...SAFETY_CLASSIFIER_CATEGORIES, "self_care_burnout"] as const;
+
 export type SafetyCategory = (typeof SAFETY_CATEGORIES)[number];
 
-export type SafetySeverity = "high" | "medium";
+export type SafetySeverity = "low" | "high" | "medium";
 
 export type SuggestedAction =
   | "call_988"
@@ -28,7 +32,7 @@ export type SuggestedAction =
   | "call_adult_protective_services"
   | "show_crisis_strip_emphasis";
 
-export type SafetySource = "rule" | "llm";
+export type SafetySource = "rule" | "llm" | "burnout_self_assessment";
 
 export type SafetyInput = {
   userId: string;
@@ -55,11 +59,11 @@ export type SafetyResult =
   | { triaged: false }
   | {
       triaged: true;
-      category: SafetyCategory;
-      severity: SafetySeverity;
+      category: SafetyClassifierCategory;
+      severity: Exclude<SafetySeverity, "low">;
       suggestedAction: SuggestedAction;
       matchedSignals: string[];
-      source: SafetySource;
+      source: "rule" | "llm";
     };
 
 /**
@@ -73,7 +77,7 @@ export type SafetyRule = {
    * Per-rule severity. The aggregator picks the highest-severity match across
    * all categories before falling back to the table default for the category.
    */
-  severity: SafetySeverity;
+  severity: Exclude<SafetySeverity, "low">;
 };
 
 /** Default severity when only the *category* (not a specific rule) is known. */
@@ -87,6 +91,8 @@ export function categoryToSeverity(c: SafetyCategory): SafetySeverity {
     case "abuse_cr_to_caregiver":
     case "neglect":
       return "medium";
+    case "self_care_burnout":
+      return "low";
   }
 }
 
@@ -102,5 +108,8 @@ export function categoryToSuggestedAction(c: SafetyCategory): SuggestedAction {
     case "abuse_cr_to_caregiver":
     case "neglect":
       return "call_adult_protective_services";
+    case "self_care_burnout":
+      // Never returned by the classifier; soft-flag only. Neutral placeholder.
+      return "show_crisis_strip_emphasis";
   }
 }

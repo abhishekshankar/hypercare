@@ -22,6 +22,34 @@
       "when": 1776826778043,
       "tag": "0002_messages_citations_refusal",
       "breakpoints": true
+    },
+    {
+      "idx": 3,
+      "version": "7",
+      "when": 1776837110468,
+      "tag": "0003_schema_v1_retention_loop",
+      "breakpoints": true
+    },
+    {
+      "idx": 4,
+      "version": "7",
+      "when": 1776900000000,
+      "tag": "0004_safety_flags_burnout_source",
+      "breakpoints": true
+    },
+    {
+      "idx": 5,
+      "version": "7",
+      "when": 1777000000000,
+      "tag": "0005_messages_classified_topics",
+      "breakpoints": true
+    },
+    {
+      "idx": 6,
+      "version": "7",
+      "when": 1777100000000,
+      "tag": "0006_modules_try_this_today",
+      "breakpoints": true
     }
   ]
 }

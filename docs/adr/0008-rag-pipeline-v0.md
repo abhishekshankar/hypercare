@@ -86,9 +86,12 @@ False positives (e.g. dosage `400`) are accepted. The actual privacy boundary is
 
 - All thresholds are tunable from one place (`config.ts`); evals can sweep them without touching layer code.
 - The `safety_triaged` code is a placeholder until TASK-010 ships; the orchestrator already handles it, so TASK-010 is a one-file replacement.
+- **Operator logging on `internal_error`:** The pipeline catch-all still returns `{ code: "internal_error", detail }` to the client (no stack traces in the API contract), but it also invokes `deps.warn("rag.pipeline.internal_error", { errMessage, errStack, errName, userId, questionPreview })` so operators get structured logs in CloudWatch or the server console. Default wiring uses `console.warn` like the safety package’s `warn` hook. See `packages/rag/src/pipeline.ts`.
+- **Generation token usage (TASK-017):** On `kind: "answered"`, `AnswerResult` includes `usage: { inputTokens, outputTokens, modelId }` from Bedrock’s reported usage after layer 5. The same values are also emitted to `deps.onUsage` after generation whenever the model ran, including when layer 6 returns a refusal (e.g. `uncitable_response`), so cost pipelines can log without a second client. This is **operator-facing telemetry**, not a user-facing metric; the chat UI does not render it, but it is safe to include in server responses for observability and eval reports.
 - The duplicated `inferStage` is debt (tracked by TODO comment + this ADR) — the next time a third package needs the rule, extract a shared package.
 - We accept that re-ranking is missing; v1 should land it before opening the corpus past the pilot.
 - The `stage_relevance` jsonb filter assumes the loader writes an array. The loader's tests guarantee this; the search SQL also defensively gates on `jsonb_typeof(...) = 'array'`.
+- **Topic labels (TASK-022):** User turns now carry `classified_topics` + `topic_confidence` (see [ADR-0013](./0013-topic-classifier-and-recent-signal.md)). Classification runs in parallel with the rest of the pipeline; it does not change retrieval in v0.
 
 ## References
 
@@ -100,3 +103,4 @@ False positives (e.g. dosage `400`) are accepted. The actual privacy boundary is
 - `tasks/TASK-010-safety-classifier.md` (replaces layer 0 stub).
 - `tasks/TASK-011-home-conversation-ui.md` (consumes `answer()`).
 - `tasks/TASK-012-eval-harness.md` (tunes thresholds).
+- [ADR-0013](./0013-topic-classifier-and-recent-signal.md) — topic classifier + `getRecentTopicSignal` (vocabulary, persistence, recency).

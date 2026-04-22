@@ -1,8 +1,12 @@
-import { describe, expect, it } from "vitest";
+import { afterEach, describe, expect, it, vi } from "vitest";
 
 import { canonicalLoopbackRedirectUrl } from "@/lib/auth/canonical-origin";
 
 describe("canonicalLoopbackRedirectUrl", () => {
+  afterEach(() => {
+    vi.unstubAllEnvs();
+  });
+
   it("returns null when hosts already match", () => {
     expect(
       canonicalLoopbackRedirectUrl(
@@ -73,5 +77,17 @@ describe("canonicalLoopbackRedirectUrl", () => {
         "http://127.0.0.1:3456",
       ),
     ).toBeNull();
+  });
+
+  it("does not Playwright no-op when process NODE_ENV is production even if nodeEnv arg is wrong", () => {
+    vi.stubEnv("NODE_ENV", "production");
+    expect(
+      canonicalLoopbackRedirectUrl(
+        "http://127.0.0.1:3456/app?x=1",
+        "http://localhost:3000",
+        "development",
+        "http://127.0.0.1:3456",
+      ),
+    ).toBe("http://localhost:3000/app?x=1");
   });
 });

@@ -1,14 +1,14 @@
-import { PlaceholderCard } from "@/components/placeholder-card";
 import { ScreenHeader } from "@/components/screen-header";
+import { LibraryBrowse } from "@/components/library/LibraryBrowse";
+import { loadLibraryModuleList } from "@/lib/library/load-list";
 
-export default function LibraryPage() {
+export default async function LibraryPage() {
+  const modules = await loadLibraryModuleList();
+
   return (
     <>
-      <ScreenHeader
-        subHeadline="Browse modules by situation — behaviors, care, legal, self-care, and more."
-        title="The library"
-      />
-      <PlaceholderCard ticket="sprint 2" />
+      <ScreenHeader title="Library." />
+      <LibraryBrowse modules={modules} />
     </>
   );
 }

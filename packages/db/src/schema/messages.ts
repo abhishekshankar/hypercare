@@ -1,5 +1,5 @@
 import { sql } from "drizzle-orm";
-import { check, index, jsonb, pgTable, text, timestamp, uuid } from "drizzle-orm/pg-core";
+import { check, index, jsonb, pgTable, real, text, timestamp, uuid } from "drizzle-orm/pg-core";
 import { conversations } from "./conversations.js";
 
 export const messages = pgTable(
@@ -31,6 +31,14 @@ export const messages = pgTable(
      */
     refusal: jsonb("refusal"),
     modelId: text("model_id"),
+    /**
+     * TASK-022: 0–3 `topics.slug` values from the closed vocabulary (user rows only; `[]` for assistant).
+     */
+    classifiedTopics: jsonb("classified_topics")
+      .notNull()
+      .default(sql`'[]'::jsonb`),
+    /** Classifier self-reported score in [0, 1] when `classified_topics` is non-empty; else null. */
+    topicConfidence: real("topic_confidence"),
     createdAt: timestamp("created_at", { withTimezone: true }).defaultNow().notNull(),
   },
   (t) => [

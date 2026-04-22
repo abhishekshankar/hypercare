@@ -55,16 +55,17 @@ export const safetyFlags = pgTable(
       "safety_flags_category_check",
       sql`${t.category} IN (
         'self_harm_user', 'self_harm_cr', 'acute_medical',
-        'abuse_cr_to_caregiver', 'abuse_caregiver_to_cr', 'neglect'
+        'abuse_cr_to_caregiver', 'abuse_caregiver_to_cr', 'neglect',
+        'self_care_burnout'
       )`,
     ),
     check(
       "safety_flags_severity_check",
-      sql`${t.severity} IN ('high', 'medium')`,
+      sql`${t.severity} IN ('low', 'high', 'medium')`,
     ),
     check(
       "safety_flags_source_check",
-      sql`${t.source} IN ('rule', 'llm')`,
+      sql`${t.source} IN ('rule', 'llm', 'burnout_self_assessment')`,
     ),
     check(
       "safety_flags_confidence_check",

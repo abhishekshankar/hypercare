@@ -28,12 +28,16 @@ export type {
   AnswerInput,
   AnswerResult,
   Citation,
+  RagUsage,
   RefusalReason,
   RetrievedChunk,
   SafetyTriageReason,
   Stage,
+  TopicFields,
 } from "./types.js";
 export type { Deps } from "./pipeline.js";
+export type { RecentTopicSignal } from "./topics/signal.js";
+export { getRecentTopicSignal } from "./topics/signal.js";
 export type { RagConfig } from "./config.js";
 export { DEFAULT_CONFIG, withConfig } from "./config.js";
 export { buildDefaultDeps } from "./deps.js";

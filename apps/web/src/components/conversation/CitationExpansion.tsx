@@ -10,7 +10,7 @@ import type { Citation } from "@hypercare/rag";
  * intentionally only exposes `moduleSlug` (so the UI can re-fetch full
  * module metadata in a later task without us caching the title at
  * citation-write time and going stale). For v0 we surface the slug as a
- * humanised label and link out to the stub `/app/modules/[slug]` page.
+ * humanised label and link out to the full module at `/app/modules/[slug]`.
  */
 
 function humaniseSlug(slug: string): string {

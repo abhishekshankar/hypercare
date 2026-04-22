@@ -89,6 +89,10 @@ export async function runRetrievalEval(): Promise<{
         if (!hits) {
           throw new Error(`Missing offline hit fixture for case ${c.id}`);
         }
+        const offlineTopic: Deps["topicClassify"] = async () => ({
+          topics: [],
+          confidence: 0,
+        });
         deps = {
           embed: async (text) => deterministicEmbedding(c.id + text.slice(0, 40)),
           search: async () => {
@@ -106,6 +110,7 @@ export async function runRetrievalEval(): Promise<{
             };
           },
           safety: { persist: async () => {}, disableLlm: true },
+          topicClassify: offlineTopic,
         };
       }
 

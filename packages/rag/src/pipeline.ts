@@ -22,7 +22,8 @@ import { retrieve } from "./layers/2-retrieve.js";
 import { classifySafety } from "./layers/0-safety.js";
 import { understandQuestion } from "./layers/1-understand.js";
 import { verify } from "./layers/6-verify.js";
-import type { AnswerInput, AnswerResult, RetrievedChunk, Stage } from "./types.js";
+import type { TopicClassifyInput, TopicClassifyResult } from "./topics/classifier.js";
+import type { AnswerInput, AnswerResult, RagUsage, RetrievedChunk, Stage, TopicFields } from "./types.js";
 
 export type SearchFn = (q: {
   embedding: number[];
@@ -37,11 +38,57 @@ export type Deps = {
   generate: (input: GenerateInput) => Promise<GenerateOutput>;
   /** Safety classifier wiring (TASK-010). See `@hypercare/safety`. */
   safety: SafetyClassifyDeps;
+  /**
+   * Operator observability for top-level pipeline failures (`internal_error`).
+   * Same shape as `safety.warn` — structured `ctx` for CloudWatch / log filters.
+   */
+  warn?: (msg: string, ctx?: Record<string, unknown>) => void;
+  /**
+   * Invoked when layer 5 has returned (token counts and modelId known), including
+   * when layer 6 refuses (`uncitable_response`, `INSUFFICIENT_CONTEXT` →
+   * `low_confidence`, etc.). For `kind: "answered"`, the same values appear on
+   * `result.usage` — this hook is for logging or cost pipelines without
+   * branching on the answer/refusal kind.
+   */
+  onUsage?: (usage: RagUsage) => void;
   config?: Partial<RagConfig>;
+  /**
+   * Topic classifier (TASK-022). Fires in parallel with the rest of the pipeline; answer
+   * generation does not await the LLM step — only the return path merges the outcome.
+   */
+  topicClassify: (input: TopicClassifyInput) => Promise<TopicClassifyResult>;
 };
+
+function mergeTopics(t: TopicClassifyResult): TopicFields {
+  return {
+    classifiedTopics: t.topics,
+    topicConfidence: t.topics.length > 0 ? t.confidence : null,
+  };
+}
+
+async function awaitTopic(
+  p: Promise<TopicClassifyResult>,
+  warn?: Deps["warn"],
+): Promise<TopicFields> {
+  try {
+    const t = await p;
+    return mergeTopics(t);
+  } catch (err) {
+    warn?.("rag.topics.classifier.unexpected", {
+      error: err instanceof Error ? err.message : String(err),
+    });
+    return { classifiedTopics: [], topicConfidence: null };
+  }
+}
 
 export async function runPipeline(input: AnswerInput, deps: Deps): Promise<AnswerResult> {
   const config: RagConfig = { ...DEFAULT_CONFIG, ...(deps.config ?? {}) };
+
+  const topicP = deps.topicClassify({
+    userId: input.userId,
+    question: input.question,
+    ...(input.priorUserTurn !== undefined ? { priorUserTurn: input.priorUserTurn } : {}),
+  });
 
   try {
     // Layer 0 — Safety.
@@ -59,6 +106,7 @@ export async function runPipeline(input: AnswerInput, deps: Deps): Promise<Answe
           suggestedAction: safety.suggestedAction,
           source: safety.source,
         },
+        ...(await awaitTopic(topicP, deps.warn)),
       };
     }
 
@@ -68,6 +116,7 @@ export async function runPipeline(input: AnswerInput, deps: Deps): Promise<Answe
       return {
         kind: "refused",
         reason: { code: "no_content", message: "Empty question after normalization." },
+        ...(await awaitTopic(topicP, deps.warn)),
       };
     }
 
@@ -83,7 +132,7 @@ export async function runPipeline(input: AnswerInput, deps: Deps): Promise<Answe
     // Layer 3 — Ground.
     const grounded = ground({ hits: retrieved.hits, config });
     if (grounded.decision === "refuse") {
-      return { kind: "refused", reason: grounded.reason };
+      return { kind: "refused", reason: grounded.reason, ...(await awaitTopic(topicP, deps.warn)) };
     }
 
     // Layer 4 — Compose.
@@ -97,16 +146,41 @@ export async function runPipeline(input: AnswerInput, deps: Deps): Promise<Answe
       { systemPrompt: composed.systemPrompt, userPrompt: composed.userPrompt },
       { generate: deps.generate },
     );
+    const usage: RagUsage = {
+      inputTokens: generated.inputTokens,
+      outputTokens: generated.outputTokens,
+      modelId: generated.modelId,
+    };
+    deps.onUsage?.(usage);
 
     // Layer 6 — Verify.
     const verified = verify({ rawText: generated.text, sources: composed.sourceMap });
     if (!verified.ok) {
-      return { kind: "refused", reason: verified.reason };
+      return { kind: "refused", reason: verified.reason, ...(await awaitTopic(topicP, deps.warn)) };
     }
 
-    return { kind: "answered", text: verified.text, citations: verified.citations };
+    return {
+      kind: "answered",
+      text: verified.text,
+      citations: verified.citations,
+      usage,
+      ...(await awaitTopic(topicP, deps.warn)),
+    };
   } catch (err) {
     const detail = err instanceof Error ? err.message : String(err);
-    return { kind: "refused", reason: { code: "internal_error", detail } };
+    const q = input.question;
+    const questionPreview = q.length <= 120 ? q : q.slice(0, 120);
+    deps.warn?.("rag.pipeline.internal_error", {
+      errMessage: detail,
+      errStack: err instanceof Error ? err.stack : undefined,
+      errName: err instanceof Error ? err.name : "NonError",
+      userId: input.userId,
+      questionPreview,
+    });
+    return {
+      kind: "refused",
+      reason: { code: "internal_error", detail },
+      ...(await awaitTopic(topicP, deps.warn)),
+    };
   }
 }

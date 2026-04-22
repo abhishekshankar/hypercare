@@ -19,6 +19,8 @@
 - `pnpm --filter web test` still passes (same behavioral coverage for `isE2ETestRuntime()`).
 - No production/runtime code changes unless strictly required; keep the fix scoped to the test harness (e.g. `vi.stubEnv` / `vi.unstubAllEnvs`, or another pattern that satisfies both Vitest and `tsc`).
 
+**Verification:** Implementation uses `vi.stubEnv` / `vi.unstubAllEnvs` in `apps/web/test/lib/env.test-runtime.test.ts`. Run `pnpm --filter web build` before `pnpm --filter web test` locally (same order as CI: build then test) so `src/screens.smoke.test.ts` can spawn `next start` against a fresh `.next` output.
+
 ---
 
 ## Files

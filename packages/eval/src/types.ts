@@ -115,6 +115,8 @@ export type AnswerCaseReport = {
   expected_cited_modules?: string[];
   cited_module_slugs: string[];
   reason_code: RefusalReason["code"] | null;
+  /** Populated for `internal_error` — operator/eval triage (not shown to end users). */
+  reason_detail?: string;
   verification_refused: boolean;
   latency_ms: number;
   input_tokens: number | null;
@@ -144,6 +146,11 @@ export type AnswersReportSummary = {
   p95_ms: number;
   mismatch_breakdown: Record<string, number>;
   refusal_reasons: RefusalReasonCounts;
+  /**
+   * When any case ends in `internal_error`, how many distinct first lines of
+   * `reason_detail` appear (same root cause vs. many failures).
+   */
+  internal_error_distinct_first_lines?: number;
 };
 
 export type AnswersReport = {

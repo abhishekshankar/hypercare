@@ -11,10 +11,15 @@ import { isProductionCookieSecure } from "@/lib/env.server";
 import { serverEnv } from "@/lib/env.server";
 import {
   careProfile,
+  careProfileChanges,
   conversations,
   createDbClient,
+  lessonProgress,
   messages,
+  modules,
+  safetyFlags,
   users,
+  weeklyCheckins,
 } from "@hypercare/db";
 
 export const dynamic = "force-dynamic";
@@ -63,6 +68,9 @@ export async function GET(request: NextRequest) {
   const mode = request.nextUrl.searchParams.get("mode") ?? "fresh";
   const onboarded = mode === "onboarded";
 
+  await db.delete(safetyFlags).where(eq(safetyFlags.userId, userRow.id));
+  await db.delete(lessonProgress).where(eq(lessonProgress.userId, userRow.id));
+  await db.delete(weeklyCheckins).where(eq(weeklyCheckins.userId, userRow.id));
   // Always clear conversation history so each test starts from an empty
   // /app surface. Cascade fk drops messages with the conversation row.
   await db.delete(conversations).where(eq(conversations.userId, userRow.id));
@@ -71,6 +79,7 @@ export async function GET(request: NextRequest) {
     .delete(messages)
     .where(eq(messages.conversationId, "00000000-0000-0000-0000-000000000000"));
 
+  await db.delete(careProfileChanges).where(eq(careProfileChanges.userId, userRow.id));
   await db.delete(careProfile).where(eq(careProfile.userId, userRow.id));
 
   if (onboarded) {
@@ -78,6 +87,31 @@ export async function GET(request: NextRequest) {
       .update(users)
       .set({ displayName: "Alex" })
       .where(eq(users.id, userRow.id));
+    const inferred = request.nextUrl.searchParams.get("inferred");
+    const useEarly = inferred === "early";
+    const stageAnswers = useEarly
+      ? {
+          manages_meds: "yes",
+          drives: "yes",
+          left_alone: "yes",
+          recognizes_you: "yes",
+          bathes_alone: "yes",
+          wandering_incidents: "no",
+          conversations: "yes",
+          sleeps_through_night: "yes",
+        }
+      : {
+          manages_meds: "yes",
+          drives: "no",
+          left_alone: "no",
+          recognizes_you: "yes",
+          bathes_alone: "no",
+          wandering_incidents: "no",
+          conversations: "yes",
+          sleeps_through_night: "no",
+        };
+    const hardest =
+      request.nextUrl.searchParams.get("hardest") ?? "Sundowning most evenings.";
     await db.insert(careProfile).values({
       userId: userRow.id,
       crFirstName: "Margaret",
@@ -85,26 +119,74 @@ export async function GET(request: NextRequest) {
       crRelationship: "parent",
       crDiagnosis: "alzheimers",
       crDiagnosisYear: 2020,
-      stageAnswers: {
-        manages_meds: "yes",
-        drives: "no",
-        left_alone: "no",
-        recognizes_you: "yes",
-        bathes_alone: "no",
-        wandering_incidents: "no",
-        conversations: "yes",
-        sleeps_through_night: "no",
-      },
-      inferredStage: "middle",
+      stageAnswers,
+      inferredStage: useEarly ? "early" : "middle",
       livingSituation: "with_caregiver",
       careNetwork: "solo",
       caregiverProximity: "same_home",
       caregiverAgeBracket: "55_64",
       caregiverWorkStatus: "working",
       caregiverState1_5: 1,
-      hardestThing: "Sundowning most evenings.",
+      hardestThing: hardest,
       crBackground: "",
+      crJoy: "",
+      crPersonalityNotes: "",
     });
+
+    // Optional seed: complete a module N days ago (TASK-024 anti-repeat / cadence E2E).
+    const completedSlug = request.nextUrl.searchParams.get("completed_slug");
+    const completedDaysAgo = Number.parseInt(
+      request.nextUrl.searchParams.get("completed_days_ago") ?? "",
+      10,
+    );
+    if (completedSlug != null && Number.isFinite(completedDaysAgo)) {
+      const [m] = await db.select({ id: modules.id }).from(modules).where(eq(modules.slug, completedSlug)).limit(1);
+      if (m) {
+        const at = new Date(Date.now() - completedDaysAgo * 24 * 60 * 60 * 1000);
+        await db.insert(lessonProgress).values({
+          userId: userRow.id,
+          moduleId: m.id,
+          startedAt: at,
+          completedAt: at,
+          revisit: false,
+          source: "weekly_focus",
+        });
+      }
+    }
+
+    // Optional seed: backdate a weekly_checkins row (cadence + elevation E2E).
+    const checkinDaysAgo = Number.parseInt(
+      request.nextUrl.searchParams.get("checkin_days_ago") ?? "",
+      10,
+    );
+    if (Number.isFinite(checkinDaysAgo)) {
+      const at = new Date(Date.now() - checkinDaysAgo * 24 * 60 * 60 * 1000);
+      await db.insert(weeklyCheckins).values({
+        userId: userRow.id,
+        promptedAt: at,
+        answeredAt: at,
+        triedSomething: true,
+        whatHelped: null,
+      });
+    }
+
+    // Optional seed: insert N soft burnout flags within the last 7d (elevation E2E).
+    const softFlags = Number.parseInt(
+      request.nextUrl.searchParams.get("soft_flags") ?? "",
+      10,
+    );
+    if (Number.isFinite(softFlags) && softFlags > 0) {
+      for (let i = 0; i < softFlags; i++) {
+        await db.insert(safetyFlags).values({
+          userId: userRow.id,
+          messageText: "Burnout self-assessment seeded for E2E (TASK-024).",
+          category: "self_care_burnout",
+          severity: "low",
+          source: "burnout_self_assessment",
+          matchedSignals: ["seed:e2e", `idx:${String(i)}`],
+        });
+      }
+    }
   }
 
   const next = request.nextUrl.searchParams.get("next") ?? "/onboarding/step/1";

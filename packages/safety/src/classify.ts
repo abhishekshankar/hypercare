@@ -28,7 +28,7 @@ import { makeDbPersist, type PersistFn } from "./persist.js";
 import {
   categoryToSeverity,
   categoryToSuggestedAction,
-  type SafetyCategory,
+  type SafetyClassifierCategory,
   type SafetyInput,
   type SafetyResult,
   type SafetyRule,
@@ -60,7 +60,7 @@ export type ClassifyDeps = {
  * within the same severity — the table in TASK-010 specifies "first-listed
  * category wins" on a tie.
  */
-const CATEGORY_RULES: ReadonlyArray<readonly [SafetyCategory, SafetyRule[]]> = [
+const CATEGORY_RULES: ReadonlyArray<readonly [SafetyClassifierCategory, SafetyRule[]]> = [
   ["self_harm_user", selfHarmUserRules],
   ["self_harm_cr", selfHarmCrRules],
   ["acute_medical", acuteMedicalRules],
@@ -69,12 +69,12 @@ const CATEGORY_RULES: ReadonlyArray<readonly [SafetyCategory, SafetyRule[]]> = [
   ["neglect", neglectRules],
 ];
 
-const SEVERITY_RANK: Record<SafetySeverity, number> = { high: 2, medium: 1 };
+const SEVERITY_RANK: Record<Exclude<SafetySeverity, "low">, number> = { high: 2, medium: 1 };
 
 type RuleHit = {
-  category: SafetyCategory;
+  category: SafetyClassifierCategory;
   ruleId: string;
-  severity: SafetySeverity;
+  severity: Exclude<SafetySeverity, "low">;
 };
 
 /** Run every rule in every category and return all hits in declaration order. */
@@ -116,7 +116,8 @@ export function aggregateRuleHits(
   return {
     triaged: true,
     category: winningCategory,
-    severity: categoryToSeverity(winningCategory),
+    // Classifier categories never map to `low`; `categoryToSeverity` is shared with DB-only categories.
+    severity: categoryToSeverity(winningCategory) as Exclude<SafetySeverity, "low">,
     suggestedAction: categoryToSuggestedAction(winningCategory),
     matchedSignals: winningSignals,
     source: "rule",
@@ -128,6 +129,10 @@ export async function classify(
   deps: ClassifyDeps,
 ): Promise<SafetyResult> {
   const text = input.text ?? "";
+  if (text.trim().length === 0) {
+    // No signals to match; avoid Bedrock and noisy warns on empty/whitespace-only turns.
+    return { triaged: false };
+  }
 
   // Layer A — rules.
   const ruleAggregate = aggregateRuleHits(runAllRules(text));

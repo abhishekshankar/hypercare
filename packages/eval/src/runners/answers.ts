@@ -21,6 +21,11 @@ import { seedEvalUser, type SeededEvalUser } from "../live/seed-user.js";
 
 const live = process.env.EVAL_LIVE === "1";
 
+function firstLineOfDetail(detail: string): string {
+  const line = detail.split(/\r?\n/, 1)[0] ?? detail;
+  return line.trim();
+}
+
 function mismatchKind(
   c: AnswerGoldenCase,
   r: AnswerResult,
@@ -99,13 +104,11 @@ export async function runAnswersEval(): Promise<{
       r.kind === "answered" ? r.citations.map((x) => x.moduleSlug) : [];
     let inT: number | null = null;
     let outT: number | null = null;
-    if (live) {
-      // We don't have a hook; leave null in live. Offline mocks could attach — skip.
-      inT = null;
-      outT = null;
-    } else {
-      inT = 100;
-      outT = 30;
+    let caseModelId = modelId;
+    if (r.kind === "answered") {
+      inT = r.usage.inputTokens;
+      outT = r.usage.outputTokens;
+      caseModelId = r.usage.modelId;
     }
     inTok += inT ?? 0;
     outTok += outT ?? 0;
@@ -120,11 +123,14 @@ export async function runAnswersEval(): Promise<{
         : {}),
       cited_module_slugs: cited,
       reason_code: r.kind === "refused" ? (r.reason.code as AnswerCaseReport["reason_code"]) : null,
+      ...(r.kind === "refused" && r.reason.code === "internal_error"
+        ? { reason_detail: r.reason.detail }
+        : {}),
       verification_refused: verificationRefused(c, r),
       latency_ms: ms,
       input_tokens: inT,
       output_tokens: outT,
-      model_id: modelId,
+      model_id: caseModelId,
       ...(c.notes !== undefined ? { notes: c.notes } : {}),
     });
   }
@@ -172,6 +178,15 @@ export async function runAnswersEval(): Promise<{
   const p50 = percentile(latencies, 50);
   const p95 = percentile(latencies, 95);
 
+  const internalErrorDistinctFirstLines =
+    refusalReasons.internal_error > 0
+      ? new Set(
+          perCase
+            .filter((p) => p.reason_code === "internal_error" && p.reason_detail)
+            .map((p) => firstLineOfDetail(p.reason_detail!)),
+        ).size
+      : undefined;
+
   const summary: AnswersReportSummary = {
     kind_accuracy: kindAcc,
     cited_module_hit_rate: citedRate,
@@ -186,6 +201,9 @@ export async function runAnswersEval(): Promise<{
     p95_ms: p95,
     mismatch_breakdown: breakdown,
     refusal_reasons: refusalReasons,
+    ...(internalErrorDistinctFirstLines !== undefined
+      ? { internal_error_distinct_first_lines: internalErrorDistinctFirstLines }
+      : {}),
   };
 
   const report: AnswersReport = {
