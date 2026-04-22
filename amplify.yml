@@ -40,15 +40,38 @@ applications:
             - ls -la apps/web/.next/standalone 2>&1 || true
             - find apps/web/.next/standalone -name "server.js" 2>&1 || true
             - du -sh apps/web/.next apps/web/.next/server apps/web/.next/static apps/web/.next/standalone 2>&1 || true
+            # SSR-detection guard: Amplify needs these at the artifact root or it provisions no
+            # compute function (CloudFront then returns 500 with no `server:` header). Fail the
+            # build here instead of shipping a half-broken deploy.
+            - |
+              missing=""
+              for f in BUILD_ID required-server-files.json routes-manifest.json prerender-manifest.json; do
+                if [ ! -f "apps/web/.next/$f" ]; then missing="$missing $f"; fi
+              done
+              if [ -n "$missing" ]; then
+                echo "FATAL: SSR detection manifests missing from .next/:$missing" >&2
+                exit 1
+              fi
+              echo "SSR detection manifests present at .next/ root."
             - echo "=== postBuild done ==="
       artifacts:
         # `output: 'standalone'` (apps/web/next.config.ts) writes a self-contained server tree
         # under `.next/standalone` plus the client chunks under `.next/static`. Shipping the full
         # `.next/` would also upload `.next/server` — a duplicate of what's already inside
         # `standalone/` — and put the artifact over Amplify's ~220MB deploy limit (440MB+ observed).
-        # Restrict the upload to the two trees the SSR runner actually needs.
+        #
+        # IMPORTANT: Amplify Hosting's Next.js SSR build provider detects "this is an SSR app"
+        # by reading manifests at the artifact root (`required-server-files.json`, `BUILD_ID`,
+        # `routes-manifest.json`, `prerender-manifest.json`, `app-path-routes-manifest.json`,
+        # `app-build-manifest.json`, `build-manifest.json`). If those are missing, Amplify
+        # provisions NO compute function — CloudFront has no origin and every URL returns
+        # `500` from CloudFront (header `x-cache: Error from cloudfront`, no `server:` header).
+        # The build & deploy phases still report SUCCEED because nothing throws; the failure
+        # is silent at the SSR-detection step. Total manifest weight is ~380KB.
         baseDirectory: apps/web/.next
         files:
+          - "BUILD_ID"
+          - "*.json"
           - "standalone/**/*"
           - "static/**/*"
       cache:
