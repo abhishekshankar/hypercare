@@ -1,0 +1,29 @@
+version: 1
+applications:
+  - appRoot: apps/web
+    frontend:
+      phases:
+        preBuild:
+          commands:
+            # pnpm is not preinstalled on the Amplify Standard image; activate the
+            # version pinned in the root package.json (`packageManager` field) via corepack.
+            - corepack enable
+            - corepack prepare pnpm@10.0.0 --activate
+            - pnpm --version
+            # Install the entire workspace from the repo root so workspace:^ deps
+            # (@hypercare/db, @hypercare/picker, @hypercare/rag, @hypercare/safety) resolve.
+            - cd ../..
+            - pnpm install --frozen-lockfile
+        build:
+          commands:
+            - cd ../..
+            - pnpm --filter web run build
+      artifacts:
+        baseDirectory: .next
+        files:
+          - "**/*"
+      cache:
+        paths:
+          - ../../node_modules/**/*
+          - ../../.pnpm-store/**/*
+          - .next/cache/**/*
