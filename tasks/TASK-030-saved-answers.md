@@ -3,7 +3,7 @@
 - **Owner:** Cursor
 - **Depends on:** TASK-011 (conversation UI already renders a "Save this" button per PRD §6.4, but today it's non-persisting), TASK-019 (schema v1 is the cleanest place to add the table)
 - **Unblocks:** closes the PRD §6.3 "recent conversations, saved answers, and a 'Things I want to revisit' list" promise; feeds the sprint-4 "review surface" feature set
-- **Status:** pending
+- **Status:** done
 - **ADR:** none strictly required (small, additive). An optional ADR-light one-pager under `docs/adr/0020-saved-answers.md` is welcome for the decision on "save a message" vs "save a conversation."
 
 ---

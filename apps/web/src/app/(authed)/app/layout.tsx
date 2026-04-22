@@ -1,6 +1,15 @@
 import Link from "next/link";
 
-export default function AppSectionLayout({ children }: Readonly<{ children: React.ReactNode }>) {
+import { requireSession } from "@/lib/auth/session";
+import { maybeLogUserSessionForApp } from "@/lib/internal/visit-log";
+
+export default async function AppSectionLayout({
+  children,
+}: Readonly<{
+  children: React.ReactNode;
+}>) {
+  const s = await requireSession();
+  await maybeLogUserSessionForApp(s.userId);
   return (
     <div>
       <nav

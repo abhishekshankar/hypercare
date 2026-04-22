@@ -18,6 +18,7 @@ import {
   messages,
   modules,
   safetyFlags,
+  userSuppression,
   users,
   weeklyCheckins,
 } from "@hypercare/db";
@@ -69,6 +70,7 @@ export async function GET(request: NextRequest) {
   const onboarded = mode === "onboarded";
 
   await db.delete(safetyFlags).where(eq(safetyFlags.userId, userRow.id));
+  await db.delete(userSuppression).where(eq(userSuppression.userId, userRow.id));
   await db.delete(lessonProgress).where(eq(lessonProgress.userId, userRow.id));
   await db.delete(weeklyCheckins).where(eq(weeklyCheckins.userId, userRow.id));
   // Always clear conversation history so each test starts from an empty

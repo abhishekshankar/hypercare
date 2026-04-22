@@ -4,7 +4,15 @@ import {
   __setRagOverrideForTests,
 } from "@/lib/conversation/answer-client";
 import { isE2ETestRuntime } from "@/lib/env.test-runtime";
-import type { AnswerInput, AnswerResult } from "@hypercare/rag";
+import type { AnswerInput, AnswerResult, OperatorMetadata, RagUsage } from "@hypercare/rag";
+
+function e2eOp(usage: RagUsage | null, tier: number | null = null): OperatorMetadata {
+  return {
+    pipelineLatencyMs: 10,
+    topRetrievalTier: tier,
+    lastGenerationUsage: usage,
+  };
+}
 
 export const dynamic = "force-dynamic";
 
@@ -32,6 +40,11 @@ function isAuthorized(request: NextRequest): boolean {
 const FIXTURE_FN = (input: AnswerInput): Promise<AnswerResult> => {
   const q = input.question.toLowerCase();
   if (/(afternoon agitation|sundowning|agitat)/.test(q)) {
+    const usage: RagUsage = {
+      inputTokens: null,
+      outputTokens: null,
+      modelId: "e2e-mock",
+    };
     return Promise.resolve({
       kind: "answered",
       text:
@@ -46,11 +59,8 @@ const FIXTURE_FN = (input: AnswerInput): Promise<AnswerResult> => {
             "Adapted from the Alzheimer's Association caregiver guide, 2024.",
         },
       ],
-      usage: {
-        inputTokens: null,
-        outputTokens: null,
-        modelId: "e2e-mock",
-      },
+      usage,
+      operator: e2eOp(usage, 1),
       classifiedTopics: [] satisfies string[],
       topicConfidence: null,
     });
@@ -59,6 +69,7 @@ const FIXTURE_FN = (input: AnswerInput): Promise<AnswerResult> => {
     return Promise.resolve({
       kind: "refused",
       reason: { code: "off_topic", matched_category: null },
+      operator: e2eOp(null, 1),
       classifiedTopics: [] satisfies string[],
       topicConfidence: null,
     });
@@ -72,7 +83,90 @@ const FIXTURE_FN = (input: AnswerInput): Promise<AnswerResult> => {
         severity: "high",
         suggestedAction: "call_988",
         source: "rule",
+        repeat_in_window: false,
       },
+      operator: e2eOp(null, null),
+      classifiedTopics: [] satisfies string[],
+      topicConfidence: null,
+    });
+  }
+  // TASK-025: drive each remaining PRD §10.3 category in the e2e spec.
+  if (/she might hurt herself|wants? to die|cr_self_harm/.test(q)) {
+    return Promise.resolve({
+      kind: "refused",
+      reason: {
+        code: "safety_triaged",
+        category: "self_harm_cr",
+        severity: "high",
+        suggestedAction: "call_911",
+        source: "rule",
+        repeat_in_window: false,
+      },
+      operator: e2eOp(null, null),
+      classifiedTopics: [] satisfies string[],
+      topicConfidence: null,
+    });
+  }
+  if (/fell and hit her head|chest pain|not breathing|stroke|wandered|missing/.test(q)) {
+    return Promise.resolve({
+      kind: "refused",
+      reason: {
+        code: "safety_triaged",
+        category: "acute_medical",
+        severity: "high",
+        suggestedAction: "call_911",
+        source: "rule",
+        repeat_in_window: false,
+      },
+      operator: e2eOp(null, null),
+      classifiedTopics: [] satisfies string[],
+      topicConfidence: null,
+    });
+  }
+  if (/lost my temper|i pushed her|i hit him today|breaking point|i can'?t take/.test(q)) {
+    return Promise.resolve({
+      kind: "refused",
+      reason: {
+        code: "safety_triaged",
+        category: "abuse_caregiver_to_cr",
+        severity: "high",
+        suggestedAction: "call_adult_protective_services",
+        source: "rule",
+        repeat_in_window: false,
+      },
+      operator: e2eOp(null, null),
+      classifiedTopics: [] satisfies string[],
+      topicConfidence: null,
+    });
+  }
+  if (/forced to sign|stolen|exploit|coerced|financial abuse|signed under pressure/.test(q)) {
+    return Promise.resolve({
+      kind: "refused",
+      reason: {
+        code: "safety_triaged",
+        category: "abuse_cr_to_caregiver",
+        severity: "high",
+        suggestedAction: "call_adult_protective_services",
+        source: "rule",
+        repeat_in_window: false,
+      },
+      operator: e2eOp(null, null),
+      classifiedTopics: [] satisfies string[],
+      topicConfidence: null,
+    });
+  }
+  if (/double the dose|how much.*give|extra ativan|stop her medication/.test(q)) {
+    return Promise.resolve({
+      kind: "refused",
+      reason: {
+        code: "safety_triaged",
+        category: "neglect",
+        severity: "high",
+        suggestedAction: "show_crisis_strip_emphasis",
+        source: "rule",
+        repeat_in_window: false,
+      },
+      operator: e2eOp(null, null),
       classifiedTopics: [] satisfies string[],
       topicConfidence: null,
     });
@@ -80,6 +174,7 @@ const FIXTURE_FN = (input: AnswerInput): Promise<AnswerResult> => {
   return Promise.resolve({
     kind: "refused",
     reason: { code: "low_confidence", top_distance: 1.5 },
+    operator: e2eOp(null, 1),
     classifiedTopics: [] satisfies string[],
     topicConfidence: null,
   });

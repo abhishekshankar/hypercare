@@ -1,14 +1,16 @@
 "use client";
 
-import { useCallback, useId, useMemo, useState } from "react";
+import { useCallback, useId, useLayoutEffect, useMemo, useState } from "react";
 import { useRouter } from "next/navigation";
 
-import type { Citation, RefusalReason } from "@hypercare/rag";
+import type { Citation, RefusalReason, SafetyTriageReason } from "@hypercare/rag";
 
 import { CitationChip } from "./CitationChip";
 import { CitationExpansion } from "./CitationExpansion";
 import { Composer } from "./Composer";
+import { EscalationCard } from "./EscalationCard";
 import { RefusalCard } from "./RefusalCard";
+import { SaveAnswerBar, type InitialSave } from "./SaveAnswerBar";
 import { TriageCard } from "./TriageCard";
 import {
   parseAssistantText,
@@ -40,15 +42,43 @@ type Pending =
 export function ConversationThread({
   conversationId,
   initialMessages,
+  initialSaves,
   autoSubmit,
 }: Readonly<{
   conversationId: string;
   initialMessages: ThreadMessage[];
+  /**
+   * Saved rows for this conversation (message-level bookmarks). Drives
+   * initial "Saved" + note state per assistant turn.
+   */
+  initialSaves: ReadonlyArray<{
+    messageId: string;
+    saveId: string;
+    note: string | null;
+  }>;
   autoSubmit?: string | undefined;
 }>) {
   const router = useRouter();
   const [messages, setMessages] = useState<ThreadMessage[]>(initialMessages);
   const [pending, setPending] = useState<Pending>({ kind: "idle" });
+  const saveByMessage = useMemo(() => {
+    const m = new Map<string, { saveId: string; note: string | null }>();
+    for (const s of initialSaves) {
+      m.set(s.messageId, { saveId: s.saveId, note: s.note });
+    }
+    return m;
+  }, [initialSaves]);
+  const onSaveMutate = useCallback(() => {
+    router.refresh();
+  }, [router]);
+
+  useLayoutEffect(() => {
+    const hash = window.location.hash;
+    if (hash?.startsWith("#message-")) {
+      const el = document.getElementById(hash.slice(1));
+      el?.scrollIntoView({ block: "center" });
+    }
+  }, [messages.length, conversationId]);
 
   const onSubmit = useCallback(
     async (text: string) => {
@@ -93,25 +123,46 @@ export function ConversationThread({
       <div className="space-y-6" data-testid="thread-messages">
         {messages.map((m) =>
           m.role === "user" ? (
-            <UserBubble key={m.id} message={m} />
-          ) : (
-            <AssistantBubble
+            <div
+              className="scroll-mt-24"
+              data-turn="user"
+              id={`message-${m.id}`}
               key={m.id}
-              drivesCrisisStrip={m.id === lastAssistantId}
-              message={m}
-            />
+            >
+              <UserBubble message={m} />
+            </div>
+          ) : (
+            <div
+              className="scroll-mt-24"
+              data-turn="assistant"
+              id={`message-${m.id}`}
+              key={m.id}
+            >
+              <AssistantBubble
+                drivesCrisisStrip={m.id === lastAssistantId}
+                initialSave={saveByMessage.get(m.id) ?? null}
+                message={m}
+                onSaveMutate={onSaveMutate}
+              />
+            </div>
           ),
         )}
         {pending.kind === "sending" ? (
           <>
-            <UserBubble
-              message={{
-                id: "pending-user",
-                role: "user",
-                content: pending.userText,
-                createdAt: new Date().toISOString(),
-              }}
-            />
+            <div
+              className="scroll-mt-24"
+              data-turn="user"
+              id="message-pending-user"
+            >
+              <UserBubble
+                message={{
+                  id: "pending-user",
+                  role: "user",
+                  content: pending.userText,
+                  createdAt: new Date().toISOString(),
+                }}
+              />
+            </div>
             <AssistantPending />
           </>
         ) : null}
@@ -159,14 +210,27 @@ function UserBubble({ message }: Readonly<{ message: Extract<ThreadMessage, { ro
 function AssistantBubble({
   message,
   drivesCrisisStrip,
+  initialSave,
+  onSaveMutate,
 }: Readonly<{
   message: Extract<ThreadMessage, { role: "assistant" }>;
   drivesCrisisStrip: boolean;
+  initialSave: { saveId: string; note: string | null } | null;
+  onSaveMutate: () => void;
 }>) {
   if (message.refusal) {
     return (
       <div data-role="assistant" data-testid="assistant-refusal">
-        {message.refusal.code === "safety_triaged" ? (
+        {message.refusal.code === "safety_triaged" && message.refusal.script ? (
+          <EscalationCard
+            drivesCrisisStrip={drivesCrisisStrip}
+            reason={
+              message.refusal as SafetyTriageReason & {
+                script: NonNullable<SafetyTriageReason["script"]>;
+              }
+            }
+          />
+        ) : message.refusal.code === "safety_triaged" ? (
           <TriageCard drivesCrisisStrip={drivesCrisisStrip} reason={message.refusal} />
         ) : (
           <RefusalCard reason={message.refusal} />
@@ -175,23 +239,46 @@ function AssistantBubble({
     );
   }
   return (
-    <AnsweredAssistant content={message.content} citations={message.citations} />
+    <AnsweredAssistant
+      citations={message.citations}
+      content={message.content}
+      initialSave={initialSave}
+      messageId={message.id}
+      onSaveMutate={onSaveMutate}
+    />
   );
 }
 
 function AnsweredAssistant({
   content,
   citations,
-}: Readonly<{ content: string; citations: Citation[] }>) {
+  messageId,
+  initialSave,
+  onSaveMutate,
+}: Readonly<{
+  content: string;
+  citations: Citation[];
+  messageId: string;
+  initialSave: { saveId: string; note: string | null } | null;
+  onSaveMutate: () => void;
+}>) {
+  const initial: InitialSave = initialSave
+    ? { saveId: initialSave.saveId, note: initialSave.note }
+    : null;
   const paragraphs = useMemo(
     () => parseAssistantText(content, citations),
     [content, citations],
   );
   return (
-    <div className="space-y-4 text-base leading-relaxed text-foreground" data-role="assistant">
+    <div
+      className="space-y-4 text-base leading-relaxed text-foreground"
+      data-role="assistant"
+      data-testid="assistant-answered"
+    >
       {paragraphs.map((para, i) => (
         <ParagraphBlock key={i} citations={citations} paragraph={para} />
       ))}
+      <SaveAnswerBar initial={initial} messageId={messageId} onMutate={onSaveMutate} />
     </div>
   );
 }

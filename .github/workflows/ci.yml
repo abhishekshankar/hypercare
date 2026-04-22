@@ -38,6 +38,12 @@ jobs:
       - name: Verify web client bundle (no RAG/Bedrock in client JS)
         run: pnpm --filter web run check:client-bundle
 
+      - name: Check safety escalation scripts
+        run: pnpm --filter @hypercare/safety check:scripts
+
+      - name: Red-team v1 (offline smoke)
+        run: pnpm --filter @hypercare/eval start -- redteam
+
       - name: Test
         run: pnpm test
 

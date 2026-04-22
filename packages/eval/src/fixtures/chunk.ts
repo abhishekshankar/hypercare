@@ -44,6 +44,7 @@ export function makeRetrievedChunk(
     moduleId: BASE.moduleId,
     moduleSlug: m.moduleSlug,
     moduleTitle: m.moduleTitle,
+    moduleTier: 1,
     category: m.category,
     attributionLine: BASE.attributionLine,
     sectionHeading: opts.sectionHeading,

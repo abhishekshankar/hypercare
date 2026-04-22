@@ -46,7 +46,7 @@ export async function runSafetyEval(): Promise<{
   const perCase: SafetyCaseReport[] = [];
   const latencies: number[] = [];
   const dbUrl = process.env.DATABASE_URL;
-  const offlineDeps = { persist: async () => {}, disableLlm: true };
+  const offlineDeps = { persist: async () => ({ repeatInWindow: false }), disableLlm: true };
   const liveDeps =
     live && dbUrl
       ? buildDefaultDeps({

@@ -17,3 +17,11 @@ export function reportDirForRunner(runner: "retrieval" | "safety" | "answers"): 
 export function reportLatestPath(runner: "retrieval" | "safety" | "answers"): string {
   return join(reportDirForRunner(runner), "latest.json");
 }
+
+export function redteamReportDir(): string {
+  return join(EVAL_ROOT, "reports", "redteam");
+}
+
+export function redteamReportLatestJson(): string {
+  return join(redteamReportDir(), "latest.json");
+}

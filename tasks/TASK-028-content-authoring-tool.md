@@ -3,7 +3,7 @@
 - **Owner:** Cursor
 - **Depends on:** TASK-008 (content loader + `module_chunks` embedding pipeline; this tool's publish step reuses it), TASK-021 (admin-gated surfaces exist — reuse the role/auth pattern), TASK-023 (library reads modules; the tool writes modules)
 - **Unblocks:** the content team's 30–50-module ramp (PRD §7.1 library) without blocking every module on a dev PR
-- **Status:** pending
+- **Status:** in_progress
 - **ADR:** `docs/adr/0018-content-authoring-tool.md` (new — workflow states, data model, why-not-Contentful decision)
 
 ---

@@ -7,7 +7,7 @@ import { classifySafety, type SafetyLayerDeps } from "../src/layers/0-safety.js"
 function buildLayerDeps(over: Partial<ClassifyDeps> = {}): SafetyLayerDeps {
   return {
     classifyDeps: {
-      persist: vi.fn(async () => undefined),
+      persist: vi.fn(async () => ({ repeatInWindow: false })),
       disableLlm: true,
       ...over,
     },

@@ -30,7 +30,7 @@ function toVectorColumn(emb: number[]) {
   return sql.raw(`'[${emb.map((n) => n.toString()).join(",")}]'::vector(1024)`);
 }
 
-type Embeddable = {
+export type Embeddable = {
   front: ModuleFrontMatter;
   body: string;
   chunks: TextChunk[];
@@ -106,6 +106,65 @@ function parsePgVectorText(s: string): number[] {
 export type UpsertOneResult = { moduleId: string; chunkCount: number };
 
 /**
+ * Replaces `module_topics` and `module_chunks` for an existing `moduleId`
+ * (shared by disk ingest and the internal publish path).
+ * `tx` is a Drizzle transaction client (or root client).
+ */
+export async function replaceModuleChunkRowsInTx(
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any -- drizzle transaction & db share insert/delete API
+  tx: any,
+  moduleId: string,
+  input: Embeddable,
+  embeddings: number[][],
+): Promise<number> {
+  if (input.chunks.length !== embeddings.length) {
+    throw new Error("chunks and embeddings length mismatch");
+  }
+  const { front, chunks } = input;
+  await tx.delete(moduleTopics).where(eq(moduleTopics.moduleId, moduleId));
+  if (front.topics.length > 0) {
+    await tx.insert(moduleTopics).values(front.topics.map((topicSlug) => ({ moduleId, topicSlug })));
+  }
+  if (chunks.length === 0) {
+    await tx.delete(moduleChunks).where(eq(moduleChunks.moduleId, moduleId));
+    return 0;
+  }
+  await tx
+    .delete(moduleChunks)
+    .where(and(eq(moduleChunks.moduleId, moduleId), gte(moduleChunks.chunkIndex, chunks.length)));
+  for (let i = 0; i < chunks.length; i++) {
+    const ch = chunks[i]!;
+    const emb = embeddings[i]!;
+    const hash = contentHashForChunk(front.title, ch.content);
+    const metadata: ChunkMetadata = {
+      section_heading: ch.sectionHeading,
+      stage_relevance: front.stage_relevance,
+      content_hash: hash,
+    };
+    await tx
+      .insert(moduleChunks)
+      .values({
+        moduleId,
+        chunkIndex: ch.chunkIndex,
+        content: ch.content,
+        tokenCount: ch.tokenCount,
+        embedding: toVectorColumn(emb) as never,
+        metadata,
+      })
+      .onConflictDoUpdate({
+        target: [moduleChunks.moduleId, moduleChunks.chunkIndex],
+        set: {
+          content: sql`excluded."content"`,
+          tokenCount: sql`excluded."token_count"`,
+          embedding: sql`excluded."embedding"::vector(1024)`,
+          metadata: sql`excluded."metadata"`,
+        },
+      });
+  }
+  return chunks.length;
+}
+
+/**
  * One transaction: upsert module, trim orphan chunks, upsert all chunk rows.
  */
 export async function upsertModuleWithChunks(
@@ -117,7 +176,7 @@ export async function upsertModuleWithChunks(
     throw new Error("chunks and embeddings length mismatch");
   }
   const db = createDbClient(databaseUrl);
-  const { front, body, chunks } = input;
+  const { front, body } = input;
   return await db.transaction(async (tx) => {
     const [row] = await tx
       .insert(modules)
@@ -135,6 +194,8 @@ export async function upsertModuleWithChunks(
         nextReviewDue: null,
         tryThisToday: front.try_this_today ?? null,
         published: true,
+        draftStatus: "published",
+        lastPublishedAt: new Date(),
       })
       .onConflictDoUpdate({
         target: modules.slug,
@@ -151,6 +212,8 @@ export async function upsertModuleWithChunks(
           nextReviewDue: sql`excluded."next_review_due"`,
           tryThisToday: sql`excluded."try_this_today"`,
           published: sql`excluded."published"`,
+          draftStatus: sql`excluded."draft_status"`,
+          lastPublishedAt: sql`excluded."last_published_at"`,
         },
       })
       .returning({ id: modules.id });
@@ -158,49 +221,8 @@ export async function upsertModuleWithChunks(
       throw new Error("Upsert module returned no row");
     }
     const moduleId = row.id;
-    await tx.delete(moduleTopics).where(eq(moduleTopics.moduleId, moduleId));
-    if (front.topics.length > 0) {
-      await tx.insert(moduleTopics).values(
-        front.topics.map((topicSlug) => ({ moduleId, topicSlug })),
-      );
-    }
-    if (chunks.length === 0) {
-      await tx.delete(moduleChunks).where(eq(moduleChunks.moduleId, moduleId));
-      return { moduleId, chunkCount: 0 };
-    }
-    await tx
-      .delete(moduleChunks)
-      .where(and(eq(moduleChunks.moduleId, moduleId), gte(moduleChunks.chunkIndex, chunks.length)));
-    for (let i = 0; i < chunks.length; i++) {
-      const ch = chunks[i]!;
-      const emb = embeddings[i]!;
-      const hash = contentHashForChunk(front.title, ch.content);
-      const metadata: ChunkMetadata = {
-        section_heading: ch.sectionHeading,
-        stage_relevance: front.stage_relevance,
-        content_hash: hash,
-      };
-      await tx
-        .insert(moduleChunks)
-        .values({
-          moduleId,
-          chunkIndex: ch.chunkIndex,
-          content: ch.content,
-          tokenCount: ch.tokenCount,
-          embedding: toVectorColumn(emb) as never,
-          metadata,
-        })
-        .onConflictDoUpdate({
-          target: [moduleChunks.moduleId, moduleChunks.chunkIndex],
-          set: {
-            content: sql`excluded."content"`,
-            tokenCount: sql`excluded."token_count"`,
-            embedding: sql`excluded."embedding"::vector(1024)`,
-            metadata: sql`excluded."metadata"`,
-          },
-        });
-    }
-    return { moduleId, chunkCount: chunks.length };
+    const chunkCount = await replaceModuleChunkRowsInTx(tx, moduleId, input, embeddings);
+    return { moduleId, chunkCount };
   });
 }
 

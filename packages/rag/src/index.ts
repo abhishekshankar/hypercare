@@ -28,9 +28,11 @@ export type {
   AnswerInput,
   AnswerResult,
   Citation,
+  OperatorMetadata,
   RagUsage,
   RefusalReason,
   RetrievedChunk,
+  SafetyEscalationScript,
   SafetyTriageReason,
   Stage,
   TopicFields,
@@ -41,4 +43,16 @@ export { getRecentTopicSignal } from "./topics/signal.js";
 export type { RagConfig } from "./config.js";
 export { DEFAULT_CONFIG, withConfig } from "./config.js";
 export { buildDefaultDeps } from "./deps.js";
+export { invokeClaude } from "./bedrock/claude.js";
 export { runPipeline } from "./pipeline.js";
+export { loadConversationMemoryForAnswer } from "./memory/load.js";
+export {
+  runConversationMemoryRefresh,
+  countUserMessagesInConversation,
+  shouldRunMemoryRefresh,
+} from "./memory/refresh.js";
+export { parseMemorySections } from "./memory/section-parse.js";
+export { verifyMemorySummaryBannedContent } from "./memory/verify-banned.js";
+export { estimateTokenCount } from "./memory/tokens.js";
+export { rewriteQueryWithMemory } from "./memory/query-rewrite.js";
+export type { ConversationMemoryForPrompt, MemoryRefreshLog } from "./memory/types.js";

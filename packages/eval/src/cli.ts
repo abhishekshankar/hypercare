@@ -1,5 +1,6 @@
 #!/usr/bin/env node
 import { runAnswersEval } from "./runners/answers.js";
+import { runRedteamEval, runRedteamExport } from "./runners/redteam.js";
 import { runRetrievalEval } from "./runners/retrieval.js";
 import { runSafetyEval } from "./runners/safety.js";
 
@@ -18,11 +19,50 @@ function pickCmd(): string {
   return a[0] ?? "all";
 }
 
+function hasFlag(name: string): boolean {
+  const a = process.argv.slice(2);
+  return a.includes(name);
+}
+
+function argAfter(flag: string): string | undefined {
+  const a = process.argv.slice(2);
+  const i = a.indexOf(flag);
+  if (i === -1) return undefined;
+  return a[i + 1];
+}
+
 async function main() {
   const a = pickCmd();
+  if (a === "redteam:export") {
+    const fmt = argAfter("--format") ?? "external-review";
+    if (fmt !== "external-review") {
+      console.error("Usage: … redteam:export --format external-review");
+      process.exit(2);
+    }
+    await runRedteamExport({ format: "external-review" });
+    process.exit(0);
+  }
+  if (a === "redteam") {
+    const doubleRun = hasFlag("--double-run");
+    const fixture = argAfter("--fixture");
+    const r = await runRedteamEval({
+      offline: hasFlag("--offline"),
+      doubleRun,
+      ...(fixture !== undefined ? { fixture } : {}),
+    });
+    console.log(r.message);
+    console.log(
+      JSON.stringify(
+        { pass_rate: r.report.summary.pass_rate, by_bucket: r.report.summary.by_bucket, gate: r.report.summary.gate },
+        null,
+        2,
+      ),
+    );
+    process.exit(r.exitCode);
+  }
   if (!["retrieval", "safety", "answers", "all"].includes(a)) {
     console.error(
-      "Usage: pnpm --filter @hypercare/eval start -- <retrieval|safety|answers|all>  (alias: pnpm … run eval -- …; see ADR 0011)",
+      "Usage: pnpm --filter @hypercare/eval start -- <retrieval|safety|answers|all|redteam|redteam:export>  (alias: pnpm … run eval -- …; see ADR 0011 / 0016)",
     );
     process.exit(2);
   }

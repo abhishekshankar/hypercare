@@ -12,7 +12,8 @@
     }
   },
   "scripts": {
-    "build": "rimraf dist tsconfig.tsbuildinfo && tsc -p tsconfig.json && node ./scripts/copy-prompts.mjs",
+    "build": "rimraf dist tsconfig.tsbuildinfo && tsc -p tsconfig.json && node ./scripts/copy-prompts.mjs && node ./scripts/copy-scripts.mjs",
+    "check:scripts": "tsx scripts/check-safety-scripts.ts",
     "lint": "eslint src test --max-warnings 0",
     "typecheck": "tsc -p tsconfig.json --noEmit && tsc -p tsconfig.test.json --noEmit",
     "test": "vitest run",
@@ -22,9 +23,11 @@
     "@aws-sdk/client-bedrock-runtime": "^3.1034.0",
     "@hypercare/db": "workspace:*",
     "drizzle-orm": "^0.45.2",
+    "js-yaml": "^4.1.0",
     "zod": "^4.3.6"
   },
   "devDependencies": {
+    "@types/js-yaml": "^4.0.9",
     "@types/node": "^25.6.0",
     "rimraf": "^6.0.1",
     "tsx": "^4.21.0",

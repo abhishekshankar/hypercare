@@ -64,6 +64,8 @@ export type SafetyResult =
       suggestedAction: SuggestedAction;
       matchedSignals: string[];
       source: "rule" | "llm";
+      /** True when this triage updated an existing row in the 5-minute dedupe window (TASK-025). */
+      repeatInWindow: boolean;
     };
 
 /**

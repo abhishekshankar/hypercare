@@ -9,7 +9,7 @@ import { fakeEmbedding, makeChunk } from "./fixtures.js";
 type SearchArgs = { embedding: number[]; stage: Stage | null; k: number };
 
 const offlineSafety: ClassifyDeps = {
-  persist: vi.fn(async () => {}),
+  persist: vi.fn(async () => ({ repeatInWindow: false })),
   disableLlm: true,
 };
 
@@ -274,7 +274,7 @@ describe("pipeline orchestrator (end-to-end, all mocks)", () => {
         stopReason: null,
       }),
     );
-    const persist = vi.fn(async () => undefined);
+    const persist = vi.fn(async () => ({ repeatInWindow: false }));
     const deps = buildDeps({
       search,
       generate,
@@ -300,7 +300,7 @@ describe("pipeline orchestrator (end-to-end, all mocks)", () => {
   });
 
   it("answers normally on a non-crisis golden question (sundowning) — no safety flag", async () => {
-    const persist = vi.fn(async () => undefined);
+    const persist = vi.fn(async () => ({ repeatInWindow: false }));
     const deps = buildDeps({ safety: { persist, disableLlm: true } });
     const r = await runPipeline(
       { question: "how do I help with sundowning", userId: "u1" },

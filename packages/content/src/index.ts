@@ -10,3 +10,27 @@ export {
   type UpsertOneResult,
 } from "./upsert.js";
 export { requireDatabaseUrlAdmin, resolveModulesDir, runLoad } from "./cli.js";
+export {
+  buildModuleFrontMatterFromModuleRow,
+  publishModuleFromDatabase,
+  runIngestAllModulesFromDisk,
+} from "./ingest.js";
+export {
+  APP_ROLES,
+  hasAnyRole,
+  isAppRole,
+  isPrivilegedContentRole,
+  type AppRole,
+} from "./app-role.js";
+export {
+  DRAFT_STATUSES,
+  assertCanCallPublish,
+  canPublishForCategory,
+  evidenceRequiredForMoveToExpertReview,
+  hasAllRequiredApprovals,
+  isDraftStatus,
+  requiredReviewRolesForCategory,
+  validateTransitionRequest,
+  type DraftStatus,
+} from "./workflow.js";
+export { replaceModuleChunkRowsInTx } from "./upsert.js";

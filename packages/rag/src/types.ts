@@ -7,6 +7,30 @@ export type AnswerInput = {
   userId: string;
   /** Optional last user line for short-followup topic disambiguation (TASK-022). */
   priorUserTurn?: string | null;
+  /** When present, safety `safety_flags` dedupe + linkage use this (TASK-025). */
+  conversationId?: string;
+  /**
+   * Pre-rendered markdown from `care_profile` (apps/web). Injected above sources; not a citation.
+   * TASK-027.
+   */
+  careProfileContextMd?: string | null;
+  /**
+   * Rolling conversation summary from `conversation_memory` when valid (not invalidated).
+   * TASK-027.
+   */
+  conversationMemoryMd?: string | null;
+};
+
+/** Filled in server-side in apps/web from markdown scripts (not bundled to client). */
+export type SafetyEscalationScript = {
+  version: number;
+  reviewed_by: string;
+  reviewed_on: string;
+  next_review_due: string;
+  direct_answer: string;
+  body_md: string;
+  primary_resources: Array<{ label: string; href: string; primary?: boolean }>;
+  disclosure?: string;
 };
 
 /** Carried on every `AnswerResult` for persistence on the user `messages` row. */
@@ -31,6 +55,8 @@ export type RetrievedChunk = {
   content: string;
   /** pgvector cosine distance: 0 = identical, 2 = opposite. Lower is better. */
   distance: number;
+  /** Parent `modules.tier` (1 = Tier-1 reviewed modules, …). */
+  moduleTier: number;
 };
 
 export type Citation = {
@@ -65,6 +91,10 @@ export type SafetyTriageReason = {
     | "call_adult_protective_services"
     | "show_crisis_strip_emphasis";
   source: "rule" | "llm";
+  /** Deduplicated repeat inside the 5-minute window (TASK-025). */
+  repeat_in_window?: boolean;
+  /** Set by apps/web from `@hypercare/safety` scripts; omitted until enrichment. */
+  script?: SafetyEscalationScript;
 };
 
 export type RefusalReason =
@@ -89,6 +119,20 @@ export type RagUsage = {
   modelId: string;
 };
 
+/**
+ * Persisted to `messages` for the operator metrics page (TASK-029).
+ * Present on every `AnswerResult` from `runPipeline`.
+ */
+export type OperatorMetadata = {
+  pipelineLatencyMs: number;
+  topRetrievalTier: number | null;
+  /**
+   * Layer-5 token usage when generation ran; null when the pipeline refused
+   * before or without a successful generation call.
+   */
+  lastGenerationUsage: RagUsage | null;
+};
+
 export type AnswerResult =
-  | ({ kind: "answered"; text: string; citations: Citation[]; usage: RagUsage } & TopicFields)
-  | ({ kind: "refused"; reason: RefusalReason } & TopicFields);
+  | ({ kind: "answered"; text: string; citations: Citation[]; usage: RagUsage; operator: OperatorMetadata } & TopicFields)
+  | ({ kind: "refused"; reason: RefusalReason; operator: OperatorMetadata } & TopicFields);

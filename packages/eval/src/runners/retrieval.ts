@@ -109,7 +109,7 @@ export async function runRetrievalEval(): Promise<{
               stopReason: "end_turn",
             };
           },
-          safety: { persist: async () => {}, disableLlm: true },
+          safety: { persist: async () => ({ repeatInWindow: false }), disableLlm: true },
           topicClassify: offlineTopic,
         };
       }

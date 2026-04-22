@@ -16,3 +16,11 @@ if (!existsSync(src)) {
 mkdirSync(dst, { recursive: true });
 cpSync(src, dst, { recursive: true });
 console.log(`copy-prompts: copied ${src} -> ${dst}`);
+
+const memSrc = resolve(here, "../src/memory");
+const memDst = resolve(here, "../dist/memory");
+if (existsSync(memSrc)) {
+  mkdirSync(memDst, { recursive: true });
+  cpSync(memSrc, memDst, { recursive: true });
+  console.log(`copy-prompts: copied ${memSrc} -> ${memDst}`);
+}

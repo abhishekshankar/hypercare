@@ -17,9 +17,27 @@
 import { SYSTEM_PROMPT, USER_TEMPLATE } from "../prompts/loader.js";
 import type { RetrievedChunk } from "../types.js";
 
+function buildOptionalContext(input: ComposeInput): string {
+  const parts: string[] = [];
+  if (input.careProfileContextMd?.trim()) {
+    parts.push(`## Your care context (from profile)\n\n${input.careProfileContextMd.trim()}`);
+  }
+  if (input.conversationMemoryMd?.trim()) {
+    parts.push(
+      `## What we've been discussing in this conversation\n\n${input.conversationMemoryMd.trim()}`,
+    );
+  }
+  if (parts.length === 0) return "";
+  return `${parts.join("\n\n")}\n\n`;
+}
+
 export type ComposeInput = {
   scrubbedQuestion: string;
   chunks: RetrievedChunk[];
+  /** Optional; not a retrieval source — context only. TASK-027. */
+  careProfileContextMd?: string | null;
+  /** Optional; not a retrieval source — context only. TASK-027. */
+  conversationMemoryMd?: string | null;
 };
 
 export type ComposeOutput = {
@@ -41,10 +59,10 @@ export function compose(input: ComposeInput): ComposeOutput {
   const sourcesBlock = input.chunks
     .map((c, i) => renderSource(i + 1, c))
     .join("\n\n---\n\n");
-  const userPrompt = USER_TEMPLATE.replace("{{QUESTION}}", input.scrubbedQuestion).replace(
-    "{{SOURCES}}",
-    sourcesBlock,
-  );
+  const contextBlock = buildOptionalContext(input);
+  const userPrompt = USER_TEMPLATE.replace("{{CONTEXT}}", contextBlock)
+    .replace("{{QUESTION}}", input.scrubbedQuestion)
+    .replace("{{SOURCES}}", sourcesBlock);
   return {
     systemPrompt: SYSTEM_PROMPT,
     userPrompt,

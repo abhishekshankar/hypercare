@@ -17,7 +17,15 @@ export type {
   SuggestedAction,
 } from "./types.js";
 export { makeDbPersist } from "./persist.js";
-export type { PersistFn, PersistInput, SafetyDb } from "./persist.js";
+export type { PersistFn, PersistInput, PersistOutcome, SafetyDb } from "./persist.js";
+export {
+  parseEscalationFile,
+  parseEscalationMarkdown,
+  getScriptPathForCategory,
+  readScriptVersionOnly,
+  resolveScriptFilename,
+} from "./scripts/parse.js";
+export type { EscalationResource, ParsedEscalationScript } from "./scripts/parse.js";
 export {
   CLASSIFIER_MAX_TOKENS,
   CLASSIFIER_MODEL_ID,

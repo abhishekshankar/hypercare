@@ -7,8 +7,11 @@ import { CheckinCard } from "@/components/home/CheckinCard";
 import { HomeAsk } from "@/components/home/StarterChips";
 import { RecentConversations } from "@/components/home/RecentConversations";
 import { SavedLessonBanner } from "@/components/home/SavedLessonBanner";
+import { ThingsToRevisit } from "@/components/home/ThingsToRevisit";
+import { SuppressionCard } from "@/components/home/SuppressionCard";
 import { WeeksFocusCard } from "@/components/home/WeeksFocusCard";
 import { loadRecentConversations } from "@/lib/conversation/load";
+import { listRecentSavesForHome } from "@/lib/saved/service";
 import { startersForStage } from "@/lib/conversation/starters";
 import { serverEnv } from "@/lib/env.server";
 import { greetingForLocalHour } from "@/lib/greeting";
@@ -22,6 +25,7 @@ import {
   isWizardDataCompleteFromSnapshot,
   loadProfileBundle,
 } from "@/lib/onboarding/status";
+import { getSuppressionStatus } from "@/lib/safety/user-suppression";
 import { inferStage } from "@/lib/onboarding/stage";
 import type { StageAnswersRecord } from "@/lib/onboarding/stage-keys";
 
@@ -47,13 +51,17 @@ export default async function AppHomePage() {
   const greet = greetingForLocalHour(hour);
   const stage = inferStage((profile?.stageAnswers ?? {}) as StageAnswersRecord);
   const starters = startersForStage(stage);
-  const recent = await loadRecentConversations(session.userId, 5);
+  const [recent, thingsToRevisit] = await Promise.all([
+    loadRecentConversations(session.userId, 5),
+    listRecentSavesForHome(session.userId, 5),
+  ]);
 
   const db = createDbClient(serverEnv.DATABASE_URL);
   const now = () => new Date();
-  const [focus, checkin] = await Promise.all([
+  const [focus, checkin, suppression] = await Promise.all([
     pickThisWeeksFocus({ userId: session.userId }, { db, now }),
     shouldShowWeeklyCheckin(session.userId, { db, now }),
+    getSuppressionStatus(session.userId, now()),
   ]);
   const focusSubtitle = refineFocusSubtitle(focus, profile?.hardestThing ?? null);
 
@@ -66,10 +74,12 @@ export default async function AppHomePage() {
         <p className="text-base text-foreground">Caring for {crName}.</p>
       </header>
       <SavedLessonBanner />
-      <WeeksFocusCard result={focus} subtitle={focusSubtitle} />
-      {checkin.show ? <CheckinCard /> : null}
+      {suppression.active ? <SuppressionCard /> : null}
+      {suppression.active ? null : <WeeksFocusCard result={focus} subtitle={focusSubtitle} />}
+      {suppression.active ? null : checkin.show ? <CheckinCard /> : null}
       <HomeAsk starters={starters} />
       <RecentConversations items={recent} />
+      <ThingsToRevisit items={thingsToRevisit} />
     </div>
   );
 }

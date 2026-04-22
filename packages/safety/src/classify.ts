@@ -98,9 +98,9 @@ export function runAllRules(text: string): RuleHit[] {
  * `matchedSignals` is the set of rule ids from the *winning* category only —
  * cross-category misfires are noisy and would confuse downstream review.
  */
-export function aggregateRuleHits(
-  hits: RuleHit[],
-): Extract<SafetyResult, { triaged: true }> | null {
+type TriageBase = Omit<Extract<SafetyResult, { triaged: true }>, "repeatInWindow">;
+
+export function aggregateRuleHits(hits: RuleHit[]): TriageBase | null {
   if (hits.length === 0) return null;
   const topRank = Math.max(...hits.map((h) => SEVERITY_RANK[h.severity]));
   const topHits = hits.filter((h) => SEVERITY_RANK[h.severity] === topRank);
@@ -137,7 +137,7 @@ export async function classify(
   // Layer A — rules.
   const ruleAggregate = aggregateRuleHits(runAllRules(text));
   if (ruleAggregate) {
-    await deps.persist({
+    const { repeatInWindow } = await deps.persist({
       userId: input.userId,
       messageText: text,
       category: ruleAggregate.category,
@@ -149,7 +149,7 @@ export async function classify(
         ? { conversationId: input.conversationId }
         : {}),
     });
-    return ruleAggregate;
+    return { ...ruleAggregate, repeatInWindow };
   }
 
   // Layer B — Haiku. Skipped on disableLlm or if no invoker is configured.
@@ -169,7 +169,7 @@ export async function classify(
   }
   if (!llm.triaged) return { triaged: false };
 
-  const result: Extract<SafetyResult, { triaged: true }> = {
+  const result: TriageBase = {
     triaged: true,
     category: llm.category,
     severity: llm.severity,
@@ -177,7 +177,7 @@ export async function classify(
     matchedSignals: [llm.evidence],
     source: "llm",
   };
-  await deps.persist({
+  const { repeatInWindow } = await deps.persist({
     userId: input.userId,
     messageText: text,
     category: result.category,
@@ -189,7 +189,7 @@ export async function classify(
       ? { conversationId: input.conversationId }
       : {}),
   });
-  return result;
+  return { ...result, repeatInWindow };
 }
 
 /** Convenience for callers that want the default Bedrock + DB wiring. */

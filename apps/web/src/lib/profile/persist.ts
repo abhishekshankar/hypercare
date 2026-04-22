@@ -2,6 +2,7 @@ import "server-only";
 import { eq, sql } from "drizzle-orm";
 import { careProfile, careProfileChanges, createDbClient, users } from "@hypercare/db";
 
+import { invalidateConversationMemoryForUser } from "@/lib/conversation/invalidate-memory";
 import { serverEnv } from "../env.server";
 import type { ProfileChangePart } from "./change-diff";
 
@@ -63,4 +64,9 @@ export async function applyCareProfileTransaction(args: {
       });
     }
   });
+  if (args.changes.length > 0) {
+    void invalidateConversationMemoryForUser(args.userId).catch((e) => {
+      console.warn("invalidateConversationMemoryForUser", e);
+    });
+  }
 }

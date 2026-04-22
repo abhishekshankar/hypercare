@@ -30,6 +30,7 @@ type SearchRow = {
   module_id: string;
   module_slug: string;
   module_title: string;
+  module_tier: number;
   category: string;
   attribution_line: string;
   section_heading: string | null;
@@ -72,6 +73,7 @@ export async function searchChunks(params: SearchParams): Promise<RetrievedChunk
       mc.module_id       AS module_id,
       m.slug             AS module_slug,
       m.title            AS module_title,
+      m.tier             AS module_tier,
       m.category         AS category,
       m.attribution_line AS attribution_line,
       mc.metadata->>'section_heading' AS section_heading,
@@ -96,6 +98,7 @@ export async function searchChunks(params: SearchParams): Promise<RetrievedChunk
     moduleId: r.module_id,
     moduleSlug: r.module_slug,
     moduleTitle: r.module_title,
+    moduleTier: r.module_tier,
     category: r.category,
     attributionLine: r.attribution_line,
     sectionHeading: r.section_heading ?? "",

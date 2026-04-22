@@ -1,4 +1,4 @@
-import { and, eq } from "drizzle-orm";
+import { and, eq, ne } from "drizzle-orm";
 import { createDbClient, moduleTopics, modules, topics } from "@hypercare/db";
 
 import { serverEnv } from "@/lib/env.server";
@@ -19,7 +19,7 @@ export async function loadLibraryModuleList(): Promise<LibraryModuleListItem[]> 
     .from(modules)
     .leftJoin(moduleTopics, eq(modules.id, moduleTopics.moduleId))
     .leftJoin(topics, eq(moduleTopics.topicSlug, topics.slug))
-    .where(and(eq(modules.published, true)));
+    .where(and(eq(modules.published, true), ne(modules.draftStatus, "retired")));
 
   const bySlug = new Map<
     string,

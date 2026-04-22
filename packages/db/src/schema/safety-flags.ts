@@ -2,6 +2,7 @@ import { sql } from "drizzle-orm";
 import {
   check,
   index,
+  integer,
   jsonb,
   numeric,
   pgTable,
@@ -44,6 +45,12 @@ export const safetyFlags = pgTable(
     matchedSignals: jsonb("matched_signals")
       .notNull()
       .default(sql`'[]'::jsonb`),
+    /** Same-category follow-ups in a short window (TASK-025); first row 0, then incremented. */
+    repeatCount: integer("repeat_count").notNull().default(0),
+    /** Latest turn text when repeat_count is incremented. */
+    lastMessageText: text("last_message_text"),
+    /** Pre-scripted escalation file version (YAML frontmatter) at triage time. */
+    scriptVersion: integer("script_version"),
     /** Legacy v0 fields, kept nullable for back-compat with TASK-004 schema. */
     confidence: numeric("confidence", { precision: 3, scale: 2 }),
     classifierOutput: jsonb("classifier_output"),

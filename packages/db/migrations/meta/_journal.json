@@ -50,6 +50,34 @@
       "when": 1777100000000,
       "tag": "0006_modules_try_this_today",
       "breakpoints": true
+    },
+    {
+      "idx": 7,
+      "version": "7",
+      "when": 1777200000000,
+      "tag": "0007_user_suppression_and_flag_dedupe",
+      "breakpoints": true
+    },
+    {
+      "idx": 8,
+      "version": "7",
+      "when": 1777300000000,
+      "tag": "0009_saved_answers",
+      "breakpoints": true
+    },
+    {
+      "idx": 9,
+      "version": "7",
+      "when": 1777400000000,
+      "tag": "0010_metrics_surface",
+      "breakpoints": true
+    },
+    {
+      "idx": 10,
+      "version": "7",
+      "when": 1777500000000,
+      "tag": "0011_conversation_memory",
+      "breakpoints": true
     }
   ]
 }

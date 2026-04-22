@@ -19,11 +19,21 @@ import { compose } from "./layers/4-compose.js";
 import { generate as runGenerate } from "./layers/5-generate.js";
 import { ground } from "./layers/3-ground.js";
 import { retrieve } from "./layers/2-retrieve.js";
+import { rewriteQueryWithMemory } from "./memory/query-rewrite.js";
+import { parseMemorySections } from "./memory/section-parse.js";
 import { classifySafety } from "./layers/0-safety.js";
 import { understandQuestion } from "./layers/1-understand.js";
 import { verify } from "./layers/6-verify.js";
 import type { TopicClassifyInput, TopicClassifyResult } from "./topics/classifier.js";
-import type { AnswerInput, AnswerResult, RagUsage, RetrievedChunk, Stage, TopicFields } from "./types.js";
+import type {
+  AnswerInput,
+  AnswerResult,
+  OperatorMetadata,
+  RagUsage,
+  RetrievedChunk,
+  Stage,
+  TopicFields,
+} from "./types.js";
 
 export type SearchFn = (q: {
   embedding: number[];
@@ -66,6 +76,18 @@ function mergeTopics(t: TopicClassifyResult): TopicFields {
   };
 }
 
+function opMeta(
+  t0: number,
+  topRetrievalTier: number | null,
+  lastGenerationUsage: RagUsage | null,
+): OperatorMetadata {
+  return {
+    pipelineLatencyMs: Date.now() - t0,
+    topRetrievalTier,
+    lastGenerationUsage,
+  };
+}
+
 async function awaitTopic(
   p: Promise<TopicClassifyResult>,
   warn?: Deps["warn"],
@@ -82,6 +104,7 @@ async function awaitTopic(
 }
 
 export async function runPipeline(input: AnswerInput, deps: Deps): Promise<AnswerResult> {
+  const t0 = Date.now();
   const config: RagConfig = { ...DEFAULT_CONFIG, ...(deps.config ?? {}) };
 
   const topicP = deps.topicClassify({
@@ -93,7 +116,11 @@ export async function runPipeline(input: AnswerInput, deps: Deps): Promise<Answe
   try {
     // Layer 0 — Safety.
     const safety = await classifySafety(
-      { userId: input.userId, question: input.question },
+      {
+        userId: input.userId,
+        question: input.question,
+        ...(input.conversationId !== undefined ? { conversationId: input.conversationId } : {}),
+      },
       { classifyDeps: deps.safety },
     );
     if (safety.triaged) {
@@ -105,7 +132,9 @@ export async function runPipeline(input: AnswerInput, deps: Deps): Promise<Answe
           severity: safety.severity,
           suggestedAction: safety.suggestedAction,
           source: safety.source,
+          repeat_in_window: safety.repeatInWindow,
         },
+        operator: opMeta(t0, null, null),
         ...(await awaitTopic(topicP, deps.warn)),
       };
     }
@@ -116,6 +145,7 @@ export async function runPipeline(input: AnswerInput, deps: Deps): Promise<Answe
       return {
         kind: "refused",
         reason: { code: "no_content", message: "Empty question after normalization." },
+        operator: opMeta(t0, null, null),
         ...(await awaitTopic(topicP, deps.warn)),
       };
     }
@@ -123,22 +153,47 @@ export async function runPipeline(input: AnswerInput, deps: Deps): Promise<Answe
     // Stage lookup (pre-layer-2).
     const stage = await deps.loadStage(input.userId);
 
+    const retrievalQuery = rewriteQueryWithMemory(
+      understood.scrubbed,
+      input.conversationMemoryMd,
+      config,
+    );
+
     // Layer 2 — Retrieve.
     const retrieved = await retrieve(
-      { scrubbedQuestion: understood.scrubbed, stage, k: config.retrievalK },
+      { scrubbedQuestion: retrievalQuery, stage, k: config.retrievalK },
       { embed: deps.embed, search: deps.search },
     );
 
     // Layer 3 — Ground.
     const grounded = ground({ hits: retrieved.hits, config });
     if (grounded.decision === "refuse") {
-      return { kind: "refused", reason: grounded.reason, ...(await awaitTopic(topicP, deps.warn)) };
+      const top = retrieved.hits[0] as RetrievedChunk | undefined;
+      return {
+        kind: "refused",
+        reason: grounded.reason,
+        operator: opMeta(t0, top !== undefined ? top.moduleTier : null, null),
+        ...(await awaitTopic(topicP, deps.warn)),
+      };
+    }
+
+    if (input.conversationMemoryMd?.trim()) {
+      const s = parseMemorySections(input.conversationMemoryMd);
+      deps.warn?.("rag.memory.prompt_included", {
+        conversation_id: input.conversationId,
+        has_current_focus: s.hasCurrentFocus,
+        has_what_tried: s.hasWhatsTried,
+        has_open_threads: s.hasOpenThreads,
+        has_signals: s.hasSignals,
+      });
     }
 
     // Layer 4 — Compose.
     const composed = compose({
       scrubbedQuestion: understood.scrubbed,
       chunks: grounded.chunks,
+      careProfileContextMd: input.careProfileContextMd ?? null,
+      conversationMemoryMd: input.conversationMemoryMd ?? null,
     });
 
     // Layer 5 — Generate.
@@ -156,14 +211,26 @@ export async function runPipeline(input: AnswerInput, deps: Deps): Promise<Answe
     // Layer 6 — Verify.
     const verified = verify({ rawText: generated.text, sources: composed.sourceMap });
     if (!verified.ok) {
-      return { kind: "refused", reason: verified.reason, ...(await awaitTopic(topicP, deps.warn)) };
+      const top = grounded.chunks[0] as RetrievedChunk | undefined;
+      return {
+        kind: "refused",
+        reason: verified.reason,
+        operator: opMeta(
+          t0,
+          top !== undefined ? top.moduleTier : null,
+          usage,
+        ),
+        ...(await awaitTopic(topicP, deps.warn)),
+      };
     }
 
+    const topA = grounded.chunks[0] as RetrievedChunk;
     return {
       kind: "answered",
       text: verified.text,
       citations: verified.citations,
       usage,
+      operator: opMeta(t0, topA.moduleTier, usage),
       ...(await awaitTopic(topicP, deps.warn)),
     };
   } catch (err) {
@@ -180,6 +247,7 @@ export async function runPipeline(input: AnswerInput, deps: Deps): Promise<Answe
     return {
       kind: "refused",
       reason: { code: "internal_error", detail },
+      operator: opMeta(t0, null, null),
       ...(await awaitTopic(topicP, deps.warn)),
     };
   }

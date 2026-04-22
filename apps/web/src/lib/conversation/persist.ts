@@ -6,6 +6,10 @@ import type { AnswerResult, Citation, RefusalReason, TopicFields } from "@hyperc
 
 import { serverEnv } from "@/lib/env.server";
 
+function refusalReasonCode(r: RefusalReason): string {
+  return r.code;
+}
+
 export type CreateConversationInput = {
   userId: string;
   title?: string | null;
@@ -104,6 +108,8 @@ export async function persistTurn(args: {
     args.result.kind === "refused" ? args.result.reason : null;
   const responseKind: "answer" | "refusal" =
     args.result.kind === "answered" ? "answer" : "refusal";
+  const op = args.result.operator;
+  const genUsage = op.lastGenerationUsage;
 
   const [assistantRow] = await db
     .insert(messages)
@@ -114,6 +120,13 @@ export async function persistTurn(args: {
       responseKind,
       citations: assistantCitations,
       refusal: assistantRefusal,
+      retrievalTopTier: op.topRetrievalTier,
+      refusalReasonCode: args.result.kind === "refused" ? refusalReasonCode(args.result.reason) : null,
+      bedrockInputTokens: genUsage?.inputTokens ?? null,
+      bedrockOutputTokens: genUsage?.outputTokens ?? null,
+      modelId: genUsage?.modelId ?? null,
+      generationLatencyMs: op.pipelineLatencyMs,
+      ratingInvited: responseKind === "answer" ? true : false,
     })
     .returning({
       id: messages.id,

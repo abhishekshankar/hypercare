@@ -17,6 +17,7 @@ import type { ClassifyDeps } from "@hypercare/safety";
 export type SafetyInput = {
   userId: string;
   question: string;
+  conversationId?: string;
 };
 
 export type SafetyOutput = SafetyResult;
@@ -29,5 +30,12 @@ export async function classifySafety(
   input: SafetyInput,
   deps: SafetyLayerDeps,
 ): Promise<SafetyOutput> {
-  return classify({ userId: input.userId, text: input.question }, deps.classifyDeps);
+  return classify(
+    {
+      userId: input.userId,
+      text: input.question,
+      ...(input.conversationId !== undefined ? { conversationId: input.conversationId } : {}),
+    },
+    deps.classifyDeps,
+  );
 }

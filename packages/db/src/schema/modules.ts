@@ -10,6 +10,8 @@ import {
   timestamp,
   uuid,
 } from "drizzle-orm/pg-core";
+import { moduleBriefs } from "./module-briefs.js";
+import { users } from "./users.js";
 
 export const modules = pgTable(
   "modules",
@@ -29,6 +31,16 @@ export const modules = pgTable(
     /** One-line prompt for lesson "try this" card; from front-matter, optional (TASK-023). */
     tryThisToday: text("try_this_today"),
     published: boolean("published").notNull().default(false),
+    /** TASK-028 authoring workflow state (distinct from `published` boolean for library/retire). */
+    draftStatus: text("draft_status").notNull().default("draft"),
+    assignedExpertReviewerId: uuid("assigned_expert_reviewer_id").references(() => users.id, {
+      onDelete: "set null",
+    }),
+    assignedLivedReviewerId: uuid("assigned_lived_reviewer_id").references(() => users.id, {
+      onDelete: "set null",
+    }),
+    briefId: uuid("brief_id").references(() => moduleBriefs.id, { onDelete: "set null" }),
+    lastPublishedAt: timestamp("last_published_at", { withTimezone: true }),
     createdAt: timestamp("created_at", { withTimezone: true }).defaultNow().notNull(),
     updatedAt: timestamp("updated_at", { withTimezone: true }).defaultNow().notNull(),
   },
@@ -41,6 +53,14 @@ export const modules = pgTable(
       )`,
     ),
     check("modules_tier_check", sql`${t.tier} IN (1, 2, 3)`),
+    check(
+      "modules_draft_status_check",
+      sql`${t.draftStatus} IN (
+        'draft', 'content_lead_review', 'expert_review', 'lived_experience_review',
+        'approved', 'published', 'retired'
+      )`,
+    ),
     index("modules_category_tier_published_idx").on(t.category, t.tier, t.published),
+    index("modules_draft_status_idx").on(t.draftStatus),
   ],
 );

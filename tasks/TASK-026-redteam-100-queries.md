@@ -3,7 +3,7 @@
 - **Owner:** Cursor (authoring of the set is PM + Caregiver-Support Clinician; Cursor writes the harness + integration + report)
 - **Depends on:** TASK-012 (eval harness v0), TASK-025 (escalation flows so pass/fail on flow-specific UI behavior can be scored)
 - **Unblocks:** beta launch (PRD §10.5 names the 100-query red-team as a launch precondition), TASK-029 (metrics surface reports the last red-team run)
-- **Status:** pending
+- **Status:** done (harness, fixture v1, CI smoke, ADR 0016; live baseline doc — run `redteam:live` when creds available)
 - **ADR:** `docs/adr/0016-redteam-100-query-set.md` (new — set structure, scoring, reproducibility)
 
 ---

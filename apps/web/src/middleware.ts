@@ -26,6 +26,8 @@ export async function middleware(request: NextRequest) {
   const needsSessionGate =
     pathname.startsWith("/app") ||
     pathname.startsWith("/api/app") ||
+    pathname.startsWith("/api/internal") ||
+    pathname.startsWith("/internal") ||
     pathname === "/onboarding" ||
     pathname.startsWith("/onboarding/");
 
@@ -37,7 +39,7 @@ export async function middleware(request: NextRequest) {
   requestHeaders.set("x-hc-pathname", fullPath);
 
   // Machine clients expect JSON 401 from Route Handlers, not a 302 to the login page.
-  if (pathname.startsWith("/api/app")) {
+  if (pathname.startsWith("/api/app") || pathname.startsWith("/api/internal")) {
     return NextResponse.next({ request: { headers: requestHeaders } });
   }
 

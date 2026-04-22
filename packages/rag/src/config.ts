@@ -29,6 +29,23 @@ export const ANSWER_REGION = "ca-central-1";
 export const ANSWER_MAX_TOKENS = 600;
 export const ANSWER_TEMPERATURE = 0.2;
 
+/**
+ * Conversation memory refresh cadence: refresh after every N user turns, and
+ * immediately after a care-profile change (invalidation bit).
+ * TASK-027.
+ */
+export const MEMORY_REFRESH_EVERY_N = 3;
+/** Enforced on `summary_md` at refresh time (rough token count). */
+export const MEMORY_MAX_TOKENS = 400;
+/** Haiku for rolling summaries (cost envelope). */
+export const MEMORY_MODEL_ID = "us.anthropic.claude-haiku-4-5-20251001-v1:0";
+export const MEMORY_MODEL_REGION = ANSWER_REGION;
+/**
+ * If true, expand retrieval query with memory before embedding (v0: off; ship prompt-only first).
+ * TASK-027.
+ */
+export const REWRITE_QUERY_WITH_MEMORY = false;
+
 /** All knobs in one shape so callers can override piecewise. */
 export type RagConfig = {
   retrievalK: number;
@@ -41,6 +58,9 @@ export type RagConfig = {
   answerRegion: string;
   answerMaxTokens: number;
   answerTemperature: number;
+  memoryRefreshEveryN: number;
+  memoryMaxTokens: number;
+  rewriteQueryWithMemory: boolean;
 };
 
 export const DEFAULT_CONFIG: Readonly<RagConfig> = Object.freeze({
@@ -54,6 +74,9 @@ export const DEFAULT_CONFIG: Readonly<RagConfig> = Object.freeze({
   answerRegion: ANSWER_REGION,
   answerMaxTokens: ANSWER_MAX_TOKENS,
   answerTemperature: ANSWER_TEMPERATURE,
+  memoryRefreshEveryN: MEMORY_REFRESH_EVERY_N,
+  memoryMaxTokens: MEMORY_MAX_TOKENS,
+  rewriteQueryWithMemory: REWRITE_QUERY_WITH_MEMORY,
 });
 
 export function withConfig(overrides: Partial<RagConfig> = {}): RagConfig {

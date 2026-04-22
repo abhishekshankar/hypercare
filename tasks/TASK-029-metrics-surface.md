@@ -3,7 +3,7 @@
 - **Owner:** Cursor
 - **Depends on:** TASK-011 (conversations + messages with helpfulness thumbs), TASK-019 (lesson_progress + weekly_checkins), TASK-024 (the retention loop's writes)
 - **Unblocks:** PM's launch-readiness review, the week-4 / week-8 retention checkpoints that the PRD §12 metrics call for
-- **Status:** pending
+- **Status:** done
 - **ADR:** `docs/adr/0019-metrics-surface.md` (new — data model, query patterns, why-not-warehouse decision)
 
 ---

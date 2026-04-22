@@ -12,7 +12,7 @@ import type { PersistFn } from "../src/persist.js";
 /* Helper kept for clarity; some tests build their own deps inline to assert
  * mock call counts directly. */
 function _buildDeps(over: Partial<ClassifyDeps> = {}): ClassifyDeps {
-  const persist: PersistFn = vi.fn(async () => undefined);
+  const persist: PersistFn = vi.fn(async () => ({ repeatInWindow: false }));
   return {
     persist,
     disableLlm: true,
@@ -61,7 +61,7 @@ describe("aggregateRuleHits — severity/order tie-breaks", () => {
 describe("classify — empty / whitespace text short-circuit", () => {
   it("returns triaged: false for empty string without invoke or persist", async () => {
     const llmInvoke = vi.fn();
-    const persist = vi.fn(async () => undefined);
+    const persist = vi.fn(async () => ({ repeatInWindow: false }));
     const warn = vi.fn();
     const r = await classify({ userId: "u1", text: "" }, { persist, llmInvoke, warn });
     expect(r).toEqual({ triaged: false });
@@ -72,7 +72,7 @@ describe("classify — empty / whitespace text short-circuit", () => {
 
   it("returns triaged: false for whitespace-only text without invoke or persist", async () => {
     const llmInvoke = vi.fn();
-    const persist = vi.fn(async () => undefined);
+    const persist = vi.fn(async () => ({ repeatInWindow: false }));
     const warn = vi.fn();
     const r = await classify(
       { userId: "u1", text: "   \n\t  " },
@@ -86,7 +86,7 @@ describe("classify — empty / whitespace text short-circuit", () => {
 
   it("unchanged for real text (Layer A miss + LLM path)", async () => {
     const llmInvoke = vi.fn(async () => JSON.stringify({ triaged: false }));
-    const persist = vi.fn(async () => undefined);
+    const persist = vi.fn(async () => ({ repeatInWindow: false }));
     const r = await classify(
       { userId: "u1", text: "how do I help with sundowning" },
       { persist, llmInvoke },
@@ -100,7 +100,7 @@ describe("classify — empty / whitespace text short-circuit", () => {
 describe("classify — Layer A (rules) wins, no LLM call", () => {
   it("triages a self-harm question without invoking the LLM", async () => {
     const llmInvoke = vi.fn();
-    const persist = vi.fn(async () => undefined);
+    const persist = vi.fn(async () => ({ repeatInWindow: false }));
     const r = await classify(
       { userId: "u1", text: "I want to kill myself, I can't do this anymore" },
       { persist, llmInvoke },
@@ -123,7 +123,7 @@ describe("classify — Layer A (rules) wins, no LLM call", () => {
   });
 
   it("returns triaged: false on a routine caregiver question (Layer A miss + LLM disabled)", async () => {
-    const persist = vi.fn(async () => undefined);
+    const persist = vi.fn(async () => ({ repeatInWindow: false }));
     const r = await classify(
       { userId: "u1", text: "how do I help my mom with bathing" },
       { persist, disableLlm: true },
@@ -143,7 +143,7 @@ describe("classify — Layer B (LLM) on Layer A miss", () => {
         evidence: "don't see the point some days",
       }),
     );
-    const persist = vi.fn(async () => undefined);
+    const persist = vi.fn(async () => ({ repeatInWindow: false }));
     const r = await classify(
       {
         userId: "u2",
@@ -166,7 +166,7 @@ describe("classify — Layer B (LLM) on Layer A miss", () => {
 
   it("returns triaged: false when the LLM says triaged: false", async () => {
     const llmInvoke = vi.fn(async () => JSON.stringify({ triaged: false }));
-    const persist = vi.fn(async () => undefined);
+    const persist = vi.fn(async () => ({ repeatInWindow: false }));
     const r = await classify(
       { userId: "u1", text: "how do I help with sundowning" },
       { persist, llmInvoke },
@@ -177,7 +177,7 @@ describe("classify — Layer B (LLM) on Layer A miss", () => {
 
   it("downgrades to triaged: false on malformed LLM JSON without throwing", async () => {
     const llmInvoke = vi.fn(async () => "not json at all");
-    const persist = vi.fn(async () => undefined);
+    const persist = vi.fn(async () => ({ repeatInWindow: false }));
     const warn = vi.fn();
     const r = await classify(
       { userId: "u1", text: "ambiguous text the llm can't parse" },
@@ -192,7 +192,7 @@ describe("classify — Layer B (LLM) on Layer A miss", () => {
     const llmInvoke = vi.fn(async () => {
       throw new Error("Bedrock 503");
     });
-    const persist = vi.fn(async () => undefined);
+    const persist = vi.fn(async () => ({ repeatInWindow: false }));
     const warn = vi.fn();
     const r = await classify(
       { userId: "u1", text: "anything" },
@@ -245,6 +245,7 @@ describe("classify — buildDefaults wiring", () => {
     const calls: unknown[] = [];
     const persist: PersistFn = async (row) => {
       calls.push(row);
+      return { repeatInWindow: false };
     };
     const r = await classify(
       { userId: "u1", text: "I want to kill myself" },

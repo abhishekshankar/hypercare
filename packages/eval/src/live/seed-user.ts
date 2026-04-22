@@ -45,7 +45,7 @@ function isoStamp(): string {
  */
 export async function seedEvalUser(
   databaseUrl: string,
-  runner: "retrieval" | "safety" | "answers",
+  runner: "retrieval" | "safety" | "answers" | "redteam",
   opts: { withCareProfile?: boolean; stageAnswers?: Record<string, unknown> } = {},
 ): Promise<SeededEvalUser> {
   const withCareProfile = opts.withCareProfile ?? true;

@@ -32,7 +32,7 @@ export async function loadModuleBySlug(
 ): Promise<ModulePagePayload | null> {
   const db = createDbClient(serverEnv.DATABASE_URL);
   const [m] = await db.select().from(modules).where(eq(modules.slug, slug)).limit(1);
-  if (!m || !m.published) return null;
+  if (!m || !m.published || m.draftStatus === "retired") return null;
 
   const trows = await db
     .select({ slug: topics.slug, displayName: topics.displayName })

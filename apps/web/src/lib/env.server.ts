@@ -40,9 +40,25 @@ const serverSchema = z.object({
       }),
   ),
   /**
+   * Optional superuser / migration URL for content publish (embeddings + chunk write).
+   * When unset, publish uses `DATABASE_URL` (same as the app role).
+   */
+  DATABASE_URL_ADMIN: z.preprocess(
+    (v) => (typeof v === "string" && v.trim() !== "" ? v.trim() : undefined),
+    z
+      .string()
+      .refine((s) => /^postgres(ql)?:\/\//i.test(s), { message: "Invalid postgres URL" })
+      .optional(),
+  ),
+  /**
    * `test` is set by Vitest so optional secrets can be minimal in unit tests; production uses `development` or `production`.
    */
   NODE_ENV: z.enum(["development", "test", "production"]).optional(),
+  /**
+   * Comma-separated. Grants `/internal/*` (metrics) before `users.role` is set in DB.
+   * Production should rely on `users.role = 'admin'`.
+   */
+  INTERNAL_METRICS_ALLOW_EMAILS: z.string().optional(),
 });
 
 function formatZodError(err: z.ZodError): string {
@@ -69,6 +85,7 @@ const NEXT_BUILD_PLACEHOLDERS = {
   AUTH_SIGNOUT_URL: "http://127.0.0.1:1",
   SESSION_COOKIE_SECRET: "0123456789abcdef0123456789abcdef",
   DATABASE_URL: "postgres://b:b@127.0.0.1:1/b",
+  INTERNAL_METRICS_ALLOW_EMAILS: undefined,
 } as const;
 
 const isNextProductionBuild = process.env.NEXT_PHASE === "phase-production-build";
@@ -101,7 +118,9 @@ const raw = {
   DATABASE_URL: (isNextProductionBuild
     ? (process.env.DATABASE_URL ?? NEXT_BUILD_PLACEHOLDERS.DATABASE_URL)
     : process.env.DATABASE_URL) as string | undefined,
+  DATABASE_URL_ADMIN: process.env.DATABASE_URL_ADMIN,
   NODE_ENV: process.env.NODE_ENV as "development" | "test" | "production" | undefined,
+  INTERNAL_METRICS_ALLOW_EMAILS: process.env.INTERNAL_METRICS_ALLOW_EMAILS as string | undefined,
 };
 
 const parsed = serverSchema.safeParse(raw);
@@ -112,6 +131,11 @@ if (!parsed.success) {
 
 export const serverEnv = parsed.data;
 export type ServerEnv = z.infer<typeof serverSchema>;
+
+/** DB URL for `publishModuleFromDatabase` (Titan embeddings + chunk writes). */
+export function contentPublishDatabaseUrl(): string {
+  return serverEnv.DATABASE_URL_ADMIN ?? serverEnv.DATABASE_URL;
+}
 
 /** Cognito issuer for ID token validation. */
 export function cognitoIssuer(): string {

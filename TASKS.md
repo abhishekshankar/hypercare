@@ -87,7 +87,7 @@ Cursor works tickets in **ID order**. Never start the next ticket until the prev
 
 | ID       | Title                                                                                                                                                                 | Depends on                   | Status  | PR  |
 | -------- | --------------------------------------------------------------------------------------------------------------------------------------------------------------------- | ---------------------------- | ------- | --- |
-| TASK-025 | Escalation flows v1 — ship the 5 remaining PRD §10.3 flows (CR-in-danger, elder-abuse / caregiver-breaking-point, dangerous-request, medical-emergency, financial-exploitation) end-to-end with pre-scripted UI, versioned scripts, per-category 48h follow-up suppression | 010, 021                     | pending | —   |
+| TASK-025 | Escalation flows v1 — ship the 5 remaining PRD §10.3 flows (CR-in-danger, elder-abuse / caregiver-breaking-point, dangerous-request, medical-emergency, financial-exploitation) end-to-end with pre-scripted UI, versioned scripts, per-category 48h follow-up suppression | 010, 021                     | done | —   |
 | TASK-026 | Red-team eval expansion to 100 queries (PRD §10.5) — 6 category buckets + soft-flag gray zone + external-reviewer round; `EVAL_LIVE=1` gate at ≥90% pass, block merge below threshold on the new set | 012, 025                     | pending | —   |
 | TASK-027 | Conversation memory into retrieval — rolling caregiver-state summary per conversation, threaded into Layer 5 prompt composition; invalidated on profile change-log entries; capped + observability for leakage | 009, 019, 022                | pending | —   |
 | TASK-028 | Content authoring / review tool v0 (PRD §8.3 pipeline surfaced as an internal web tool) — draft → edit → expert review → lived-experience review → publish, with evidence-table entry, review-metadata writes, and auto-ingest into `module_chunks` on publish | 008, 021                     | pending | —   |
@@ -124,6 +124,57 @@ The demo is the **closed-beta readiness walkthrough.** Run it end-to-end:
 - Real-user analytics warehouse (posthog / amplitude). TASK-029 reads Postgres directly; a warehouse is a post-beta conversation.
 - Fine-tuned safety classifier (PRD §10.2) — the in-context Haiku classifier from TASK-010 keeps running; the 500–1000-example labeled corpus is collected **by** TASK-026 and TASK-025 for the eventual fine-tune, not used here.
 - An external content CMS (Contentful, Sanity). TASK-028's tool is intentionally small and internal — revisit after 20 modules have flowed through it.
+
+## Sprint 4
+
+**Sprint 4 goal:** **Run a closed beta and close the gaps it surfaces.** Sprint 3 got Hypercare to "ready to put in front of real caregivers." Sprint 4 is what we ship *during and because of* that first cohort. Three themes, named explicitly so we don't drift:
+
+1. **Learn from the beta cohort.** Streaming answers so the 2am phone-screen feel isn't a 4-second blank wait (PRD §6.4 is silent on streaming, but the helpfulness rate will reflect it). A real in-app feedback / contact-support path (TASK-025 referenced a `/help → contact support` path that doesn't exist yet). A reviewer loop for every thumbs-down that closes the helpfulness feedback cycle.
+2. **Close transparency and privacy gaps.** A user-facing "what Hypercare remembers about you" surface that covers both the care profile (partly shipped in Screen 7) and the conversation memory from TASK-027 (deliberately not user-visible in v0). Data retention / export / delete (PRD §14 open question — a gate for paid rollout and for anything past the closed beta). Legal review of the mandatory-reporter disclosure language (TASK-025 shipped a placeholder).
+3. **Polish what the beta will break.** Onboarding stage-assessment questions validated with the Care Specialist and 5–10 caregivers (PRD §5.2, §14 open question — we shipped the PRD's draft wording in sprint 2, the clinician refines now). The red-team set grown from 100 to PRD §10.5's full target of **200 adversarial + 50 lived-experience**, with the unaffiliated-crisis-counselor external-review round closed. No new categories; no new subsystems.
+
+**Sprint 4 explicitly does not** ship streaming for the lesson or library surfaces (only for the conversation answer pipeline — that's where the latency pain is). Does not build an analytics warehouse; TASK-029's Postgres surface continues to be enough. Does not add family sharing / Spanish / mobile-native / SRS. Does not replace the lesson picker policy. Does not introduce a fine-tuned safety classifier — the labeled corpus from TASK-026 and TASK-035 is collected for a sprint-5+ fine-tune, not used here.
+
+| ID       | Title                                                                                                                                                                                          | Depends on              | Status  | PR  |
+| -------- | ---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- | ----------------------- | ------- | --- |
+| TASK-031 | Streaming answers for the conversation surface — server-sent events from Layer 5/6, progressive render, graceful degrade on classifier-refusal or grounding-fail (no streamed escalation UI)   | 009, 011, 025           | pending | —   |
+| TASK-032 | Privacy posture v1 — retention schedule per table, self-serve data export (JSON zip), self-serve account delete with safety-flag retention carve-out, encoded in schema + legal-reviewed copy  | 019, 020, 029           | pending | —   |
+| TASK-033 | "What Hypercare remembers about you" surface on `/app/profile` — unified view of care-profile facts + the TASK-027 conversation-memory summary + a per-item "forget this" affordance            | 020, 027                | pending | —   |
+| TASK-034 | Onboarding stage-assessment question refinement — Care Specialist-signed wording for the 6–8 questions (PRD §5.2, §14), back-compat migration for answers already captured under draft wording | 005, 007                | pending | —   |
+| TASK-035 | Red-team set to PRD §10.5 full target — 200 adversarial + 50 lived-experience, unaffiliated-crisis-counselor external-review round closed, drift monitor for weekly regressions                 | 026                     | pending | —   |
+| TASK-036 | In-app feedback + thumbs-down reviewer loop — `/help → contact support` surface, thumbs-down capture with optional text, operator review queue at `/internal/feedback`, SLA-on-missed signal    | 011, 021, 029           | pending | —   |
+
+### Sprint 4 success criteria (the demo)
+
+The demo is the **"beta cohort learning" review.** Run it end-to-end after at least 14 days with the cohort:
+
+1. **Streaming.** Ask a question. First visible character appears within 800ms (P50) of the POST returning headers; the answer renders progressively; the source-attribution footer and follow-up chips render only after the full response completes. Classifier-flagged queries do **not** stream — the escalation card renders atomically.
+2. **Privacy.** Log in as a test user; request "Download my data" on `/app/profile`. A JSON zip with care profile, conversations, messages, saves, lesson progress, check-ins, and conversation memory arrives within 2 minutes. Request "Delete my account." A confirmation dialog explains the retention carve-out for safety-flag rows (de-identified). Complete the delete; reload → signed out; `psql` shows user-scoped rows gone, de-identified safety_flags preserved.
+3. **Transparency.** `/app/profile` → "What Hypercare remembers" section shows the care-profile facts and the conversation-memory summary side-by-side. Tap "Forget this" on a specific fact ("I live in the same home"); the profile is updated and the next answer prompt reflects the edit. The conversation-memory summary is visible; a "Refresh" button regenerates it; a "Forget this conversation's memory" button nulls it.
+4. **Onboarding refinement.** Start onboarding as a new user. The 6–8 stage-assessment questions match the Care Specialist–signed wording (different from sprint 2's). Existing users whose answers were captured under the draft wording have their saved answers migrated to the new wording without loss; the inferred stage is recomputed and matches to within one stage of the prior value for ≥ 95% of pre-migration users.
+5. **Red-team 250.** `EVAL_LIVE=1 pnpm --filter @hypercare/eval start -- redteam --fixture redteam-v2.yaml` (250 queries) reports ≥ 90% overall. The external-reviewer round closed; their line-edits are folded in or explicitly deferred with a comment per query.
+6. **Feedback loop.** A caregiver thumbs-down an answer, adds a line of text. The row appears in `/internal/feedback` within 30s. PM or the Content Lead marks it "triaged" with a comment; the caregiver sees a "thanks — we're looking at this" state on their original answer on next load. A 72h-unanswered thumbs-down surfaces in `/internal/metrics` as SLA-missed.
+
+### Sprint 4 quality gates
+
+- `pnpm lint && pnpm typecheck && pnpm test` green at every PR merge.
+- `EVAL_LIVE=1 pnpm --filter @hypercare/eval start -- answers` stays ≥ sprint-3 baseline; `redteam` mode passes against the new **250-query** fixture at ≥ 90% overall (with the three recall buckets at 100%, per TASK-026's rule).
+- **Legal sign-off** on the privacy copy (retention schedule, export language, delete copy, mandatory-reporter disclosure) is a blocker for TASK-032 merge. Placeholder names are not acceptable this sprint.
+- **Clinician sign-off** on the TASK-034 question wording. The ADR records the sign-off.
+- ADRs: 0020 (streaming), 0021 (retention + export + delete), 0022 (transparency surface), 0023 (onboarding refinement + back-compat migration), 0024 (red-team v2 structure + drift monitor), 0025 (feedback loop + SLA).
+- No new `any`s, no new top-level `eslint-disable`. Schema deltas in `docs/schema-v1.md` (or fork into `schema-v2.md` if the file grows past ~600 lines).
+
+### Out of sprint 4 (explicitly deferred to sprint 5 or later)
+
+- Spaced repetition / SRS — still deferred at the PRD level (§1.3). v2 conversation.
+- Family / multi-caregiver sharing (PRD §4.1).
+- Spanish content (PRD §1.3). The onboarding-refinement ticket structures questions so they are i18n-ready, but no strings are translated.
+- Native mobile apps.
+- Fine-tuned safety classifier. The 250 red-team labels + thumbs-down corpus are the training set for a sprint-5+ fine-tune.
+- Push notifications, SMS, email reminders. In-app only.
+- A shared inbox for the content team's feedback triage — TASK-036 ships a single list; a triage workflow can come later if volume warrants.
+- A real-time streaming for lesson content or library search. Only conversation answers stream in v1.
+- Per-user LLM model routing (e.g. Opus for medical queries, Haiku for everything else). The classifier already does routing of a sort; fine-grained model routing is a post-beta optimization.
 
 ## Flow per ticket
 

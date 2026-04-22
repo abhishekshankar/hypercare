@@ -8,6 +8,7 @@ export function makeChunk(
     moduleId: "00000000-0000-0000-0000-000000000001",
     moduleSlug: "behaviors-sundowning",
     moduleTitle: "Sundowning",
+    moduleTier: 1,
     category: "behaviors",
     attributionLine: "Reviewed by Dr. Example, MD — 2025-09-01",
     sectionHeading: "What is sundowning",

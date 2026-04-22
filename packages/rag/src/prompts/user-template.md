@@ -1,4 +1,4 @@
-CAREGIVER QUESTION:
+{{CONTEXT}}CAREGIVER QUESTION:
 {{QUESTION}}
 
 SOURCES (numbered — cite them as [1], [2], ...):

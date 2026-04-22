@@ -27,6 +27,7 @@ describe("topic classification + messages row (integration)", () => {
           moduleId: "m",
           moduleSlug: "mod",
           moduleTitle: "t",
+          moduleTier: 1,
           category: "behaviors",
           attributionLine: "a",
           sectionHeading: "h",
@@ -40,6 +41,7 @@ describe("topic classification + messages row (integration)", () => {
           moduleId: "m",
           moduleSlug: "mod",
           moduleTitle: "t",
+          moduleTier: 1,
           category: "behaviors",
           attributionLine: "a",
           sectionHeading: "h2",
@@ -53,6 +55,7 @@ describe("topic classification + messages row (integration)", () => {
           moduleId: "m",
           moduleSlug: "mod",
           moduleTitle: "t",
+          moduleTier: 1,
           category: "behaviors",
           attributionLine: "a",
           sectionHeading: "h3",
@@ -70,7 +73,7 @@ describe("topic classification + messages row (integration)", () => {
         outputTokens: 1,
         stopReason: "end_turn" as const,
       }),
-      safety: { persist: async () => {}, disableLlm: true },
+      safety: { persist: async () => ({ repeatInWindow: false }), disableLlm: true },
     };
 
     try {

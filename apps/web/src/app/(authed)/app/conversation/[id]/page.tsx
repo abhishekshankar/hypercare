@@ -1,8 +1,9 @@
 import { notFound } from "next/navigation";
 
 import { requireSession } from "@/lib/auth/session";
-import { loadThread } from "@/lib/conversation/load";
 import { ConversationThread } from "@/components/conversation/ConversationThread";
+import { loadThread } from "@/lib/conversation/load";
+import { loadSavesInConversation } from "@/lib/saved/service";
 
 export default async function ConversationPage({
   params,
@@ -15,7 +16,10 @@ export default async function ConversationPage({
   const { id } = await params;
   const { q } = await searchParams;
 
-  const thread = await loadThread(id, session.userId);
+  const [thread, initialSaves] = await Promise.all([
+    loadThread(id, session.userId),
+    loadSavesInConversation(session.userId, id),
+  ]);
   if (!thread) {
     notFound();
   }
@@ -31,6 +35,7 @@ export default async function ConversationPage({
         autoSubmit={autoSubmit}
         conversationId={thread.id}
         initialMessages={thread.messages}
+        initialSaves={initialSaves}
       />
     </div>
   );

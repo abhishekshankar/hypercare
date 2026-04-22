@@ -6,7 +6,7 @@ import { makeRetrievedChunk } from "./chunk.js";
 import { deterministicEmbedding } from "./embedding.js";
 import { RETRIEVAL_OFFLINE_HITS } from "./retrieval-offline-hits.js";
 
-const noopPersist: ClassifyDeps["persist"] = async () => {};
+const noopPersist: ClassifyDeps["persist"] = async () => ({ repeatInWindow: false });
 
 const offlineSafety: ClassifyDeps = {
   persist: noopPersist,

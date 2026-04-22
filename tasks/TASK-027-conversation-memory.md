@@ -3,7 +3,7 @@
 - **Owner:** Cursor
 - **Depends on:** TASK-009 (RAG pipeline + Layer 5 prompt composition), TASK-019 (care profile change-log), TASK-022 (topic signal — orthogonal but the memory reads the same messages table)
 - **Unblocks:** beta launch (returning users without memory re-state context every turn, which makes the product feel dumb on turn 2 and churns them), and feeds richer signal into the lesson picker indirectly
-- **Status:** pending
+- **Status:** in_review
 - **ADR:** `docs/adr/0017-conversation-memory.md` (new — summary shape, refresh policy, invalidation, token budget)
 
 ---
@@ -129,7 +129,7 @@ packages/rag/src/memory/prompt.md
 packages/rag/src/pipeline.ts            # Layer 5 integration + post-turn refresh trigger
 packages/rag/src/config.ts              # MEMORY_REFRESH_EVERY_N = 3, MAX_MEMORY_TOKENS = 400
 packages/db/src/schema/conversation-memory.ts
-packages/db/migrations/00NN_conversation_memory.sql
+packages/db/migrations/0011_conversation_memory.sql
 packages/db/src/schema/care-profile-change-log.ts   # add trigger hook that marks memory invalidated
 apps/web/src/app/api/app/conversation/[id]/message/route.ts   # existing route calls the refresh hook after persist
 apps/web/src/app/internal/conversation/[id]/memory/page.tsx   # admin audit surface
