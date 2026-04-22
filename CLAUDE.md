@@ -39,7 +39,15 @@ If platform/framework/env are already correct but the URL **still** returns **`s
 
 **500 on every route (including `/`):** `apps/web/src/instrumentation.ts` eagerly imports `env.server` in production; missing/invalid **Hosting → Environment variables** causes Zod to throw at process boot. See **`docs/auth-runbook.md`** § *Amplify: “Internal Server Error” on every page* and mirror `apps/web/.env.local` keys into Amplify (plus CloudWatch for the thrown message).
 
-**Deploy: “build output exceeds max allowed size” (~220MB):** With `output: 'standalone'`, Next still leaves **`.next/cache`** at the app root and copies it under **`standalone/.../.next/cache`** (~400MB+ total). Amplify’s deploy bundle must stay under the limit. Root **`amplify.yml`** runs **`postBuild`** `rm -rf` on those two `cache` directories before artifacts are collected (safe at runtime; cache is build-only).
+**Deploy: “build output exceeds max allowed size” (~220MB):** Two distinct bloat sources, both observed; fix is layered.
+
+1. **`.next/cache` (Next webpack/turbopack cache).** With `output: 'standalone'`, Next still leaves `.next/cache` at the app root and copies it again under `.next/standalone/.../.next/cache` (~150–200MB combined). Cache is build-only; safe to delete before artifact collection. Root `amplify.yml` `postBuild` does `rm -rf apps/web/.next/cache apps/web/.next/standalone/apps/web/.next/cache`.
+
+2. **Duplicate server tree from shipping the full `.next/`.** `output: 'standalone'` writes a self-contained server bundle under `.next/standalone/` (with traced `packages/*` workspace deps, since `outputFileTracingRoot` is the repo root). `.next/server/` already contains the same compiled server. Uploading `apps/web/.next/**/*` ships both copies — observed at **440MB after cache cleanup**, well over the ~220MB limit. Fix: narrow `artifacts.files` to `standalone/**/*` and `static/**/*` only. The SSR runner only needs the standalone tree (entry point) and the static client chunks; `.next/server` is redundant once standalone exists.
+
+The current `amplify.yml` does both. The `postBuild` also prints per-subtree `du -sh` (`.next`, `.next/server`, `.next/static`, `.next/standalone`) bracketed by `=== postBuild start/done ===` markers — if the next size failure happens, those lines tell you which subtree grew. If you don't see them in the build log, `postBuild` didn't run; check the Amplify console for a phase-level error before debugging size.
+
+**If deploy succeeds but `/_next/static/chunks/...` 404:** the compute bundle may not be laying out `static/` where the standalone `server.js` expects it. **Option B** is to align paths (e.g. ensure `.next/static` ends up as `standalone/apps/web/.next/static` relative to the process cwd, or follow AWS Next SSR + standalone layout docs for your image). Confirm with a real deploy first — Option A is the smaller diff.
 
 ## Product / architecture pointers
 

@@ -26,12 +26,21 @@ applications:
             # `next build` leaves webpack/turbopack caches under `.next/cache` and copies them
             # again under `standalone/.../.next/cache`. They are not needed at runtime but can
             # exceed Amplify's ~220MB deploy artifact limit (~400MB+ observed).
+            - echo "=== postBuild start ==="
             - rm -rf apps/web/.next/cache apps/web/.next/standalone/apps/web/.next/cache
-            - du -sh apps/web/.next || true
+            # Per-subtree size readouts make the next size-limit failure unambiguous in the build log.
+            - du -sh apps/web/.next apps/web/.next/server apps/web/.next/static apps/web/.next/standalone || true
+            - echo "=== postBuild done ==="
       artifacts:
+        # `output: 'standalone'` (apps/web/next.config.ts) writes a self-contained server tree
+        # under `.next/standalone` plus the client chunks under `.next/static`. Shipping the full
+        # `.next/` would also upload `.next/server` — a duplicate of what's already inside
+        # `standalone/` — and put the artifact over Amplify's ~220MB deploy limit (440MB+ observed).
+        # Restrict the upload to the two trees the SSR runner actually needs.
         baseDirectory: apps/web/.next
         files:
-          - "**/*"
+          - "standalone/**/*"
+          - "static/**/*"
       cache:
         paths:
           - node_modules/**/*
