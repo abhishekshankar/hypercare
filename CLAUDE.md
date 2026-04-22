@@ -24,9 +24,16 @@ Conversation messages: `POST /api/app/conversation/[id]/message` reads `users.ro
 
 If `curl -sI https://<branch>.<appId>.amplifyapp.com/` shows **404** and **`server: AmazonS3`**, Amplify deployed the `.next` folder as a **static** site (platform **WEB**). This app needs **SSR + API routes** (platform **WEB_COMPUTE**, framework **Next.js - SSR**). S3 cannot run Next.js, so there is no document at `/`.
 
-**Fix (console):** Amplify → your app → **Hosting** → **Environment variables** — ensure `AMPLIFY_MONOREPO_APP_ROOT` is `apps/web` (must match `appRoot` in root `amplify.yml`). **App settings** → **General** — set **Platform** to **WEB_COMPUTE** and **Framework** to **Next.js - SSR** (not “Web”), then redeploy the branch.
+**Monorepo env:** Hosting → **Environment variables** → `AMPLIFY_MONOREPO_APP_ROOT=apps/web` (all branches), matching `appRoot` in root `amplify.yml`.
 
-**Fix (CLI):** `aws amplify update-app --app-id <appId> --platform WEB_COMPUTE --region <region>` then trigger a new build. Use the app’s AWS region (CLI default account/region must match the Amplify app).
+**Platform / framework:** For many existing apps, the console **General → Edit** page does **not** expose Platform or Framework dropdowns; set them with the CLI (use the app’s region and account). **Platform** is **app**-level; **framework** is **branch**-level.
+
+```bash
+aws amplify update-app     --app-id <appId> --platform WEB_COMPUTE --region <region>
+aws amplify update-branch  --app-id <appId> --branch-name main --framework "Next.js - SSR" --region <region>
+```
+
+Then **redeploy** the branch (new build). Example production app: `ca-central-1`, app id `d1ajzemw7s1n5f`.
 
 ## Product / architecture pointers
 
