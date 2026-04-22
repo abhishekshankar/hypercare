@@ -11,5 +11,13 @@ export async function register() {
   if (process.env.NODE_ENV === "development") {
     return;
   }
-  await import("./lib/env.server");
+  try {
+    await import("./lib/env.server");
+  } catch (err) {
+    console.error(
+      "[hypercare] Server boot: env.server validation failed. On Amplify, set Hosting → Environment variables for every required key in apps/web/src/lib/env.server.ts (see docs/auth-runbook.md § Amplify).",
+      err,
+    );
+    throw err;
+  }
 }

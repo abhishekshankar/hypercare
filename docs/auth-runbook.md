@@ -49,6 +49,26 @@ Cognito’s registered callback is **`http://localhost:3000/api/auth/callback`**
 
 **Instrumentation / `env.server`:** In **development**, `apps/web/src/instrumentation.ts` skips eager validation of `env.server` so the dev server can boot before `.env.local` exists; the **first route that imports `env.server`** still fails loudly if required vars are missing. In **production** (`next start`), instrumentation eagerly loads `env.server` on Node startup so misconfiguration fails immediately—this is why you may not see a process-level env error in dev until you hit an authenticated or DB-backed path.
 
+### Amplify: “Internal Server Error” on every page (including `/`)
+
+After Hosting compute (`WEB_COMPUTE`) is wired up, a blanket **500** with body `Internal Server Error` almost always means **`env.server` failed during `instrumentation` boot** (before any route runs). Check **Amplify → Hosting → Build / hosting logs** (or **CloudWatch** logs for the compute function) for: `Invalid or missing environment variables` or the `[hypercare] Server boot: env.server validation failed` line.
+
+Copy the same keys you use in `apps/web/.env.local` into **Amplify → Hosting → Environment variables** for the branch (server-only; no `NEXT_PUBLIC_*` in this list). Required keys are defined in **`apps/web/src/lib/env.server.ts`** (Zod `serverSchema`); at minimum:
+
+| Variable | Notes |
+|----------|--------|
+| `COGNITO_USER_POOL_ID` | From `auth-contract.md` |
+| `COGNITO_APP_CLIENT_ID` | |
+| `COGNITO_APP_CLIENT_SECRET` | Confidential client secret (server-only); from Cognito / Secrets Manager |
+| `COGNITO_DOMAIN` | Full URL, `https://…` |
+| `COGNITO_REGION` | e.g. `ca-central-1` |
+| `AUTH_BASE_URL` | Amplify app URL, no trailing slash — see table above (**a**) |
+| `AUTH_SIGNOUT_URL` | Cognito sign-out allowlist; for Amplify often same host as `AUTH_BASE_URL` |
+| `SESSION_COOKIE_SECRET` | `openssl rand -base64 32` (must meet schema min length) |
+| `DATABASE_URL` | `postgres(ql)://…` reachable from Amplify compute (VPC / security group if RDS) |
+
+Redeploy after saving variables. Optional keys (`DATABASE_URL_ADMIN`, `CRON_SECRET`, streaming flags, etc.) are in the same schema.
+
 ## PM verification checklist (TASK-006 gate, before TASK-009)
 
 Human-in-the-loop only; Cursor cannot drive Hosted UI or your tunnel.

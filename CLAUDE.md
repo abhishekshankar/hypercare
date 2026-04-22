@@ -37,6 +37,8 @@ Then **redeploy** the branch (new build). Example production app: `ca-central-1`
 
 If platform/framework/env are already correct but the URL **still** returns **`server: AmazonS3`** on `/`, align the **monorepo build spec** with [AWS monorepo Hosting](https://docs.aws.amazon.com/amplify/latest/userguide/monorepo-configuration.html): root `amplify.yml` uses `frontend.buildPath: /`, phases run `pnpm install` / `pnpm --filter web... run build` from the repo root, and `artifacts.baseDirectory` is **`apps/web/.next`** (relative to `/`, not `.next` alone). Repo root **`.npmrc`** sets `node-linker=hoisted` (required for pnpm on Amplify). **`apps/web/next.config.ts`** sets `output: 'standalone'` and `outputFileTracingRoot` to the repo root so compute can trace `packages/*` workspace deps.
 
+**500 on every route (including `/`):** `apps/web/src/instrumentation.ts` eagerly imports `env.server` in production; missing/invalid **Hosting → Environment variables** causes Zod to throw at process boot. See **`docs/auth-runbook.md`** § *Amplify: “Internal Server Error” on every page* and mirror `apps/web/.env.local` keys into Amplify (plus CloudWatch for the thrown message).
+
 ## Product / architecture pointers
 
 - `PROJECT_BRIEF.md`, `prd.md`, root `README.md`, `ARCHITECTURE.md`

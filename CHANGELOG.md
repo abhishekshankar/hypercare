@@ -18,6 +18,7 @@ All notable changes to this repo are documented here. The format is loose; align
 
 ### Ops / runbooks
 
+- [docs/auth-runbook.md](docs/auth-runbook.md): Amplify blanket **500** / `Internal Server Error` — `instrumentation` eagerly loads `env.server` in production; mirror `apps/web/.env.local` into Amplify Hosting env vars. [CLAUDE.md](CLAUDE.md) cross-link; clearer `console.error` prefix in `apps/web/src/instrumentation.ts` before rethrow.
 - [CLAUDE.md](CLAUDE.md) "Amplify Hosting (build succeeds, site is 404)": runbook for the `server: AmazonS3` 404 symptom — Amplify app registered as platform `WEB` serves `.next` statically from S3; fix is platform `WEB_COMPUTE` + framework `Next.js - SSR`, with `AMPLIFY_MONOREPO_APP_ROOT=apps/web` matching root `amplify.yml`. Console path + `aws amplify update-app` CLI equivalent both documented.
 - Amplify monorepo hosting: root `amplify.yml` now uses `buildPath: /` and artifact `apps/web/.next`; root `.npmrc` adds `node-linker=hoisted` for pnpm on Amplify; `apps/web` Next config adds `output: 'standalone'` and `outputFileTracingRoot` for workspace file tracing when platform is already `WEB_COMPUTE` but the live URL still behaved like static S3.
 
