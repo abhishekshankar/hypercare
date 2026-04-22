@@ -1,19 +1,21 @@
 #!/usr/bin/env node
 /**
  * TASK-034: migrate legacy `stage_answers` (v0) to v1 ordinals + recompute `inferred_stage`.
- * Usage: `pnpm --filter @hypercare/db migrate:stage-v1` (dry-run) or `--commit`.
+ * Usage: `pnpm --filter @hypercare/content migrate:stage-v1` (dry-run) or `--commit`.
  */
 import { eq } from "drizzle-orm";
 
-import { careProfile, createDbClient } from "@hypercare/db";
+import {
+  careProfile,
+  createDbClient,
+  requireDatabaseUrl,
+} from "@hypercare/db";
 import {
   inferInferredStage,
   mapStageAnswersV0ToV1,
   type CareProfileStageSnapshot,
   type StageAnswersRecord,
-} from "@hypercare/content/stage-rules";
-
-import { requireDatabaseUrl } from "../env.js";
+} from "../stage-rules/index.js";
 
 const commit = process.argv.includes("--commit");
 

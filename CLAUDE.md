@@ -4,6 +4,7 @@
 
 - After pulling: `pnpm --filter @hypercare/db migrate` — never reset the DB; apply new migrations only.
 - **TASK-041:** migration `0020_library_search_streams.sql` creates telemetry for library SSE search (counts and latency only; no query text).
+- **Stage v1 data migration:** `pnpm --filter @hypercare/content migrate:stage-v1` (was `@hypercare/db`; script lives in `packages/content` so `@hypercare/db` can build before `@hypercare/content`).
 
 ## Web app (`apps/web`)
 

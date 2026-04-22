@@ -16,8 +16,10 @@ applications:
             - pnpm install --frozen-lockfile
         build:
           commands:
+            # Build workspace libraries first (`@hypercare/db` / `@hypercare/content`
+            # ship `dist/` only; `next build` does not run their `tsc`).
             - cd ../..
-            - pnpm --filter web run build
+            - pnpm --filter web... run build
       artifacts:
         baseDirectory: .next
         files:

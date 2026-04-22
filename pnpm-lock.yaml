@@ -197,9 +197,6 @@ importers:
 
   packages/db:
     dependencies:
-      '@hypercare/content':
-        specifier: workspace:*
-        version: link:../content
       '@hypercare/model-router':
         specifier: workspace:*
         version: link:../model-router

@@ -25,7 +25,7 @@ Behaviorally aligned with ADR 0005:
 
 Documented in code: `mapStageAnswersV0ToV1` in `@hypercare/content`. Conservative where v0 is ambiguous (e.g. `manages_meds: no` → `reminders`, not `hands_on_help`).
 
-One-shot script: `pnpm --filter @hypercare/db migrate:stage-v1` (dry-run default; `--commit` to write). The script reports how many `inferred_stage` values differ from the prior value; if the flip rate is high, pause and review rules with the Care Specialist before committing.
+One-shot script: `pnpm --filter @hypercare/content migrate:stage-v1` (dry-run default; `--commit` to write). The script reports how many `inferred_stage` values differ from the prior value; if the flip rate is high, pause and review rules with the Care Specialist before committing.
 
 ## Consequences
 
