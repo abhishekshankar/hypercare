@@ -35,6 +35,8 @@ aws amplify update-branch  --app-id <appId> --branch-name main --framework "Next
 
 Then **redeploy** the branch (new build). Example production app: `ca-central-1`, app id `d1ajzemw7s1n5f`.
 
+If platform/framework/env are already correct but the URL **still** returns **`server: AmazonS3`** on `/`, align the **monorepo build spec** with [AWS monorepo Hosting](https://docs.aws.amazon.com/amplify/latest/userguide/monorepo-configuration.html): root `amplify.yml` uses `frontend.buildPath: /`, phases run `pnpm install` / `pnpm --filter web... run build` from the repo root, and `artifacts.baseDirectory` is **`apps/web/.next`** (relative to `/`, not `.next` alone). Repo root **`.npmrc`** sets `node-linker=hoisted` (required for pnpm on Amplify). **`apps/web/next.config.ts`** sets `output: 'standalone'` and `outputFileTracingRoot` to the repo root so compute can trace `packages/*` workspace deps.
+
 ## Product / architecture pointers
 
 - `PROJECT_BRIEF.md`, `prd.md`, root `README.md`, `ARCHITECTURE.md`
