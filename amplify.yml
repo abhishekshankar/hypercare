@@ -27,9 +27,19 @@ applications:
             # again under `standalone/.../.next/cache`. They are not needed at runtime but can
             # exceed Amplify's ~220MB deploy artifact limit (~400MB+ observed).
             - echo "=== postBuild start ==="
-            - rm -rf apps/web/.next/cache apps/web/.next/standalone/apps/web/.next/cache
-            # Per-subtree size readouts make the next size-limit failure unambiguous in the build log.
-            - du -sh apps/web/.next apps/web/.next/server apps/web/.next/static apps/web/.next/standalone || true
+            # Confirm Amplify's cwd and what's around it — `appRoot` + `buildPath` interaction
+            # in monorepo mode can resolve artifact paths from a different anchor than expected.
+            - pwd 2>&1 || true
+            - ls -la 2>&1 || true
+            - rm -rf apps/web/.next/cache apps/web/.next/standalone/apps/web/.next/cache 2>&1 || true
+            # Diagnostic block: every command merges stderr into stdout (`2>&1`) so the Amplify
+            # log viewer can't hide "No such file or directory" warnings on missing subtrees.
+            # `ls -la` proves what `.next` actually contains; `find` confirms the standalone
+            # entry point (`server.js`); `du -sh` gives per-subtree sizes for cap diagnosis.
+            - ls -la apps/web/.next 2>&1 || true
+            - ls -la apps/web/.next/standalone 2>&1 || true
+            - find apps/web/.next/standalone -name "server.js" 2>&1 || true
+            - du -sh apps/web/.next apps/web/.next/server apps/web/.next/static apps/web/.next/standalone 2>&1 || true
             - echo "=== postBuild done ==="
       artifacts:
         # `output: 'standalone'` (apps/web/next.config.ts) writes a self-contained server tree
