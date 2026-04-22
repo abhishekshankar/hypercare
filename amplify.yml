@@ -21,6 +21,13 @@ applications:
             # Build workspace libraries first (`@hypercare/db` / `@hypercare/content`
             # ship `dist/` only; `next build` does not run their `tsc`).
             - pnpm --filter web... run build
+        postBuild:
+          commands:
+            # `next build` leaves webpack/turbopack caches under `.next/cache` and copies them
+            # again under `standalone/.../.next/cache`. They are not needed at runtime but can
+            # exceed Amplify's ~220MB deploy artifact limit (~400MB+ observed).
+            - rm -rf apps/web/.next/cache apps/web/.next/standalone/apps/web/.next/cache
+            - du -sh apps/web/.next || true
       artifacts:
         baseDirectory: apps/web/.next
         files:

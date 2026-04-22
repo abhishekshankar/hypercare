@@ -39,6 +39,8 @@ If platform/framework/env are already correct but the URL **still** returns **`s
 
 **500 on every route (including `/`):** `apps/web/src/instrumentation.ts` eagerly imports `env.server` in production; missing/invalid **Hosting → Environment variables** causes Zod to throw at process boot. See **`docs/auth-runbook.md`** § *Amplify: “Internal Server Error” on every page* and mirror `apps/web/.env.local` keys into Amplify (plus CloudWatch for the thrown message).
 
+**Deploy: “build output exceeds max allowed size” (~220MB):** With `output: 'standalone'`, Next still leaves **`.next/cache`** at the app root and copies it under **`standalone/.../.next/cache`** (~400MB+ total). Amplify’s deploy bundle must stay under the limit. Root **`amplify.yml`** runs **`postBuild`** `rm -rf` on those two `cache` directories before artifacts are collected (safe at runtime; cache is build-only).
+
 ## Product / architecture pointers
 
 - `PROJECT_BRIEF.md`, `prd.md`, root `README.md`, `ARCHITECTURE.md`
