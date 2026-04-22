@@ -19,13 +19,14 @@ Cursor works tickets in **ID order**. Never start the next ticket until the prev
 | TASK-003 | CDK app, Aurora Serverless v2 + pgvector, dev env up                                                                                                                                 | 001        | done | `4eb9926`+`c5f2576`+`b5e4d3d`+`80704cd`+`e6c445c` |
 | TASK-004 | Drizzle schema v0: users, care_profile, conversations, messages, modules, module_chunks, safety_flags                                                                                | 003        | pending | —   |
 | TASK-005 | Next.js app skeleton, Tailwind, 8-screen route stubs, persistent crisis strip                                                                                                        | 001        | done | `a4d282d` |
-| TASK-006 | Cognito auth wired (Amplify Auth v6), protected routes, server-side session                                                                                                          | 002, 005   | pending | —   |
-| TASK-007 | Onboarding flow (5 sections from PRD §5), writes to care_profile                                                                                                                     | 004, 006   | pending | —   |
-| TASK-008 | Content loader: ingest 3 seeded pilot modules (PRD §7.4), chunk, embed, store in pgvector                                                                                            | 003, 004   | pending | —   |
-| TASK-009 | RAG pipeline v0: query classifier (Layer 2) + retrieval (Layer 3) + grounding check (Layer 4) + prompt composition (Layer 5) + post-gen verification (Layer 6) + refusal path (§9.3) | 008        | pending | —   |
-| TASK-010 | Safety classifier stub + one escalation flow (caregiver self-harm, PRD §10.3) end-to-end                                                                                             | 009        | pending | —   |
-| TASK-011 | Home screen + Ask-anything input + Conversation screen rendering the §6.4 response scaffold + source attribution                                                                     | 009, 010   | pending | —   |
-| TASK-012 | Eval harness: load a seed set of 20 queries (incl. 3 adversarial, 3 crisis), score against the pipeline, output a pass/fail report                                                   | 009, 010   | pending | —   |
+| TASK-006 | Cognito auth wired (Amplify Auth v6), protected routes, server-side session                                                                                                          | 002, 005   | done    | —   |
+| TASK-007 | Onboarding flow (5 sections from PRD §5), writes to care_profile                                                                                                                     | 004, 006   | done    | —   |
+| TASK-008 | Content loader: ingest 3 seeded pilot modules (PRD §7.4), chunk, embed, store in pgvector                                                                                            | 003, 004   | done    | —   |
+| TASK-009 | RAG pipeline v0: query classifier (Layer 2) + retrieval (Layer 3) + grounding check (Layer 4) + prompt composition (Layer 5) + post-gen verification (Layer 6) + refusal path (§9.3) | 008        | done    | —   |
+| TASK-010 | Safety classifier stub + one escalation flow (caregiver self-harm, PRD §10.3) end-to-end                                                                                             | 009        | done    | —   |
+| TASK-011 | Home screen + Ask-anything input + Conversation screen rendering the §6.4 response scaffold + source attribution                                                                     | 009, 010   | in_review | —   |
+| TASK-012 | Eval harness v0: golden-set scoring for retrieval, safety, and end-to-end answers (see `tasks/TASK-012-eval-harness.md`, ADR 0011)                                                      | 009, 010   | in_review | —   |
+| TASK-013 | Playwright: no-op canonical-origin redirect in middleware when `PLAYWRIGHT_TEST_BASE_URL` is set (avoids `next dev` loop); see `tasks/TASK-013-playwright-canonical-redirect.md` | —          | open      | —   |
 
 ## Out of sprint 1 (explicitly deferred)
 
