@@ -12,6 +12,7 @@ export default tseslint.config(
       "apps/web/**",
     ],
   },
+
   ...tseslint.configs.recommended.map((config) => ({
     ...config,
     files: [
@@ -21,6 +22,7 @@ export default tseslint.config(
       "infra/lib/**/*.ts",
     ],
   })),
+
   {
     files: [
       "packages/*/src/**/*.ts",
