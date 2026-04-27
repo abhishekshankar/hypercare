@@ -56,9 +56,9 @@ export default function HelpPage() {
             <span className="font-medium">Product support:</span>{" "}
             <a
               className="text-accent underline-offset-2 hover:underline focus-visible:ring-2 focus-visible:ring-accent"
-              href="mailto:support@hypercare.app"
+              href="mailto:support@alongside.app"
             >
-              Email us at support@hypercare.app
+              Email us at support@alongside.app
             </a>
           </p>
           <p className="text-sm text-muted-foreground">
@@ -67,7 +67,7 @@ export default function HelpPage() {
               className="text-accent underline-offset-2 hover:underline focus-visible:ring-2 focus-visible:ring-accent"
               href="/about"
             >
-              About Hypercare
+              About Alongside
             </Link>{" "}
             (summary page — v0)
           </p>

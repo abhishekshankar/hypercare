@@ -12,7 +12,7 @@ const compat = new FlatCompat({
 });
 
 export default defineConfig([
-  globalIgnores([".next/**", "out/**", "build/**", "next-env.d.ts"]),
+  globalIgnores([".next/**", ".open-next/**", "out/**", "build/**", "next-env.d.ts"]),
   ...compat.extends("next/core-web-vitals", "next/typescript"),
   {
     files: ["src/components/**/*.{ts,tsx}", "src/app/**/*.{ts,tsx}"],
@@ -33,10 +33,10 @@ export default defineConfig([
         {
           paths: [
             {
-              name: "@hypercare/rag",
+              name: "@alongside/rag",
               allowTypeImports: true,
               message:
-                "Value imports from @hypercare/rag belong in server code only; use `import type` in UI layers or a server entry (see ARCHITECTURE.md).",
+                "Value imports from @alongside/rag belong in server code only; use `import type` in UI layers or a server entry (see ARCHITECTURE.md).",
             },
           ],
         },

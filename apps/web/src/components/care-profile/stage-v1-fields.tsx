@@ -3,7 +3,7 @@
 import { useCallback, useState } from "react";
 
 import { ALONE_SAFETY_OPTIONS, STAGE_V1_TEXT, type StageV1FormDefaults } from "@/lib/onboarding/questions-v1";
-import type { AloneSafetyChip } from "@hypercare/content/stage-rules";
+import type { AloneSafetyChip } from "@alongside/content/stage-rules";
 
 type Props = {
   crFirstName: string;

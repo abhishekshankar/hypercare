@@ -1,6 +1,6 @@
 import { createHash } from "node:crypto";
 import { and, eq, gte, sql } from "drizzle-orm";
-import { createDbClient, moduleChunks, moduleTopics, modules } from "@hypercare/db";
+import { createDbClient, moduleChunks, moduleTopics, modules } from "@alongside/db";
 import { buildEmbeddingText, embedTitanV2 } from "./embed.js";
 import type { ModuleFrontMatter } from "./schema.js";
 import type { TextChunk } from "./chunk.js";
@@ -116,14 +116,16 @@ export async function replaceModuleChunkRowsInTx(
   moduleId: string,
   input: Embeddable,
   embeddings: number[][],
+  options?: { topicSlugs?: string[] },
 ): Promise<number> {
   if (input.chunks.length !== embeddings.length) {
     throw new Error("chunks and embeddings length mismatch");
   }
   const { front, chunks } = input;
+  const topicSlugs = options?.topicSlugs ?? front.topics;
   await tx.delete(moduleTopics).where(eq(moduleTopics.moduleId, moduleId));
-  if (front.topics.length > 0) {
-    await tx.insert(moduleTopics).values(front.topics.map((topicSlug) => ({ moduleId, topicSlug })));
+  if (topicSlugs.length > 0) {
+    await tx.insert(moduleTopics).values(topicSlugs.map((topicSlug) => ({ moduleId, topicSlug })));
   }
   if (chunks.length === 0) {
     await tx.delete(moduleChunks).where(eq(moduleChunks.moduleId, moduleId));

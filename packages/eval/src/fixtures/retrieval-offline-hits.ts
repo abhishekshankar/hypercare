@@ -1,4 +1,4 @@
-import type { RetrievedChunk } from "@hypercare/rag";
+import type { RetrievedChunk } from "@alongside/rag";
 
 import { makeRetrievedChunk } from "./chunk.js";
 

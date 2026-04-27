@@ -1,5 +1,5 @@
 {
-  "name": "hypercare",
+  "name": "alongside",
   "private": true,
   "workspaces": [
     "apps/*",
@@ -30,6 +30,9 @@
       "esbuild",
       "sharp",
       "unrs-resolver"
-    ]
+    ],
+    "overrides": {
+      "postcss": "8.5.10"
+    }
   }
 }

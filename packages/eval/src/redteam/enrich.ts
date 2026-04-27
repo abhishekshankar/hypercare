@@ -1,9 +1,9 @@
-import type { SafetyEscalationScript, SafetyTriageReason } from "@hypercare/rag";
+import type { SafetyEscalationScript, SafetyTriageReason } from "@alongside/rag";
 import {
   parseEscalationFile,
   resolveScriptFilename,
   type SafetyClassifierCategory,
-} from "@hypercare/safety";
+} from "@alongside/safety";
 
 export type TriageNameContext = { crName: string; caregiverName?: string };
 

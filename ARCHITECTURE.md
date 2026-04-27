@@ -55,13 +55,19 @@ High-level product and stack context stay in `PROJECT_BRIEF.md` and `prd.md`. Th
 
 Content workflow (`/internal/content/*`), **`/internal/metrics`** (operator telemetry; ADR 0019), **`/internal/feedback`** (Care Specialist triage on thumbs-down with safety context), **`/internal/safety`** (fine-tuned shadow stats), **`/internal/modules-search`**. Access patterns: `docs/infra-runbook.md`, `tasks/TASK-036`, `tasks/TASK-039`.
 
+| Method | Path | Role |
+|--------|------|------|
+| `POST` | `/api/internal/content/publish-bundle` | Hermes / automation: JSON body = same bundle shape as disk (`parseHeavyPublishBundle`); upserts heavy `modules` + `module_branches` / `module_tools` / `module_evidence` / `module_relations`, Titan chunks. Auth: internal content roles (`content_writer` / `content_lead` / `admin`). DB URL: `contentPublishDatabaseUrl()` (`DATABASE_URL_ADMIN` ?? `DATABASE_URL`). ADR 0031, runbook: `docs/heavy-modules-runbook.md`. |
+
 Unauthenticated calls to `/api/app/*` handlers above return **401** JSON (session middleware does not redirect `/api/app/*` to the login page so `fetch` and tests see a proper status).
 
-## Import boundary: browser never loads `@hypercare/rag`
+## Import boundary: browser never loads `@alongside/rag`
 
-All RAG and safety orchestration run on the **server** (Route Handlers and `server-only` helpers). The browser must not import `@hypercare/rag` or call Bedrock-capable code; that keeps keys and heavy deps out of the client bundle. ADR 0010 is the full rationale.
+All RAG and safety orchestration run on the **server** (Route Handlers and `server-only` helpers). The browser must not import `@alongside/rag` or call Bedrock-capable code; that keeps keys and heavy deps out of the client bundle. ADR 0010 is the full rationale.
 
-**Enforcement:** `apps/web/eslint.config.mjs` — `@typescript-eslint/no-restricted-imports` blocks **value** imports of `@hypercare/rag` under `src/components` and `src/app` (excluding `src/app/api/**`, where type-only imports remain allowed in UI code). Core `no-restricted-imports` blocks `@aws-sdk/client-bedrock-runtime` under `src/**` except `api` routes, so a stray client bundle pull fails `pnpm --filter web lint`. After `next build`, `pnpm --filter web run check:client-bundle` greps `.next/static` for those strings in compiled client JS (belt-and-suspenders); the same step runs in CI after the monorepo build. `test/api-app-session-audit.test.ts` requires every `src/app/api/app/**/route.ts` to call `getSession` so the `/api/app` pass-through in middleware does not leave a handler unauthenticated.
+**Enforcement:** `apps/web/eslint.config.mjs` — `@typescript-eslint/no-restricted-imports` blocks **value** imports of `@alongside/rag` under `src/components` and `src/app` (excluding `src/app/api/**`, where type-only imports remain allowed in UI code). Core `no-restricted-imports` blocks `@aws-sdk/client-bedrock-runtime` under `src/**` except `api` routes, so a stray client bundle pull fails `pnpm --filter web lint`. After `next build`, `pnpm --filter web run check:client-bundle` greps `.next/static` for those strings in compiled client JS (belt-and-suspenders); the same step runs in CI after the monorepo build. `test/api-app-session-audit.test.ts` requires every `src/app/api/app/**/route.ts` to call `getSession` so the `/api/app` pass-through in middleware does not leave a handler unauthenticated.
+
+- **`@alongside/content` (heavy publish surface)** — Route handlers (e.g. `POST /api/internal/content/publish-bundle`) and the operator CLI may import **`parseHeavyPublishBundle`**, **`publishHeavyModulePayload`**, **`validateHeavyModule`**, and **`getToolSchemaForType`**. That code is **server-only** (embeddings, Zod, filesystem); it must not be imported from client components. Prefer `import type` from `@alongside/content` in shared code if only types are needed.
 
 ## Schema note (TASK-011)
 
@@ -79,7 +85,7 @@ New schema deltas land in v2 going forward (or fork into v3 if v2 grows past ~60
 
 ## Retention loop (TASK-024)
 
-`packages/picker` (`@hypercare/picker`) is a pure, server-only module that returns one `PickerResult` for "This week's focus". Policy order, in priority sequence:
+`packages/picker` (`@alongside/picker`) is a pure, server-only module that returns one `PickerResult` for "This week's focus". Policy order, in priority sequence:
 
 1. **Profile change in last 7d** — `care_profile_changes.field == "hardest_thing"` mapped to a `topics.slug` via `mapHardestTextToTopicSlug`, or an `inferred_stage` flip.
 2. **Recent topic signal in last 14d** — `getRecentTopicSignal` (TASK-022) chooses the top topic; pick a stage-relevant module tagged with it.

@@ -4,7 +4,7 @@
  * Usage:
  *   DATABASE_URL=postgres://... \
  *   AWS_REGION=ca-central-1 \
- *   pnpm --filter @hypercare/rag smoke -- --user-id <seed-user-uuid>
+ *   pnpm --filter @alongside/rag smoke -- --user-id <seed-user-uuid>
  *
  * Requires that the answering model in `packages/rag/src/config.ts` (Claude Haiku 4.5) is
  * enabled in the account's `ca-central-1` region. If not, the call to the

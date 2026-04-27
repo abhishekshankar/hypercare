@@ -1,6 +1,6 @@
 import { describe, expect, it, vi } from "vitest";
 
-import type { ClassifyDeps } from "@hypercare/safety";
+import type { ClassifyDeps } from "@alongside/safety";
 
 import { classifySafety, type SafetyLayerDeps } from "../src/layers/0-safety.js";
 

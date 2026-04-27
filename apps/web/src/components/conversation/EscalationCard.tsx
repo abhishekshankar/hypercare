@@ -3,7 +3,7 @@
 import Link from "next/link";
 import { useEffect } from "react";
 import ReactMarkdown from "react-markdown";
-import type { SafetyEscalationScript, SafetyTriageReason } from "@hypercare/rag";
+import type { SafetyEscalationScript, SafetyTriageReason } from "@alongside/rag";
 
 import { setCrisisStripPulse } from "@/components/crisis-strip-pulse";
 

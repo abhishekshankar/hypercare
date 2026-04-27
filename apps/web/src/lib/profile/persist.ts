@@ -1,6 +1,6 @@
 import "server-only";
 import { eq, sql } from "drizzle-orm";
-import { careProfile, careProfileChanges, createDbClient, users } from "@hypercare/db";
+import { careProfile, careProfileChanges, createDbClient, users } from "@alongside/db";
 
 import { invalidateConversationMemoryForUserIds } from "@/lib/conversation/invalidate-memory";
 import { serverEnv } from "../env.server";

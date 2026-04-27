@@ -16,7 +16,7 @@ Collect up to 50 real-feel phrasings from closed-beta caregivers to stress-test 
 
 - **Compensation (TASK-035 default):** $75 gift card per session — confirm with PM.
 - **Consent:** use `docs/safety/redteam-lived-experience-consent-template.pdf` (template in repo; executed forms stored per PM, not in git).
-- **Withdrawal:** If a participant later withdraws consent for their prompt, remove those rows from `redteam-v2.yaml`, re-run `pnpm --filter @hypercare/eval run redteam:v2:gate`, and do not release until the gate passes.
+- **Withdrawal:** If a participant later withdraws consent for their prompt, remove those rows from `redteam-v2.yaml`, re-run `pnpm --filter @alongside/eval run redteam:v2:gate`, and do not release until the gate passes.
 
 ## Anonymization
 

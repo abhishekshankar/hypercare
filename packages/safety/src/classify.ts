@@ -60,7 +60,7 @@ export type ClassifyDeps = {
   layerBClassifierOverride?: SafetyLayerBClassifier;
   /**
    * When `SAFETY_FT_SHADOW=1`, both classifiers run; this logger records the pair.
-   * Wired from `@hypercare/rag` `buildDefaultDeps` when DB is available.
+   * Wired from `@alongside/rag` `buildDefaultDeps` when DB is available.
    */
   logFtShadow?: FtShadowLogFn;
   /**

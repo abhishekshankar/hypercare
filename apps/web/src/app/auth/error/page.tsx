@@ -2,6 +2,9 @@ import Link from "next/link";
 
 import { ScreenHeader } from "@/components/screen-header";
 
+/** OAuth / PKCE errors pass `?reason=`; avoid any static shell that drops searchParams. */
+export const dynamic = "force-dynamic";
+
 type Props = Readonly<{
   searchParams: Promise<{ reason?: string }>;
 }>;
@@ -57,7 +60,7 @@ export default async function AuthErrorPage({ searchParams }: Props) {
             </li>
             <li>
               <strong className="text-foreground">Schema:</strong> from the repo root,{" "}
-              <code className="text-xs">DATABASE_URL=… pnpm --filter @hypercare/db migrate</code> so the{" "}
+              <code className="text-xs">DATABASE_URL=… pnpm --filter @alongside/db migrate</code> so the{" "}
               <code className="text-xs">users</code> table (and the rest) exists.
             </li>
           </ul>

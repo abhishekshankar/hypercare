@@ -7,7 +7,7 @@ import {
   normalizeLibrarySearchQuery,
   rankLibrarySearchMatches,
   type LibrarySearchCandidate,
-} from "@hypercare/db";
+} from "@alongside/db";
 import { z } from "zod";
 
 import { getSession } from "@/lib/auth/session";

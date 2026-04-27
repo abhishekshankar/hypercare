@@ -1,4 +1,4 @@
-# Hypercare — Sprint Board
+# Alongside — Sprint Board
 
 **Sprint 1 goal:** Thin vertical slice — a signed-in caregiver can complete onboarding, see a home screen, ask one question about a seeded topic, and receive a **grounded** answer that includes the refusal path when sources are thin and the safety path when a crisis phrase is used.
 
@@ -64,7 +64,7 @@ Cursor works tickets in **ID order**. Never start the next ticket until the prev
 ### Sprint 2 quality gates
 
 - `pnpm lint && pnpm typecheck && pnpm test` green at every PR merge (per `PROJECT_BRIEF.md §6`).
-- `EVAL_LIVE=1 pnpm --filter @hypercare/eval start -- answers` does not regress on retrieval / safety pass rates from the sprint-1 baseline. The check-in and lesson surfaces are not graded by the eval harness but should not break it.
+- `EVAL_LIVE=1 pnpm --filter @alongside/eval start -- answers` does not regress on retrieval / safety pass rates from the sprint-1 baseline. The check-in and lesson surfaces are not graded by the eval harness but should not break it.
 - ADR per ticket where a new design surface is introduced (TASK-019 schema v1, TASK-022 topic classifier, TASK-024 picker policy at minimum).
 - No new `any`s, no new top-level `eslint-disable` lines; new schema columns documented in `docs/schema-v0.md` (or rolled into `docs/schema-v1.md` if the file grows).
 
@@ -81,7 +81,7 @@ Cursor works tickets in **ID order**. Never start the next ticket until the prev
 
 ## Sprint 3
 
-**Sprint 3 goal:** **Get Hypercare ready to put in front of a first cohort of real caregivers.** That means closing the launch gates the PRD names explicitly: the full set of escalation flows (PRD §10.3 — today only caregiver self-harm is wired end-to-end), the 100-query red-team eval (PRD §10.5 — today 20), and conversation memory threaded into retrieval (PRD §9 — today every answer is a fresh call and returning users re-explain their situation every turn). Around those, two enabling surfaces: a content authoring/review tool v0 so the content team can ship the next batch of modules without dev handholding (PRD §8, unblocks the 30–50 module ramp), and an internal metrics surface that reports the north-star trio (helpfulness / return / behavior-change) from real data.
+**Sprint 3 goal:** **Get Alongside ready to put in front of a first cohort of real caregivers.** That means closing the launch gates the PRD names explicitly: the full set of escalation flows (PRD §10.3 — today only caregiver self-harm is wired end-to-end), the 100-query red-team eval (PRD §10.5 — today 20), and conversation memory threaded into retrieval (PRD §9 — today every answer is a fresh call and returning users re-explain their situation every turn). Around those, two enabling surfaces: a content authoring/review tool v0 so the content team can ship the next batch of modules without dev handholding (PRD §8, unblocks the 30–50 module ramp), and an internal metrics surface that reports the north-star trio (helpfulness / return / behavior-change) from real data.
 
 **Sprint 3 explicitly does not** ship new modules beyond what the content team delivers through the new authoring tool (engineering ingests, does not write), pursue spaced repetition, build family/multi-caregiver sharing, ship streaming/voice/dark-mode, touch mobile-native, or add Spanish content. It also does not replace the lesson picker policy — TASK-024's picker stays as-is; TASK-027 only feeds it richer signal.
 
@@ -99,7 +99,7 @@ Cursor works tickets in **ID order**. Never start the next ticket until the prev
 The demo is the **closed-beta readiness walkthrough.** Run it end-to-end:
 
 1. **Escalation coverage.** For each of the 5 remaining PRD §10.3 categories, send a representative red-team query. Each routes to the correct pre-scripted UI with the right primary resource (911 / APS / doctor-callback flow / helpline). Each writes a `safety_flags` row with the correct category and `source`. For 24h after a caregiver-self-harm or caregiver-breaking-point flag, the home screen's "this week's focus" and daily-lesson prompts are suppressed in favor of the gentle "I'm here when you're ready" surface (PRD §10.3).
-2. **Red-team pass rate.** `EVAL_LIVE=1 pnpm --filter @hypercare/eval start -- redteam` runs the full 100-query set and reports ≥ 90%. The run is reproducible — same seed, same result within ± 1 query.
+2. **Red-team pass rate.** `EVAL_LIVE=1 pnpm --filter @alongside/eval start -- redteam` runs the full 100-query set and reports ≥ 90%. The run is reproducible — same seed, same result within ± 1 query.
 3. **Conversation memory.** A caregiver has a 4-turn conversation about sundowning, then asks "what about the nighttime pacing?" 6 hours later. The answer references what was discussed earlier ("Since we were just talking about Margaret's sundowning…") without the user re-stating context. The memory is observable in the conversation-debug view; it is bounded (≤ 400 tokens) and invalidated within 60s of a profile change-log write.
 4. **Content tool.** The Content Lead logs into `/internal/content`, drafts a new module from a brief, routes it through expert and lived-experience review, and hits publish. The module appears in `/app/library` within a minute and becomes retrievable — a question that matches its topic pulls it as the top Tier-1 chunk.
 5. **Metrics dashboard.** `/internal/metrics` shows live counts for the sprint-2 cohort: ≥ 1 completed lesson, ≥ 1 weekly check-in, ≥ 1 helpful thumbs-up, refusal rate, flag counts. Every tile links to the SQL behind it (transparency).
@@ -108,7 +108,7 @@ The demo is the **closed-beta readiness walkthrough.** Run it end-to-end:
 ### Sprint 3 quality gates
 
 - `pnpm lint && pnpm typecheck && pnpm test` green at every PR merge (per `PROJECT_BRIEF.md §6`).
-- `EVAL_LIVE=1 pnpm --filter @hypercare/eval start -- answers` stays ≥ sprint-2 baseline on retrieval and safety. The new `redteam` mode (TASK-026) gates at ≥ 90%.
+- `EVAL_LIVE=1 pnpm --filter @alongside/eval start -- answers` stays ≥ sprint-2 baseline on retrieval and safety. The new `redteam` mode (TASK-026) gates at ≥ 90%.
 - **Safety / escalation content is versioned and expert-signed.** Each script in `packages/safety/src/scripts/*.md` carries a `reviewed_by`, `reviewed_on`, `next_review_due` frontmatter; CI fails if a script body changes without bumping `reviewed_on` (TASK-025).
 - ADRs: 0015 (escalation-scripts + suppression), 0016 (red-team set structure), 0017 (conversation memory), 0018 (content-authoring tool), 0019 (metrics surface).
 - No new `any`s, no new top-level `eslint-disable` lines; schema deltas documented in `docs/schema-v1.md`.
@@ -127,10 +127,10 @@ The demo is the **closed-beta readiness walkthrough.** Run it end-to-end:
 
 ## Sprint 4
 
-**Sprint 4 goal:** **Run a closed beta and close the gaps it surfaces.** Sprint 3 got Hypercare to "ready to put in front of real caregivers." Sprint 4 is what we ship *during and because of* that first cohort. Three themes, named explicitly so we don't drift:
+**Sprint 4 goal:** **Run a closed beta and close the gaps it surfaces.** Sprint 3 got Alongside to "ready to put in front of real caregivers." Sprint 4 is what we ship *during and because of* that first cohort. Three themes, named explicitly so we don't drift:
 
 1. **Learn from the beta cohort.** Streaming answers so the 2am phone-screen feel isn't a 4-second blank wait (PRD §6.4 is silent on streaming, but the helpfulness rate will reflect it). A real in-app feedback / contact-support path (TASK-025 referenced a `/help → contact support` path that doesn't exist yet). A reviewer loop for every thumbs-down that closes the helpfulness feedback cycle.
-2. **Close transparency and privacy gaps.** A user-facing "what Hypercare remembers about you" surface that covers both the care profile (partly shipped in Screen 7) and the conversation memory from TASK-027 (deliberately not user-visible in v0). Data retention / export / delete (PRD §14 open question — a gate for paid rollout and for anything past the closed beta). Legal review of the mandatory-reporter disclosure language (TASK-025 shipped a placeholder).
+2. **Close transparency and privacy gaps.** A user-facing "what Alongside remembers about you" surface that covers both the care profile (partly shipped in Screen 7) and the conversation memory from TASK-027 (deliberately not user-visible in v0). Data retention / export / delete (PRD §14 open question — a gate for paid rollout and for anything past the closed beta). Legal review of the mandatory-reporter disclosure language (TASK-025 shipped a placeholder).
 3. **Polish what the beta will break.** Onboarding stage-assessment questions validated with the Care Specialist and 5–10 caregivers (PRD §5.2, §14 open question — we shipped the PRD's draft wording in sprint 2, the clinician refines now). The red-team set grown from 100 to PRD §10.5's full target of **200 adversarial + 50 lived-experience**, with the unaffiliated-crisis-counselor external-review round closed. No new categories; no new subsystems.
 
 **Sprint 4 explicitly does not** ship streaming for the lesson or library surfaces (only for the conversation answer pipeline — that's where the latency pain is). Does not build an analytics warehouse; TASK-029's Postgres surface continues to be enough. Does not add family sharing / Spanish / mobile-native / SRS. Does not replace the lesson picker policy. Does not introduce a fine-tuned safety classifier — the labeled corpus from TASK-026 and TASK-035 is collected for a sprint-5+ fine-tune, not used here.
@@ -139,7 +139,7 @@ The demo is the **closed-beta readiness walkthrough.** Run it end-to-end:
 | -------- | ---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- | ----------------------- | ------- | --- |
 | TASK-031 | Streaming answers for the conversation surface — server-sent events from Layer 5/6, progressive render, graceful degrade on classifier-refusal or grounding-fail (no streamed escalation UI)   | 009, 011, 025           | pending | —   |
 | TASK-032 | Privacy posture v1 — retention schedule per table, self-serve data export (JSON zip), self-serve account delete with safety-flag retention carve-out, encoded in schema + legal-reviewed copy  | 019, 020, 029           | pending | —   |
-| TASK-033 | "What Hypercare remembers about you" surface on `/app/profile` — unified view of care-profile facts + the TASK-027 conversation-memory summary + a per-item "forget this" affordance            | 020, 027                | pending | —   |
+| TASK-033 | "What Alongside remembers about you" surface on `/app/profile` — unified view of care-profile facts + the TASK-027 conversation-memory summary + a per-item "forget this" affordance            | 020, 027                | pending | —   |
 | TASK-034 | Onboarding stage-assessment question refinement — Care Specialist-signed wording for the 6–8 questions (PRD §5.2, §14), back-compat migration for answers already captured under draft wording | 005, 007                | pending | —   |
 | TASK-035 | Red-team set to PRD §10.5 full target — 200 adversarial + 50 lived-experience, unaffiliated-crisis-counselor external-review round closed, drift monitor for weekly regressions                 | 026                     | pending | —   |
 | TASK-036 | In-app feedback + thumbs-down reviewer loop — `/help → contact support` surface, thumbs-down capture with optional text, operator review queue at `/internal/feedback`, SLA-on-missed signal    | 011, 021, 029           | pending | —   |
@@ -152,15 +152,15 @@ The demo is the **"beta cohort learning" review.** Run it end-to-end after at le
 
 1. **Streaming.** Ask a question. First visible character appears within 800ms (P50) of the POST returning headers; the answer renders progressively; the source-attribution footer and follow-up chips render only after the full response completes. Classifier-flagged queries do **not** stream — the escalation card renders atomically.
 2. **Privacy.** Log in as a test user; request "Download my data" on `/app/profile`. A JSON zip with care profile, conversations, messages, saves, lesson progress, check-ins, and conversation memory arrives within 2 minutes. Request "Delete my account." A confirmation dialog explains the retention carve-out for safety-flag rows (de-identified). Complete the delete; reload → signed out; `psql` shows user-scoped rows gone, de-identified safety_flags preserved.
-3. **Transparency.** `/app/profile` → "What Hypercare remembers" section shows the care-profile facts and the conversation-memory summary side-by-side. Tap "Forget this" on a specific fact ("I live in the same home"); the profile is updated and the next answer prompt reflects the edit. The conversation-memory summary is visible; a "Refresh" button regenerates it; a "Forget this conversation's memory" button nulls it.
+3. **Transparency.** `/app/profile` → "What Alongside remembers" section shows the care-profile facts and the conversation-memory summary side-by-side. Tap "Forget this" on a specific fact ("I live in the same home"); the profile is updated and the next answer prompt reflects the edit. The conversation-memory summary is visible; a "Refresh" button regenerates it; a "Forget this conversation's memory" button nulls it.
 4. **Onboarding refinement.** Start onboarding as a new user. The 6–8 stage-assessment questions match the Care Specialist–signed wording (different from sprint 2's). Existing users whose answers were captured under the draft wording have their saved answers migrated to the new wording without loss; the inferred stage is recomputed and matches to within one stage of the prior value for ≥ 95% of pre-migration users.
-5. **Red-team 250.** `EVAL_LIVE=1 pnpm --filter @hypercare/eval start -- redteam --fixture redteam-v2.yaml` (250 queries) reports ≥ 90% overall. The external-reviewer round closed; their line-edits are folded in or explicitly deferred with a comment per query.
+5. **Red-team 250.** `EVAL_LIVE=1 pnpm --filter @alongside/eval start -- redteam --fixture redteam-v2.yaml` (250 queries) reports ≥ 90% overall. The external-reviewer round closed; their line-edits are folded in or explicitly deferred with a comment per query.
 6. **Feedback loop.** A caregiver thumbs-down an answer, adds a line of text. The row appears in `/internal/feedback` within 30s. PM or the Content Lead marks it "triaged" with a comment; the caregiver sees a "thanks — we're looking at this" state on their original answer on next load. A 72h-unanswered thumbs-down surfaces in `/internal/metrics` as SLA-missed.
 
 ### Sprint 4 quality gates
 
 - `pnpm lint && pnpm typecheck && pnpm test` green at every PR merge.
-- `EVAL_LIVE=1 pnpm --filter @hypercare/eval start -- answers` stays ≥ sprint-3 baseline; `redteam` mode passes against the new **250-query** fixture at ≥ 90% overall (with the three recall buckets at 100%, per TASK-026's rule).
+- `EVAL_LIVE=1 pnpm --filter @alongside/eval start -- answers` stays ≥ sprint-3 baseline; `redteam` mode passes against the new **250-query** fixture at ≥ 90% overall (with the three recall buckets at 100%, per TASK-026's rule).
 - **Legal sign-off** on the privacy copy (retention schedule, export language, delete copy, mandatory-reporter disclosure) is a blocker for TASK-032 merge. Placeholder names are not acceptable this sprint.
 - **Clinician sign-off** on the TASK-034 question wording. The ADR records the sign-off.
 - ADRs: 0020 (streaming), 0021 (retention + export + delete), 0022 (transparency surface), 0023 (onboarding refinement + back-compat migration), 0024 (red-team v2 structure + drift monitor), 0025 (feedback loop + SLA).
@@ -188,7 +188,7 @@ The demo is the **"beta cohort learning" review.** Run it end-to-end after at le
 4. **Cut perceived latency on the two non-conversation surfaces.** Sprint 4 explicitly scoped streaming to conversation answers ("that's where the latency pain is"). Beta surfaced the second-order pain: a 2-second blank lesson card and a 1.5-second library search after the cohort filled the library with their own bookmarks. Stream both, reusing TASK-031's SSE transport and ADR 0020.
 5. **Per-user model routing as a quality bet, not a cost play.** Today every generation call goes to one Bedrock model id. The Layer-2 classifier (TASK-009) already produces topic + urgency; thread it into model selection. Route medical/medication queries to Opus, behavioral/self-care to Sonnet, refusal-only paths to Haiku. A/B against the current single-model baseline, gated on the helpfulness north-star (PRD §12).
 
-**Sprint 5 explicitly does not** ship Spanish content, native mobile, push/SMS/email notifications, an analytics warehouse, a content-team triage inbox, or any new module beyond what content delivers via TASK-028. Does not replace the lesson picker policy itself — TASK-037 layers an SRS pre-filter over the existing picker; ADR 0014 stays. Does not change the conversation streaming UX shipped in TASK-031; lessons + library reuse its SSE transport under their own feature flags. Does not touch Cognito user-pool sharing — family sharing is a profile-level invite within Hypercare, not a cross-app identity change. Does not introduce cost-tier model routing for unit economics — TASK-042 routes for *quality*; cost routing is a separate ADR once we see real Sprint 5 spend.
+**Sprint 5 explicitly does not** ship Spanish content, native mobile, push/SMS/email notifications, an analytics warehouse, a content-team triage inbox, or any new module beyond what content delivers via TASK-028. Does not replace the lesson picker policy itself — TASK-037 layers an SRS pre-filter over the existing picker; ADR 0014 stays. Does not change the conversation streaming UX shipped in TASK-031; lessons + library reuse its SSE transport under their own feature flags. Does not touch Cognito user-pool sharing — family sharing is a profile-level invite within Alongside, not a cross-app identity change. Does not introduce cost-tier model routing for unit economics — TASK-042 routes for *quality*; cost routing is a separate ADR once we see real Sprint 5 spend.
 
 | ID       | Title                                                                                                                                                                                          | Depends on                          | Status  | PR  |
 | -------- | ---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- | ----------------------------------- | ------- | --- |
@@ -205,7 +205,7 @@ The demo is the **"beta cohort learning" review.** Run it end-to-end after at le
 The demo is the **"closed-beta → structural"** review. Run it end-to-end with the Sprint 4 cohort still active, plus 2 invited family-sharing test pairs.
 
 1. **SRS picker.** A returning caregiver who has completed three lessons over the past week opens `/app`. The "This week's focus" card surfaces a lesson they have **not** seen in ≥ 7 days, or one they explicitly marked `revisit: true` whose schedule is due. The card includes a one-line "Last seen N days ago — due for a quick review" hint when the pick is a re-surface. The picker continues to honor stage + recent-topic signal (TASK-024 / ADR 0014 unchanged); SRS is a pre-filter, not a re-score.
-2. **Family sharing.** Caregiver A invites Caregiver B (sibling) by email. B accepts via Cognito sign-in; sees the shared care profile and Library, but **not** A's conversation history (default privacy posture per TASK-038 / ADR 0027). B's onboarding short-circuits because care recipient and stage are already set. Both A and B can edit the care profile; an audit row is written per change. The "What Hypercare remembers" surface (TASK-033) lists the other caregiver and the share table.
+2. **Family sharing.** Caregiver A invites Caregiver B (sibling) by email. B accepts via Cognito sign-in; sees the shared care profile and Library, but **not** A's conversation history (default privacy posture per TASK-038 / ADR 0027). B's onboarding short-circuits because care recipient and stage are already set. Both A and B can edit the care profile; an audit row is written per change. The "What Alongside remembers" surface (TASK-033) lists the other caregiver and the share table.
 3. **Fine-tuned safety classifier shadow + cutover.** With `SAFETY_FT_SHADOW=1`, every safety call runs both the current Haiku zero-shot and the fine-tuned model; live decision stays on zero-shot. After ≥ 7 days of shadow, `/internal/safety` shows agreement rate, per-bucket recall delta, and P95 latency delta. With `SAFETY_FT_LIVE=1` we cut over; zero-shot remains the fallback if the fine-tuned model fails to invoke (ADR 0009 path preserved). The 250-query red-team eval gate stays at ≥ 90% overall, **with the three crisis recall buckets at 100%** — same as TASK-026's rule, no relaxation.
 4. **Streaming lessons.** A caregiver opens a lesson. The first card paints in < 400ms; remaining cards stream in progressively. Mid-stream navigation away cleanly aborts; no `lesson_progress` row written. Flag off renders identically to today (TASK-024 fallback). Transport only; no change to module body content.
 5. **Streaming library.** A caregiver types in the library search box. Results appear incrementally as the server-side query streams matches; first result within ~200ms of pause. Flag off renders identically to today (TASK-023 fallback). No change to library taxonomy or chunk surface.
@@ -214,7 +214,7 @@ The demo is the **"closed-beta → structural"** review. Run it end-to-end with 
 ### Sprint 5 quality gates
 
 - `pnpm lint && pnpm typecheck && pnpm test` green at every PR merge.
-- `EVAL_LIVE=1 pnpm --filter @hypercare/eval start -- answers` stays ≥ Sprint 4 baseline on retrieval and helpfulness; `redteam` mode against the 250-query fixture passes at ≥ 90% overall **and** 100% on the three crisis buckets, **with the fine-tuned classifier as the live decision-maker** (TASK-039 cannot merge `SAFETY_FT_LIVE=1` without this).
+- `EVAL_LIVE=1 pnpm --filter @alongside/eval start -- answers` stays ≥ Sprint 4 baseline on retrieval and helpfulness; `redteam` mode against the 250-query fixture passes at ≥ 90% overall **and** 100% on the three crisis buckets, **with the fine-tuned classifier as the live decision-maker** (TASK-039 cannot merge `SAFETY_FT_LIVE=1` without this).
 - **Family-sharing privacy review** signed off by the same reviewer who signed Sprint 4's privacy copy (TASK-032). The ADR records the sign-off line. Default share posture (B sees profile + library, not A's conversation history) cannot be loosened without a separate ADR.
 - **Care Specialist sign-off** on the TASK-042 route policy table and on TASK-039's augmentation samples; both ADRs record the sign-off line.
 - **Fine-tuned classifier rollback rehearsal.** Before `SAFETY_FT_LIVE=1` ships in production, rehearse on staging: flip the flag off, observe the next request drop back to zero-shot. Recorded in TASK-039's "How to verify."
@@ -234,6 +234,12 @@ The demo is the **"closed-beta → structural"** review. Run it end-to-end with 
 - **Replacing the lesson picker policy.** TASK-037 layers SRS as a pre-filter; ADR 0014's scoring stays.
 - **Removing `care_profile.user_id`.** TASK-043 marks it deprecated; a Sprint 6 ticket removes it after a verification window confirms zero application reads.
 
+## Hermes — wave 1 (heavy modules)
+
+| ID       | Title                                                                                                                                                                                                 | Depends on | Status     | PR  |
+| -------- | ----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- | ---------- | ---------- | --- |
+| TASK-044 | Hermes heavy modules: migration `0023`, Drizzle, disk validator + tool Zod schemas, CLI `load --heavy`, internal `publish-bundle` API, library branch read for `care_profile` axes — see `tasks/TASK-044-hermes-heavy-modules-wave1.md` | —          | in_review | —   |
+
 ## Flow per ticket
 
 1. PM writes `tasks/TASK-NNN-slug.md`, sets status `pending`.
@@ -251,4 +257,4 @@ The demo is the **"closed-beta → structural"** review. Run it end-to-end with 
 
 ## Incident log
 
-- **2026-04-21 — Aurora admin password exposure (TASK-003 verification).** Cursor printed the Secrets Manager `password` field to its tool output while testing `aws secretsmanager get-secret-value`. PM rotated: `aws rds modify-db-cluster --master-user-password …` → new version `9634d385-dee8-4411-bccd-4f8b7b1d9da3` of `HypercareDatadevDatabaseClu-AivEHTsPYQF4-eKhC8O` is `AWSCURRENT`. Old password is dead. `PROJECT_BRIEF.md §8` updated: Cursor must never fetch/print secret values.
+- **2026-04-21 — Aurora admin password exposure (TASK-003 verification).** Cursor printed the Secrets Manager `password` field to its tool output while testing `aws secretsmanager get-secret-value`. PM rotated: `aws rds modify-db-cluster --master-user-password …` → new version `9634d385-dee8-4411-bccd-4f8b7b1d9da3` of `AlongsideDatadevDatabaseClu-AivEHTsPYQF4-eKhC8O` is `AWSCURRENT`. Old password is dead. `PROJECT_BRIEF.md §8` updated: Cursor must never fetch/print secret values.

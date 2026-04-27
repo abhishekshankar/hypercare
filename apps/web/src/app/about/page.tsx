@@ -8,7 +8,7 @@ export default function AboutPage() {
     <>
       <ScreenHeader
         subHeadline="We’ll tell the full product story here soon."
-        title="About Hypercare"
+        title="About Alongside"
       />
       <p className="text-base leading-relaxed text-muted-foreground">Coming soon.</p>
     </>

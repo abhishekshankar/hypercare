@@ -4,8 +4,8 @@ import {
   createDbClient,
   getCareProfileForUser,
   MultipleProfilesNotSupportedError,
-} from "@hypercare/db";
-import { inferInferredStage, type CareProfileStageSnapshot } from "@hypercare/content/stage-rules";
+} from "@alongside/db";
+import { inferInferredStage, type CareProfileStageSnapshot } from "@alongside/content/stage-rules";
 
 import type { Stage } from "../types.js";
 

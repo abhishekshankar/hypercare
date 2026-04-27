@@ -62,7 +62,7 @@ This was a stub. Replace with a real page:
 - Extend the front-matter parser in `packages/content/` to accept `topics: ["slug-a", "slug-b"]` (validated against the seeded `topics.slug` set; reject the file with a clear error if a slug is unknown).
 - Add `topics:` front-matter to each of the three seeded modules in `content/modules/` with 2–4 topic slugs each from the TASK-019 seeded set. Pick the obvious ones (e.g., `behavior-sundowning` → `["sundowning", "agitation-aggression"]`).
 - Optionally add `try_this_today: "..."` front-matter to each (one short concrete sentence per module). Used by the module page and by the lesson surface in TASK-024.
-- Re-run `pnpm --filter @hypercare/content load` — the loader now upserts `module_topics` rows alongside the module / chunk upserts. **Idempotent**: re-running it does not duplicate rows.
+- Re-run `pnpm --filter @alongside/content load` — the loader now upserts `module_topics` rows alongside the module / chunk upserts. **Idempotent**: re-running it does not duplicate rows.
 
 ### API surface
 
@@ -167,7 +167,7 @@ TASKS.md
 3. Type "bath" in search — only the bathing module visible.
 4. Click "Early" stage chip — modules without "early" disappear.
 5. Click a module — full body renders with attribution and the lesson CTA.
-6. Re-run `pnpm --filter @hypercare/content load`; check `module_topics` table — no duplicates, no churn.
+6. Re-run `pnpm --filter @alongside/content load`; check `module_topics` table — no duplicates, no churn.
 7. Read ADR 0006 addendum.
 
 ---

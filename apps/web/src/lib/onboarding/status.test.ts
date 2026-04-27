@@ -1,6 +1,6 @@
 import { describe, expect, it } from "vitest";
 
-import { careProfile } from "@hypercare/db";
+import { careProfile } from "@alongside/db";
 
 import {
   getFirstIncompleteStep,

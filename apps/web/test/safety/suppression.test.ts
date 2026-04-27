@@ -19,7 +19,7 @@ const calls: { inserts: unknown[]; updates: unknown[]; deletes: number } = {
   deletes: 0,
 };
 
-vi.mock("@hypercare/db", () => {
+vi.mock("@alongside/db", () => {
   return {
     userSuppression: {
       _: "user_suppression",

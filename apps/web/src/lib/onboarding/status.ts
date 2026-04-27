@@ -8,11 +8,11 @@ import {
   getCareProfileForUser,
   MultipleProfilesNotSupportedError,
   users,
-} from "@hypercare/db";
+} from "@alongside/db";
 
 import { serverEnv } from "../env.server";
 import { hasOnboardingAck } from "./ack";
-import { countStageV1Answered, isStageV1Answered, type StageV1Answers } from "@hypercare/content/stage-rules";
+import { countStageV1Answered, isStageV1Answered, type StageV1Answers } from "@alongside/content/stage-rules";
 
 import { STAGE_ANSWER_KEYS, type StageAnswersRecord } from "./stage-keys";
 

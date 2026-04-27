@@ -9,7 +9,7 @@ import {
 } from "@/lib/onboarding/ack";
 import { isProductionCookieSecure } from "@/lib/env.server";
 import { serverEnv } from "@/lib/env.server";
-import { mapStageAnswersV0ToV1, type StageAnswersRecord } from "@hypercare/content/stage-rules";
+import { mapStageAnswersV0ToV1, type StageAnswersRecord } from "@alongside/content/stage-rules";
 import {
   careProfile,
   careProfileChanges,
@@ -24,7 +24,7 @@ import {
   userSuppression,
   users,
   weeklyCheckins,
-} from "@hypercare/db";
+} from "@alongside/db";
 
 export const dynamic = "force-dynamic";
 

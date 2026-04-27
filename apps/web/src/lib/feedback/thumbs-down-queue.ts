@@ -1,7 +1,7 @@
 import "server-only";
 import { and, eq } from "drizzle-orm";
 
-import { createDbClient, messages, userFeedback } from "@hypercare/db";
+import { createDbClient, messages, userFeedback } from "@alongside/db";
 
 /**
  * App-layer hook: when `messages.rating` is set to `down`, inserts `user_feedback`

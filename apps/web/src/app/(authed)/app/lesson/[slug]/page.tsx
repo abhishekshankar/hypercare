@@ -1,7 +1,7 @@
 import { notFound } from "next/navigation";
 
-import { createDbClient } from "@hypercare/db";
-import { pickThisWeeksFocus } from "@hypercare/picker";
+import { createDbClient } from "@alongside/db";
+import { pickThisWeeksFocus } from "@alongside/picker";
 
 import { LessonExperience } from "@/components/lesson/LessonExperience";
 import { loadModuleBySlug } from "@/lib/library/load-module";

@@ -1,6 +1,6 @@
 /**
  * One-shot Bedrock health check: Titan Embeddings v2 + Claude (generation).
- * Same code paths as `@hypercare/content` + `@hypercare/rag` Bedrock clients.
+ * Same code paths as `@alongside/content` + `@alongside/rag` Bedrock clients.
  * Does not use the database.
  *
  * Prereqs:
@@ -13,10 +13,10 @@
  * different model id — set `BEDROCK_ANSWER_MODEL_ID` to the id shown in the console for your
  * enabled chat model, then re-run.
  *
- *   pnpm --filter @hypercare/rag bedrock-check
+ *   pnpm --filter @alongside/rag bedrock-check
  */
 import { ANSWER_MODEL_ID } from "../src/config.js";
-import { embedTitanV2 } from "@hypercare/content";
+import { embedTitanV2 } from "@alongside/content";
 import { invokeClaude } from "../src/bedrock/claude.js";
 
 let titanOk = false;

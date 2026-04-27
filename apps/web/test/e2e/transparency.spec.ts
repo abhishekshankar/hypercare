@@ -21,7 +21,7 @@ test.describe("profile transparency (TASK-033)", () => {
     }
     await page.goto(`${baseURL}/app/profile`);
     await expect(page.getByTestId("transparency-memory-section")).toBeVisible();
-    await expect(page.getByRole("heading", { name: "What Hypercare remembers from our conversations" })).toBeVisible();
+    await expect(page.getByRole("heading", { name: "What Alongside remembers from our conversations" })).toBeVisible();
     await expect(page.getByTestId("transparency-citations-section")).toBeVisible();
     await expect(page.getByRole("heading", { name: "What we've cited to you recently" })).toBeVisible();
   });

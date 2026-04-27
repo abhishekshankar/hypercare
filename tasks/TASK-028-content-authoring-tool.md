@@ -207,7 +207,7 @@ A CLI script `packages/content/src/scripts/seed-roles.ts` that PM runs once to m
 - The CLI role-seeding script runs cleanly.
 - New tables migrated, documented in `docs/schema-v1.md`.
 - ADR 0018 written, including the "why not Contentful" rationale and the workflow state machine diagram.
-- `pnpm lint typecheck test` green; eval doesn't regress; `pnpm --filter @hypercare/content check:ingest` (an offline smoke of the shared ingest path) still passes.
+- `pnpm lint typecheck test` green; eval doesn't regress; `pnpm --filter @alongside/content check:ingest` (an offline smoke of the shared ingest path) still passes.
 
 ---
 

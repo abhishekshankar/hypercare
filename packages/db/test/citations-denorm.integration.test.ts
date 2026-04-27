@@ -13,7 +13,7 @@ const enabled = process.env.CITATIONS_DENORM_INTEGRATION === "1" && Boolean(proc
  *
  * Skipped by default: set `CITATIONS_DENORM_INTEGRATION=1` and `DATABASE_URL` (see
  * `CONTRIBUTING.md` → Database integration tests). Run:
- * `CITATIONS_DENORM_INTEGRATION=1 DATABASE_URL=... pnpm --filter @hypercare/db test test/citations-denorm.integration.test.ts`
+ * `CITATIONS_DENORM_INTEGRATION=1 DATABASE_URL=... pnpm --filter @alongside/db test test/citations-denorm.integration.test.ts`
  */
 describe("citations denormalization (integration, real Postgres)", () => {
   it.skipIf(!enabled)("keeps message citation JSON when module_chunks content changes", async () => {

@@ -19,13 +19,13 @@ Behaviorally aligned with ADR 0005:
 - **Early**: not late, not middle, and at least 5/8 “answered” (same bar as v0 for minimum signal).
 - **Driving** is captured for the caregiver read-back; it is **not** a primary inference input (matches v0, which only surfaced driving in the summary copy).
 
-`inferInferredStage` in `@hypercare/content` reads `stage_questions_version` and either runs v0 on `stage_answers` or v1 on typed columns. RAG and the picker use the same helper.
+`inferInferredStage` in `@alongside/content` reads `stage_questions_version` and either runs v0 on `stage_answers` or v1 on typed columns. RAG and the picker use the same helper.
 
 ## Decision — v0 → v1 mapping (migration)
 
-Documented in code: `mapStageAnswersV0ToV1` in `@hypercare/content`. Conservative where v0 is ambiguous (e.g. `manages_meds: no` → `reminders`, not `hands_on_help`).
+Documented in code: `mapStageAnswersV0ToV1` in `@alongside/content`. Conservative where v0 is ambiguous (e.g. `manages_meds: no` → `reminders`, not `hands_on_help`).
 
-One-shot script: `pnpm --filter @hypercare/content migrate:stage-v1` (dry-run default; `--commit` to write). The script reports how many `inferred_stage` values differ from the prior value; if the flip rate is high, pause and review rules with the Care Specialist before committing.
+One-shot script: `pnpm --filter @alongside/content migrate:stage-v1` (dry-run default; `--commit` to write). The script reports how many `inferred_stage` values differ from the prior value; if the flip rate is high, pause and review rules with the Care Specialist before committing.
 
 ## Consequences
 

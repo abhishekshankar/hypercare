@@ -47,7 +47,7 @@ export function Composer({
 
   return (
     <form
-      className="rounded-lg border border-border bg-background p-3 shadow-sm"
+      className="rounded-lg border border-border bg-background p-3 shadow-md"
       data-testid="composer"
       onSubmit={handleSubmit}
     >

@@ -1,4 +1,4 @@
-import type { RetrievedChunk, Stage } from "@hypercare/rag";
+import type { RetrievedChunk, Stage } from "@alongside/rag";
 
 const BASE = {
   moduleId: "00000000-0000-0000-0000-000000000001",

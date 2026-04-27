@@ -1,10 +1,10 @@
-import type { AnswerResult, SafetyTriageReason } from "@hypercare/rag";
+import type { AnswerResult, SafetyTriageReason } from "@alongside/rag";
 import {
   categoryToSuggestedAction,
   parseEscalationFile,
   resolveScriptFilename,
-} from "@hypercare/safety";
-import type { SafetyClassifierCategory } from "@hypercare/safety";
+} from "@alongside/safety";
+import type { SafetyClassifierCategory } from "@alongside/safety";
 
 import type { RedteamExpected, RedteamQuery, RedteamSource } from "./schema.js";
 

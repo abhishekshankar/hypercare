@@ -4,7 +4,7 @@
  * **Inference profile (mandatory):** Use a regional system profile id with the
  * `us.` / `eu.` / `au.` / `global.` prefix. Bare `anthropic.*` ids often return
  * `ValidationException: on-demand throughput isn't supported` in InvokeModel.
- * The default below matches the answering model in `@hypercare/rag` (TASK-009);
+ * The default below matches the answering model in `@alongside/rag` (TASK-009);
  * see `docs/adr/0008-rag-pipeline-v0.md` §4 for the full rationale.
  *
  * Override at deploy time with `BEDROCK_CLASSIFIER_MODEL_ID` if your account

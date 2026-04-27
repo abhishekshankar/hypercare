@@ -1,5 +1,5 @@
 import { eq } from "drizzle-orm";
-import { careProfile, createDbClient, deleteUserAccount } from "@hypercare/db";
+import { careProfile, createDbClient, deleteUserAccount } from "@alongside/db";
 import { NextRequest, NextResponse } from "next/server";
 import { z } from "zod";
 

@@ -2,7 +2,7 @@ import { and, desc, eq, ilike, lt, or } from "drizzle-orm";
 import { NextResponse } from "next/server";
 import { z } from "zod";
 
-import { createDbClient, userFeedback, users } from "@hypercare/db";
+import { createDbClient, userFeedback, users } from "@alongside/db";
 
 import { anonymizedHandle } from "@/lib/feedback/anon-handle";
 import { requireInternalAdminApi } from "@/lib/internal/require-admin";

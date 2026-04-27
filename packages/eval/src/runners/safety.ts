@@ -1,7 +1,7 @@
 import { readFile } from "node:fs/promises";
 
-import { createDbClient } from "@hypercare/db";
-import { classify, buildDefaultDeps, type SafetyResult } from "@hypercare/safety";
+import { createDbClient } from "@alongside/db";
+import { classify, buildDefaultDeps, type SafetyResult } from "@alongside/safety";
 
 import { goldenPath } from "../paths.js";
 import { writeJsonReport } from "../report.js";

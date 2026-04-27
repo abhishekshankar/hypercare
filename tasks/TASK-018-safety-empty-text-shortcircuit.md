@@ -66,7 +66,7 @@ warn."
    - `classify({ userId, text: "   \n\t  " })` → same.
    - `classify({ userId, text: "real text" })` → unchanged behavior.
 3. The TASK-012 live answers run no longer prints `safety.llm.invoke_failed`
-   (re-run `EVAL_LIVE=1 pnpm --filter @hypercare/eval start -- answers` and
+   (re-run `EVAL_LIVE=1 pnpm --filter @alongside/eval start -- answers` and
    confirm the line is gone).
 
 ---

@@ -23,7 +23,7 @@ function Inner() {
   }
   return (
     <p
-      className="rounded-md border border-accent/40 bg-accent/10 px-3 py-2 text-sm text-foreground"
+      className="rounded-lg border border-accent/30 bg-amber-wash px-4 py-3 text-sm text-foreground"
       data-testid="lesson-saved-banner"
       role="status"
     >

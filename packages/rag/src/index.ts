@@ -1,5 +1,5 @@
 /**
- * `@hypercare/rag` public surface.
+ * `@alongside/rag` public surface.
  *
  * `answer(input)` is the single entry point used by routes / scripts. With
  * no `deps` argument, it builds the default wiring (Bedrock + Postgres) from

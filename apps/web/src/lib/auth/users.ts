@@ -1,7 +1,7 @@
 import "server-only";
 import { and, eq, isNull } from "drizzle-orm";
 
-import { createDbClient, routingCohortFromUserId, users } from "@hypercare/db";
+import { createDbClient, routingCohortFromUserId, users } from "@alongside/db";
 
 import { serverEnv } from "../env.server";
 import type { IdTokenClaims } from "./jwks";

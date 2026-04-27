@@ -1,7 +1,7 @@
 "use client";
 
 import Link from "next/link";
-import type { RefusalReason } from "@hypercare/rag";
+import type { RefusalReason } from "@alongside/rag";
 
 import { REFUSAL_COPY, REFUSAL_HEADINGS } from "@/lib/conversation/refusal-copy";
 

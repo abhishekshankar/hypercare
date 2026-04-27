@@ -4,7 +4,7 @@ import {
   __setRagOverrideForTests,
 } from "@/lib/conversation/answer-client";
 import { isE2ETestRuntime } from "@/lib/env.test-runtime";
-import type { AnswerInput, AnswerResult, OperatorMetadata, RagUsage } from "@hypercare/rag";
+import type { AnswerInput, AnswerResult, OperatorMetadata, RagUsage } from "@alongside/rag";
 
 function e2eOp(usage: RagUsage | null, tier: number | null = null): OperatorMetadata {
   return {

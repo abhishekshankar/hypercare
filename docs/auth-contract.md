@@ -1,6 +1,6 @@
-# Hypercare — Auth contract (shared Cognito with main project)
+# Alongside — Auth contract (shared Cognito with main project)
 
-This document records how Hypercare authenticates against the **main project’s** existing AWS Cognito user pool. Values below were supplied at TASK-002 handoff unless marked *derived*.
+This document records how Alongside authenticates against the **main project’s** existing AWS Cognito user pool. Values below were supplied at TASK-002 handoff unless marked *derived*.
 
 ## User pool and region
 
@@ -9,7 +9,7 @@ This document records how Hypercare authenticates against the **main project’s
 | **Cognito User Pool ID** | `ca-central-1_qvGFxxwDS` |
 | **AWS region** | `ca-central-1` (Canada Central) |
 
-## Hypercare app client
+## Alongside app client
 
 | Field | Value |
 |--------|--------|
@@ -24,9 +24,9 @@ This document records how Hypercare authenticates against the **main project’s
 | **OAuth flows** | **Authorization code grant** (only flow listed). PKCE is not a separate toggle in the current Cognito console; enforce PKCE in the app/SDK (TASK-006). |
 | **OAuth scopes** | `openid`, `email`, `phone`, `profile` |
 
-## Hypercare deployment URLs (user labels **a** / **b**)
+## Alongside deployment URLs (user labels **a** / **b**)
 
-These labels refer to **where Hypercare is hosted**, not to the token-bridge flow options in **Token-bridge / handoff** below.
+These labels refer to **where Alongside is hosted**, not to the token-bridge flow options in **Token-bridge / handoff** below.
 
 | Label | Role | Base URL |
 |-------|------|----------|
@@ -52,7 +52,7 @@ These labels refer to **where Hypercare is hosted**, not to the token-bridge flo
 | `https://main.d1ajzemw7s1n5f.amplifyapp.com` | Amplify (**a**) |
 | `https://cogcare.org` | Production |
 
-Use the same strings in Hypercare and in any OAuth client config so redirects match Cognito exactly (including trailing slashes / lack thereof).
+Use the same strings in Alongside and in any OAuth client config so redirects match Cognito exactly (including trailing slashes / lack thereof).
 
 ## Hosted UI
 
@@ -66,29 +66,29 @@ Use the same strings in Hypercare and in any OAuth client config so redirects ma
 |--------|--------|
 | **Cognito JWKS URL** (*derived*) | `https://cognito-idp.ca-central-1.amazonaws.com/ca-central-1_qvGFxxwDS/.well-known/jwks.json` |
 
-Server-side validation in Hypercare should use this JWKS URL with the pool’s issuer (`https://cognito-idp.ca-central-1.amazonaws.com/ca-central-1_qvGFxxwDS`).
+Server-side validation in Alongside should use this JWKS URL with the pool’s issuer (`https://cognito-idp.ca-central-1.amazonaws.com/ca-central-1_qvGFxxwDS`).
 
 ## Token-bridge / handoff from main project
 
-**Decision for v1:** Hypercare uses the **shared pool’s Hosted UI** (or equivalent OAuth redirect). Users may **sign in again** when entering Hypercare; that is acceptable for v1 per `PROJECT_BRIEF.md` §4.
+**Decision for v1:** Alongside uses the **shared pool’s Hosted UI** (or equivalent OAuth redirect). Users may **sign in again** when entering Alongside; that is acceptable for v1 per `PROJECT_BRIEF.md` §4.
 
 **Future option:** If the main project implements a **one-time code** or shared-cookie handoff, document the flow in a follow-up task and update this section — no change to the pool ID or app client ID unless the main project dictates otherwise.
 
 ## Stable user identifier
 
-**Use the Cognito `sub` claim** as the immutable user identifier for Hypercare’s `users` table (and any foreign keys). Do not use email as the primary key.
+**Use the Cognito `sub` claim** as the immutable user identifier for Alongside’s `users` table (and any foreign keys). Do not use email as the primary key.
 
 ## Custom attributes
 
-**None.** The Cognito **Sign-up** experience shows **Custom attributes (0)** — “No custom attributes found” (console: [Hosted UI / app client settings](https://ca-central-1.console.aws.amazon.com/cognito/v2/idp/user-pools/ca-central-1_qvGFxxwDS/applications/app-clients/2s4r9um36h654ehst7665vhsij/login-pages/edit/hosted-ui-settings?region=ca-central-1)). Hypercare does not sync custom pool attributes for v1.
+**None.** The Cognito **Sign-up** experience shows **Custom attributes (0)** — “No custom attributes found” (console: [Hosted UI / app client settings](https://ca-central-1.console.aws.amazon.com/cognito/v2/idp/user-pools/ca-central-1_qvGFxxwDS/applications/app-clients/2s4r9um36h654ehst7665vhsij/login-pages/edit/hosted-ui-settings?region=ca-central-1)). Alongside does not sync custom pool attributes for v1.
 
-## What Hypercare must **not** do
+## What Alongside must **not** do
 
 Delegated-auth rules (see `prd.md` / PRD §4):
 
-- No password fields in the Hypercare UI.
-- No signup flow owned by Hypercare.
-- No MFA enrollment flows owned by Hypercare.
+- No password fields in the Alongside UI.
+- No signup flow owned by Alongside.
+- No MFA enrollment flows owned by Alongside.
 - No editing of profile fields owned by the main project’s identity surface.
 
 ## Action items (Cognito / product)
@@ -98,7 +98,7 @@ Delegated-auth rules (see `prd.md` / PRD §4):
 | OAuth scopes (`profile`, etc.) | Done — see [OAuth configuration](#oauth-configuration-as-configured-in-cognito). |
 | Callback / sign-out URLs | Done — see [Callback and sign-out URLs](#callback-and-sign-out-urls-as-configured-in-cognito). |
 | Custom attributes | Done — [none](#custom-attributes). |
-| Public client (no secret) | **Optional, not blocking** — current confidential client + server-side secret + PKCE is acceptable; see [Hypercare app client](#hypercare-app-client). |
+| Public client (no secret) | **Optional, not blocking** — current confidential client + server-side secret + PKCE is acceptable; see [Alongside app client](#hypercare-app-client). |
 
 ## Operations
 

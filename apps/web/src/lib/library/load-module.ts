@@ -1,5 +1,7 @@
 import { eq } from "drizzle-orm";
-import { createDbClient, moduleTopics, modules, topics } from "@hypercare/db";
+import type { InferSelectModel } from "drizzle-orm";
+import { selectHeavyBranchMarkdown, type CareProfileAxes } from "@alongside/content";
+import { careProfile, createDbClient, moduleBranches, moduleTopics, modules, topics } from "@alongside/db";
 
 import { serverEnv } from "@/lib/env.server";
 
@@ -29,8 +31,18 @@ function categoryLabel(c: string): string {
   return c;
 }
 
+function toCareAxes(row: InferSelectModel<typeof careProfile>): CareProfileAxes {
+  const st = row.inferredStage;
+  const stage: CareProfileAxes["stage"] =
+    st === "early" || st === "middle" || st === "late" ? st : "unknown";
+  const relationship = row.crRelationship as CareProfileAxes["relationship"];
+  const livingSituation = (row.livingSituation ?? "with_caregiver") as CareProfileAxes["livingSituation"];
+  return { stage, relationship, livingSituation };
+}
+
 export async function loadModuleBySlug(
   slug: string,
+  opts?: { userId?: string },
 ): Promise<ModulePagePayload | null> {
   const db = createDbClient(serverEnv.DATABASE_URL);
   const [m] = await db.select().from(modules).where(eq(modules.slug, slug)).limit(1);
@@ -49,11 +61,32 @@ export async function loadModuleBySlug(
         ? m.reviewDate
         : (m.reviewDate as Date).toISOString().slice(0, 10);
 
+  let bodyMd = m.bodyMd;
+  if (m.heavy && opts?.userId) {
+    const [cp] = await db.select().from(careProfile).where(eq(careProfile.userId, opts.userId)).limit(1);
+    if (cp) {
+      const brs = await db.select().from(moduleBranches).where(eq(moduleBranches.moduleId, m.id));
+      if (brs.length > 0) {
+        const axes = toCareAxes(cp);
+        const { bodyMd: picked } = selectHeavyBranchMarkdown(
+          brs.map((b) => ({
+            stageKey: b.stageKey,
+            relationshipKey: b.relationshipKey,
+            livingSituationKey: b.livingSituationKey,
+            bodyMd: b.bodyMd,
+          })),
+          axes,
+        );
+        bodyMd = picked;
+      }
+    }
+  }
+
   return {
     id: m.id,
     slug: m.slug,
     title: m.title,
-    bodyMd: m.bodyMd,
+    bodyMd,
     category: m.category,
     categoryLabel: categoryLabel(m.category),
     stageRelevance: m.stageRelevance,

@@ -1,0 +1,30 @@
+{
+  "module_slug": "transitions-first-two-weeks",
+  "edges": [
+    {
+      "to_module_slug": "medical-diagnosis-demystified",
+      "relation_type": "prerequisite",
+      "rationale": "Caregivers landing here may not yet understand what the diagnosis means medically; that module provides the clinical framing."
+    },
+    {
+      "to_module_slug": "self-care-guilt-ambiguous-grief",
+      "relation_type": "follow_up",
+      "rationale": "The grief named in the first two weeks deepens; this module picks up where the self-care section here leaves off."
+    },
+    {
+      "to_module_slug": "self-care-caregiver-burnout",
+      "relation_type": "follow_up",
+      "rationale": "Early-stage caregiving stress can build toward burnout; this module is the next checkpoint."
+    },
+    {
+      "to_module_slug": "legal-advance-planning",
+      "relation_type": "follow_up",
+      "rationale": "Advance planning is explicitly deferred — 'month-two task, not week-one' — and this module is where it lands."
+    },
+    {
+      "to_module_slug": "transitions-driving-conversation",
+      "relation_type": "soft_flag_companion",
+      "rationale": "Driving comes up in the first two weeks but is deferred here; companion module handles it."
+    }
+  ]
+}

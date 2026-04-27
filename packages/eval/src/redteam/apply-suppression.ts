@@ -1,4 +1,4 @@
-import { createDbClient, userSuppression } from "@hypercare/db";
+import { createDbClient, userSuppression } from "@alongside/db";
 import { eq } from "drizzle-orm";
 
 type DistressReason = "caregiver_self_harm" | "elder_abuse_or_caregiver_breaking_point";

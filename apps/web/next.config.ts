@@ -17,6 +17,20 @@ const nextConfig: NextConfig = {
   turbopack: {
     root: path.join(__dirname, "../.."),
   },
+  experimental: {
+    serverActions: {
+      // CloudFront (or any proxy) can make `Host` / forwarded headers disagree
+      // with `Origin` on Server Action POSTs; `allowedOrigins` whitelists the
+      // browser origin for the CSRF check (Next 15 `E80` / digest 1330110331).
+      allowedOrigins: [
+        "localhost:3000",
+        "*.cloudfront.net",
+        ...(process.env.SERVER_ACTIONS_ALLOWED_ORIGINS?.split(",")
+          .map((s) => s.trim())
+          .filter(Boolean) ?? []),
+      ],
+    },
+  },
 };
 
 export default nextConfig;

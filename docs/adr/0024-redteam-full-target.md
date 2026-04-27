@@ -25,6 +25,6 @@ PRD §10.5 requires a **200 adversarial + 50 lived-experience** red-team corpus 
 
 ## Consequences
 
-- CI runs `pnpm --filter @hypercare/eval run redteam:v2:gate` in addition to the v1 smoke.
+- CI runs `pnpm --filter @alongside/eval run redteam:v2:gate` in addition to the v1 smoke.
 - PM must complete external sign-off; engineering provides export and re-runs.
 - Bumping the baseline artifact after intentional model/script changes is a deliberate commit.

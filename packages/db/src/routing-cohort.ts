@@ -1,8 +1,8 @@
 import { createHash } from "node:crypto";
 
-import { ROUTING_COHORT_CONTROL, ROUTING_COHORT_TREATMENT } from "@hypercare/model-router";
+import { ROUTING_COHORT_CONTROL, ROUTING_COHORT_TREATMENT } from "@alongside/model-router";
 
-export type { RoutingCohortId } from "@hypercare/model-router";
+export type { RoutingCohortId } from "@alongside/model-router";
 
 /**
  * Must match `0021_model_routing.sql` backfill:

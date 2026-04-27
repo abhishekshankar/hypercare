@@ -1,7 +1,7 @@
 import { eq } from "drizzle-orm";
 import type { InferSelectModel } from "drizzle-orm";
-import { createDbClient, users } from "@hypercare/db";
-import { hasAnyRole, type AppRole } from "@hypercare/content";
+import { createDbClient, users } from "@alongside/db";
+import { hasAnyRole, type AppRole } from "@alongside/content";
 import { serverEnv } from "@/lib/env.server";
 import { getSession } from "@/lib/auth/session";
 import { NextResponse } from "next/server";

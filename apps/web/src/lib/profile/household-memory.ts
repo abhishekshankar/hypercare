@@ -1,6 +1,6 @@
 import "server-only";
 
-import { createDbClient, listHouseholdActorUserIds } from "@hypercare/db";
+import { createDbClient, listHouseholdActorUserIds } from "@alongside/db";
 
 import { serverEnv } from "../env.server";
 

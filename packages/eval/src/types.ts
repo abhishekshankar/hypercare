@@ -1,5 +1,5 @@
-import type { RefusalReason, SafetyTriageReason } from "@hypercare/rag";
-import type { SafetyCategory } from "@hypercare/safety";
+import type { RefusalReason, SafetyTriageReason } from "@alongside/rag";
+import type { SafetyCategory } from "@alongside/safety";
 
 // --- Golden file shapes (kept in sync with TASK-012) ---
 

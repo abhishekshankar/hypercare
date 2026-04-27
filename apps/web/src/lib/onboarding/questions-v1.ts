@@ -2,7 +2,7 @@
  * TASK-034 — single source for stage-assessment v1 copy and option values.
  * Wording is aligned with `docs/content/stage-questions-v1.md` when PM pastes the signed file.
  */
-import type { AloneSafetyChip } from "@hypercare/content/stage-rules";
+import type { AloneSafetyChip } from "@alongside/content/stage-rules";
 
 export const ALONE_SAFETY_OPTIONS: { value: AloneSafetyChip; label: string }[] = [
   { value: "nothing", label: "Nothing in particular" },

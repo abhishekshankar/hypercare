@@ -1,0 +1,30 @@
+{
+  "module_slug": "self-care-guilt-ambiguous-grief",
+  "edges": [
+    {
+      "to": "self-care-caregiver-burnout",
+      "type": "soft_flag_companion",
+      "rationale": "When burnout classifier signals fire, this module provides the emotional scaffolding for guilt and anticipatory grief that burnout often masks."
+    },
+    {
+      "to": "self-care-asking-for-help",
+      "type": "soft_flag_companion",
+      "rationale": "Guilt for asking for help is one of the guilt patterns this module names; the asking-for-help module provides practical scripts."
+    },
+    {
+      "to": "transitions-end-of-life-signs",
+      "type": "follow_up",
+      "rationale": "Anticipatory grief intensifies as end-of-life nears; this module addresses the 'wishing it was over' guilt that precedes the transitions module."
+    },
+    {
+      "to": "transitions-placement-decision",
+      "type": "prerequisite",
+      "rationale": "Placement guilt is named in this module; the transitions-placement module provides the decision-making scaffolding."
+    },
+    {
+      "to": "working-with-family-caregiver-conflict",
+      "type": "follow_up",
+      "rationale": "Solo caregiver guilt and sibling coordination guilt can lead to family conflict; this module names the guilt, conflict module addresses the dynamics."
+    }
+  ]
+}

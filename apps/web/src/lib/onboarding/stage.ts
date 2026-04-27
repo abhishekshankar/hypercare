@@ -3,7 +3,7 @@ import {
   inferStageV0,
   inferStageV1,
   type CareProfileStageSnapshot,
-} from "@hypercare/content/stage-rules";
+} from "@alongside/content/stage-rules";
 
 import type { StageAnswersRecord } from "./stage-keys";
 

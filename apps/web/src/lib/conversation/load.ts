@@ -1,8 +1,8 @@
 import "server-only";
 import { and, asc, desc, eq } from "drizzle-orm";
 
-import { conversations, createDbClient, messages } from "@hypercare/db";
-import type { Citation, RefusalReason } from "@hypercare/rag";
+import { conversations, createDbClient, messages } from "@alongside/db";
+import type { Citation, RefusalReason } from "@alongside/rag";
 
 import { serverEnv } from "@/lib/env.server";
 

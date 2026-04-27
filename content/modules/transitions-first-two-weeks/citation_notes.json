@@ -1,0 +1,20 @@
+{
+  "status": "no_blocks",
+  "notes": [
+    {
+      "claim_anchor": "[6]",
+      "issue": "NIA caregiving URL returns HTTP 405 to automated HEAD/GET requests (bot protection). URL is valid per corpus manifest with locked snapshot at corpus/snapshots/nia-caregiving.html. Not a broken link.",
+      "action": "none_required"
+    },
+    {
+      "claim_anchor": "[7]",
+      "issue": "Lancet URL returns HTTP 403 to automated requests (bot protection / paywall). URL is valid per corpus manifest with locked snapshot at corpus/snapshots/lancet-dementia-commission-2024.pdf. Not a broken link.",
+      "action": "none_required"
+    },
+    {
+      "claim_anchor": "[8]",
+      "issue": "Source dol-fmla-overview is NOT yet in the corpus manifest (manifest.yaml). URL https://www.dol.gov/agencies/whd/fmla returns HTTP 200. Snapshot capture needed.",
+      "action": "add_to_corpus_manifest_and_capture_snapshot"
+    }
+  ]
+}

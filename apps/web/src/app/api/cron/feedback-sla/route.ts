@@ -1,7 +1,7 @@
 import { and, count, eq, sql } from "drizzle-orm";
 import { NextResponse } from "next/server";
 
-import { createDbClient, userFeedback } from "@hypercare/db";
+import { createDbClient, userFeedback } from "@alongside/db";
 
 import { postSlackFeedbackMessage } from "@/lib/feedback/slack";
 import { baseUrl, serverEnv } from "@/lib/env.server";

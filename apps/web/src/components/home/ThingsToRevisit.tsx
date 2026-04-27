@@ -19,9 +19,7 @@ export function ThingsToRevisit({ items }: Readonly<Props>) {
         className="text-sm text-muted-foreground"
         data-testid="things-to-revisit"
       >
-        <p className="mb-2 text-xs uppercase tracking-wide text-muted-foreground">
-          Things to revisit
-        </p>
+        <p className="along-section-label mb-3">Things to revisit</p>
         <p>Nothing saved yet. Tap the bookmark on any answer that helps.</p>
       </section>
     );
@@ -32,9 +30,7 @@ export function ThingsToRevisit({ items }: Readonly<Props>) {
       className="space-y-2"
       data-testid="things-to-revisit"
     >
-      <p className="mb-2 text-xs uppercase tracking-wide text-muted-foreground">
-        Things to revisit
-      </p>
+      <p className="along-section-label mb-3">Things to revisit</p>
       <ul className="divide-y divide-border rounded-lg border border-border bg-background">
         {items.map((it) => (
           <li key={it.id}>

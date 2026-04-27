@@ -1,7 +1,7 @@
 import "server-only";
 
-import type { SafetyEscalationScript, SafetyTriageReason } from "@hypercare/rag";
-import { parseEscalationFile, resolveScriptFilename, type SafetyClassifierCategory } from "@hypercare/safety";
+import type { SafetyEscalationScript, SafetyTriageReason } from "@alongside/rag";
+import { parseEscalationFile, resolveScriptFilename, type SafetyClassifierCategory } from "@alongside/safety";
 
 export type TriageNameContext = { crName: string; caregiverName?: string };
 

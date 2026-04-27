@@ -4,6 +4,13 @@ All notable changes to this repo are documented here. The format is loose; align
 
 ## Unreleased
 
+- TASK-044: Hermes heavy-module pipeline — schema (modules, branches, tools, relations, evidence), validator (errors + warnings), publish bundle endpoint, library branch read, ADR 0031, runbook.
+- AWS Amplify Hosting deprecated. CloudFront → ALB → OpenNext Lambda (`infra/lib/web-stack.ts`) is the canonical and only supported production path. `amplify.yml`, `CLAUDE.md` § Amplify, and the README carry deprecation headers; failure-mode diagnostics retained for any branch-preview revival. See ADR 0032.
+
+### Rebrand
+
+- Product name **Alongside** across the web app, LLM prompts, and primary docs. Workspace packages renamed from `@hypercare/*` to `@alongside/*`. UI tokens and typography follow `docs/Alongside/homepage-tokens.css` (Inter + Source Serif 4, paper/moss/amber palette). AWS stack IDs and Postgres identifiers may remain `Hypercare*` / `hypercare_*` in brownfield — see `docs/infra-rename.md`.
+
 ### Documentation
 
 - Expanded [ARCHITECTURE.md](ARCHITECTURE.md) with app API routes for privacy, transparency, feedback, saved answers, library SSE, suppression, cron jobs, and internal operator surfaces.
@@ -13,8 +20,8 @@ All notable changes to this repo are documented here. The format is loose; align
 
 ### Tooling / tests
 
-- `@hypercare/eval` redteam JSON report typing fixed for TypeScript `exactOptionalPropertyTypes` (`layer_b_classifier` omitted when unset).
-- `apps/web` Vitest: `upsertUserFromClaims` mock includes `update` chain; conversation escalation tests mock `@hypercare/db` and partially mock `@/lib/env.server`.
+- `@alongside/eval` redteam JSON report typing fixed for TypeScript `exactOptionalPropertyTypes` (`layer_b_classifier` omitted when unset).
+- `apps/web` Vitest: `upsertUserFromClaims` mock includes `update` chain; conversation escalation tests mock `@alongside/db` and partially mock `@/lib/env.server`.
 
 ### Ops / runbooks
 

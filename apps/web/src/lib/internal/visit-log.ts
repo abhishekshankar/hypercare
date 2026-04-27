@@ -1,6 +1,6 @@
 import "server-only";
 import { desc, eq } from "drizzle-orm";
-import { adminAudit, createDbClient, userSessions } from "@hypercare/db";
+import { adminAudit, createDbClient, userSessions } from "@alongside/db";
 import { headers } from "next/headers";
 
 import { serverEnv } from "../env.server";

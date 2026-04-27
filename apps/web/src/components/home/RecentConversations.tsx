@@ -41,9 +41,7 @@ export function RecentConversations({
       className="space-y-2"
       data-testid="recent-conversations"
     >
-      <p className="mb-2 text-xs uppercase tracking-wide text-muted-foreground">
-        Recent conversations
-      </p>
+      <p className="along-section-label mb-3">Recent conversations</p>
       <ul className="divide-y divide-border rounded-lg border border-border bg-background">
         {items.map((c) => (
           <li key={c.id}>

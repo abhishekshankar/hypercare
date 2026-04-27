@@ -15,8 +15,6 @@ jobs:
       - uses: actions/checkout@v4
 
       - uses: pnpm/action-setup@v4
-        with:
-          version: 10
 
       - uses: actions/setup-node@v4
         with:
@@ -25,6 +23,9 @@ jobs:
 
       - name: Install dependencies
         run: pnpm install --frozen-lockfile
+
+      - name: Build workspace packages (emit dist for typecheck and Vitest)
+        run: pnpm -r --filter './packages/*' run build
 
       - name: Lint
         run: pnpm lint
@@ -39,13 +40,13 @@ jobs:
         run: pnpm --filter web run check:client-bundle
 
       - name: Check safety escalation scripts
-        run: pnpm --filter @hypercare/safety check:scripts
+        run: pnpm --filter @alongside/safety check:scripts
 
       - name: Red-team v1 (offline smoke)
-        run: pnpm --filter @hypercare/eval start -- redteam
+        run: pnpm --filter @alongside/eval start -- redteam
 
       - name: Red-team v2 (offline gate, TASK-035)
-        run: pnpm --filter @hypercare/eval run redteam:v2:gate
+        run: pnpm --filter @alongside/eval run redteam:v2:gate
 
       - name: Test
         run: pnpm test

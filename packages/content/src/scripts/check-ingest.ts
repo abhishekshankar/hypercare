@@ -1,8 +1,8 @@
 /**
  * Offline smoke: shared parse → front matter → chunk path (no DB, no Bedrock).
- * `pnpm --filter @hypercare/content check:ingest`
+ * `pnpm --filter @alongside/content check:ingest`
  */
-import { TOPICS_V0 } from "@hypercare/db";
+import { TOPICS_V0 } from "@alongside/db";
 import { chunkModuleBody } from "../chunk.js";
 import { moduleFrontMatterSchema } from "../schema.js";
 

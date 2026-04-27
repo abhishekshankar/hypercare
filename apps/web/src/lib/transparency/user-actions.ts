@@ -1,4 +1,4 @@
-import { createDbClient, userActions } from "@hypercare/db";
+import { createDbClient, userActions } from "@alongside/db";
 
 export const TRANSPARENCY_FORGET_ACTION = "transparency_forget";
 export const TRANSPARENCY_REFRESH_ACTION = "transparency_refresh";

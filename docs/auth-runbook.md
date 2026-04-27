@@ -1,15 +1,15 @@
-# Auth runbook (Cognito + Hypercare)
+# Auth runbook (Cognito + Alongside)
 
 Operational notes for the shared-pool, Hosted UI, and session cookie introduced in [TASK-006](../tasks/TASK-006-cognito-auth.md). Contract values live in [`auth-contract.md`](auth-contract.md).
 
 ## Environment layout
 
 - **`apps/web/.env.local`** (local, gitignored): non-secret and development-only values; the PM copies allowed URLs from `auth-contract.md`. Do **not** paste the Cognito app client secret into a ticket, chat, or log.
-- **`COGNITO_APP_CLIENT_SECRET`**: in deployed environments, load from **AWS Secrets Manager** (or the host’s secret store) into the runtime environment—never commit it. The Hypercare `hypercare` app client is **confidential**; only **server** code may read this value (see `env.server.ts` + `env.client.ts` split in `apps/web`).
+- **`COGNITO_APP_CLIENT_SECRET`**: in deployed environments, load from **AWS Secrets Manager** (or the host’s secret store) into the runtime environment—never commit it. The Alongside `hypercare` app client is **confidential**; only **server** code may read this value (see `env.server.ts` + `env.client.ts` split in `apps/web`).
 - **`SESSION_COOKIE_SECRET`**: long random string (32+ bytes). Generate e.g. `openssl rand -base64 32`. If leaked, treat as credential leak: rotate in all environments and accept forced sign-out.
 - **Database:** `DATABASE_URL` must use the `hypercare_app` role in runtime (not admin). See `docs/infra-runbook.md` for tunneling and bootstrap.
 - **RDS from local:** the dev cluster is in a private subnet. You **cannot** put the `*.rds.amazonaws.com` host directly in `DATABASE_URL`; instead run `./scripts/db-tunnel.sh` (SSM port-forward, default `localhost:15432`) and set `DATABASE_URL=postgresql://hypercare_admin:<encoded-pw>@127.0.0.1:15432/hypercare_dev?sslmode=require`. The tunnel forwards raw TCP, so the Postgres TLS handshake is end-to-end—`sslmode=require` is required.
-- **TLS auto-enable:** the `@hypercare/db` client sets `ssl: 'require'` for `*.rds.amazonaws.com` and for any URL with `sslmode=(require|verify-*)` or `ssl=true`. Loopback hosts (`localhost`, `127.0.0.1`) won't get TLS auto-enabled, so be explicit when tunneling to RDS.
+- **TLS auto-enable:** the `@alongside/db` client sets `ssl: 'require'` for `*.rds.amazonaws.com` and for any URL with `sslmode=(require|verify-*)` or `ssl=true`. Loopback hosts (`localhost`, `127.0.0.1`) won't get TLS auto-enabled, so be explicit when tunneling to RDS.
 - **Special characters in the password:** URI userinfo breaks if the password contains `:`, `@`, `/`, `#`, etc., unless each is **percent-encoded** (e.g. `:` → `%3A`). Encode **only** the password segment, then rebuild `postgresql://user:ENCODED_PASS@host:port/db`. If sign-in fails with `user_upsert`, check the `next dev` terminal for the underlying Postgres error.
 
 ## Per-environment URL mapping (must match Cognito **exactly**)
@@ -89,7 +89,7 @@ If TASK-007 is enabled, `/app` may redirect into onboarding first; session + `us
 
 ## Co-caregiver invites (TASK-038)
 
-Family sharing uses **the same Cognito pool and Hosted UI** as today: an invited person signs up or signs in, then completes **invite acceptance** in-app (token from email or copy-link flow — product wiring in the ticket). **Do not** create a second Hypercare-specific identity system.
+Family sharing uses **the same Cognito pool and Hosted UI** as today: an invited person signs up or signs in, then completes **invite acceptance** in-app (token from email or copy-link flow — product wiring in the ticket). **Do not** create a second Alongside-specific identity system.
 
 - **Email delivery:** strawman is the pool’s **transactional / Cognito-backed** path (no new SMTP infra in v1). Until that is wired, dev can mint tokens via API and paste an accept URL; see [ADR 0027](adr/0027-family-sharing-data-model-and-privacy.md) § “Transactional email”.
 - **Acceptance:** requires a valid `hc_session` for the **same email** as the pending `care_profile_members.invitee_email` row (normalized lowercase). Schema: `docs/schema-v1.md` § `care_profile_members` / `invite_tokens`.

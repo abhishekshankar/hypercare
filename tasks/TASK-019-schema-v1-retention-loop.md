@@ -139,7 +139,7 @@ One SQL file at `packages/db/migrations/NNNN_schema_v1_retention_loop.sql` (use 
 
 ### Seed script
 
-A small script `packages/db/scripts/seed-topics.ts` that inserts the v0 topic list **idempotently** (`on conflict (slug) do nothing`). Wired up as `pnpm --filter @hypercare/db seed:topics` in `packages/db/package.json`. The migration also seeds the same rows (so a fresh DB is good after `drizzle-kit migrate`); the script exists so we can re-run after expanding the list without writing a new migration during sprint 2.
+A small script `packages/db/scripts/seed-topics.ts` that inserts the v0 topic list **idempotently** (`on conflict (slug) do nothing`). Wired up as `pnpm --filter @alongside/db seed:topics` in `packages/db/package.json`. The migration also seeds the same rows (so a fresh DB is good after `drizzle-kit migrate`); the script exists so we can re-run after expanding the list without writing a new migration during sprint 2.
 
 ### Documentation
 
@@ -150,10 +150,10 @@ A small script `packages/db/scripts/seed-topics.ts` that inserts the v0 topic li
 
 ## Acceptance criteria
 
-- `pnpm --filter @hypercare/db typecheck lint test` green.
+- `pnpm --filter @alongside/db typecheck lint test` green.
 - New migration SQL applies cleanly to a fresh `hypercare_dev` (`drizzle-kit migrate` from a wiped DB succeeds; verified locally via the SSM tunnel per `docs/infra-runbook.md`).
 - New migration SQL applies cleanly to a `hypercare_dev` that already has sprint-1 data (no destructive ops; backfill via add-with-default where any non-null column is added — this ticket adds **no** non-null columns to existing tables, so this should be free).
-- `pnpm --filter @hypercare/db seed:topics` is idempotent (running twice does not error and does not duplicate rows).
+- `pnpm --filter @alongside/db seed:topics` is idempotent (running twice does not error and does not duplicate rows).
 - All five new tables visible via `\d+` in psql with the documented columns, types, FKs, and indexes.
 - `topics` table contains the 20 seeded rows (the 18 above plus 2 of your choice if the count needs to be even — call your shot).
 - ADR 0012 written and committed.
@@ -222,11 +222,11 @@ TASKS.md                                       # status pending → in_progress 
 ## How PM verifies
 
 1. `git checkout task/TASK-019-schema-v1-retention-loop`
-2. `pnpm install && pnpm --filter @hypercare/db typecheck lint test`
-3. SSM tunnel up; `DATABASE_URL_ADMIN` set; `pnpm --filter @hypercare/db migrate` against a fresh `hypercare_dev`.
+2. `pnpm install && pnpm --filter @alongside/db typecheck lint test`
+3. SSM tunnel up; `DATABASE_URL_ADMIN` set; `pnpm --filter @alongside/db migrate` against a fresh `hypercare_dev`.
 4. `psql $DATABASE_URL_ADMIN -c '\dt'` — see the five new tables.
 5. `psql $DATABASE_URL_ADMIN -c 'select count(*) from topics;'` — returns the seeded count.
-6. `pnpm --filter @hypercare/db seed:topics` — runs cleanly twice in a row, count unchanged on the second run.
+6. `pnpm --filter @alongside/db seed:topics` — runs cleanly twice in a row, count unchanged on the second run.
 7. Read ADR 0012 — convince me on the three decisions above.
 
 ---

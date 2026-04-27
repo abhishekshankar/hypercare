@@ -10,7 +10,7 @@ Layer-5 generation historically used a single Bedrock model id (`BEDROCK_ANSWER_
 
 ## Decision
 
-1. **Router package** — Internal `@hypercare/model-router` loads a checked-in YAML policy at process boot (`packages/model-router/config/model-routing.yaml`). `selectModel()` returns `{ modelId, reason, policyVersion, matchedRuleIndex }`. Invalid YAML fails boot; unknown keys in `match` objects are rejected at parse time.
+1. **Router package** — Internal `@alongside/model-router` loads a checked-in YAML policy at process boot (`packages/model-router/config/model-routing.yaml`). `selectModel()` returns `{ modelId, reason, policyVersion, matchedRuleIndex }`. Invalid YAML fails boot; unknown keys in `match` objects are rejected at parse time.
 
 2. **Classifier verdict bridge** — Until TASK-009’s standalone Layer-2 classifier ships in this repo, `buildClassifierVerdictForRouting()` maps MODULE-022 topic slugs (+ light lexical cues) into the router’s `ClassifierVerdict` shape (`topic`, `urgency`, `stage`, `is_refusal_template`).
 

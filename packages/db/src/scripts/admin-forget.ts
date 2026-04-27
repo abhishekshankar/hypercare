@@ -1,6 +1,6 @@
 /**
  * Operator CLI — same delete transaction as the self-serve API (TASK-032).
- *   pnpm --filter @hypercare/db admin:forget -- --user-id=<uuid> --reason="support ticket"
+ *   pnpm --filter @alongside/db admin:forget -- --user-id=<uuid> --reason="support ticket"
  */
 import { parseArgs } from "node:util";
 import { eq } from "drizzle-orm";

@@ -1,19 +1,6 @@
-import { readFileSync } from "node:fs";
-import { dirname, resolve } from "node:path";
-import { fileURLToPath } from "node:url";
-
 /**
- * Loads checked-in prompt templates next to this file.
- * `import.meta.url` resolves to either `src/prompts/loader.ts` (vitest, tsx)
- * or `dist/prompts/loader.js` after build — both contain the .md siblings
- * (the build step `scripts/copy-prompts.mjs` copies them into `dist/prompts`).
+ * Prompt templates for Layer 4. Text is generated into `embedded.generated.ts`
+ * at `@alongside/rag` build time so Next.js/OpenNext server bundles do not bake
+ * absolute filesystem paths from the machine that ran `next build`.
  */
-const here = dirname(fileURLToPath(import.meta.url));
-
-function readPrompt(name: string): string {
-  const p = resolve(here, name);
-  return readFileSync(p, "utf8");
-}
-
-export const SYSTEM_PROMPT = readPrompt("system.md");
-export const USER_TEMPLATE = readPrompt("user-template.md");
+export { SYSTEM_PROMPT, USER_TEMPLATE } from "./embedded.generated.js";

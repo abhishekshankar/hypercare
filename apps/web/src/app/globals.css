@@ -1,22 +1,104 @@
 @import "tailwindcss";
 
+/* Alongside design tokens — spec: docs/Alongside/Alongside Design System.html */
 @theme inline {
-  --color-background: #faf8f5;
-  --color-foreground: #1c1917;
-  --color-muted: #f5f0e8;
-  --color-muted-foreground: #57534e;
-  --color-accent: #b45309;
-  --color-border: #e7e5e4;
-  --color-crisis-bg: #f3eee6;
-  --color-crisis-fg: #44403c;
-  --font-sans: ui-sans-serif, system-ui, sans-serif, "Apple Color Emoji", "Segoe UI Emoji",
+  --color-background: #f7f4ee; /* --paper */
+  --color-shell: #e4ddd0; /* --paper-3 outer frame (homepage artboard) */
+  --color-foreground: #1b1a17; /* --ink */
+  --color-muted: #efeae1; /* --paper-2 */
+  --color-muted-foreground: #5e5952; /* --ink-3 */
+  --color-accent: #415a3e; /* --moss (primary) */
+  --color-accent-foreground: #f7f4ee; /* on-moss / CTA label */
+  --color-accent-ink: #2c3e2a; /* --moss-ink */
+  --color-border: #d8cfbe; /* --rule */
+  --color-border-strong: #b8ad96; /* --rule-strong */
+  --color-foreground-muted: #3a3733; /* --ink-2 */
+  /* Crisis strip: amber bar, light text (design system) */
+  --color-crisis-bg: #b8531a; /* --amber */
+  --color-crisis-fg: #fff7ee; /* on-amber */
+  --color-crisis-link-focus: #6b8e68; /* --focus */
+  --color-moss-wash: #e5e7dc;
+  --color-amber-wash: #f6e6d6;
+  --color-success: #2f6a4a;
+  --color-warning: #8a5a0c;
+  --color-error: #a1291b;
+  --color-destructive: #a1291b;
+  --color-destructive-foreground: #f7f4ee;
+  --color-info: #3a5f76;
+  --font-sans: var(--font-ui-sans), ui-sans-serif, system-ui, sans-serif, "Apple Color Emoji", "Segoe UI Emoji",
     "Segoe UI Symbol", "Noto Color Emoji";
-  --font-serif: Georgia, "Times New Roman", Times, serif;
+  --font-serif: var(--font-ui-serif), ui-serif, Georgia, "Times New Roman", serif;
   --font-mono: ui-monospace, SFMono-Regular, "SF Mono", Menlo, Consolas, monospace;
+  --shadow-sm: 0 1px 0 rgba(27, 26, 23, 0.04), 0 1px 2px rgba(27, 26, 23, 0.04);
+  --shadow-md: 0 1px 0 rgba(27, 26, 23, 0.04), 0 6px 16px -6px rgba(27, 26, 23, 0.1);
+}
+
+/* Alongside patterns (avoid @apply here — keeps Tailwind compile predictable) */
+.along-eyebrow {
+  font-size: 11px;
+  font-weight: 600;
+  letter-spacing: 0.22em;
+  text-transform: uppercase;
+  color: var(--color-accent);
+}
+.along-section-label {
+  font-size: 11px;
+  font-weight: 600;
+  letter-spacing: 0.22em;
+  text-transform: uppercase;
+  color: var(--color-muted-foreground);
+}
+.along-primary-cta {
+  display: inline-flex;
+  min-height: 52px;
+  align-items: center;
+  justify-content: center;
+  gap: 0.625rem;
+  border-radius: 9999px;
+  background: var(--color-accent);
+  padding-left: 1.75rem;
+  padding-right: 1.75rem;
+  font-size: 1rem;
+  font-weight: 600;
+  letter-spacing: 0.01em;
+  color: var(--color-accent-foreground);
+  text-decoration: none;
+  transition: background-color 150ms ease;
+}
+.along-primary-cta:hover {
+  background: var(--color-accent-ink);
+}
+.along-primary-cta:focus-visible {
+  outline: 2px solid transparent;
+  outline-offset: 2px;
+  box-shadow: 0 0 0 2px var(--color-background), 0 0 0 4px var(--color-accent);
+}
+.along-data-link {
+  font-size: 0.875rem;
+  color: var(--color-muted-foreground);
+  text-decoration: underline;
+  text-decoration-color: var(--color-border-strong);
+  text-underline-offset: 3px;
+  transition: color 150ms ease;
+}
+.along-data-link:hover {
+  color: var(--color-foreground);
+}
+.along-surface-card {
+  border-radius: 0.5rem;
+  border: 1px solid var(--color-border);
+  background: var(--color-background);
+  padding: 1.25rem;
+  box-shadow: var(--shadow-sm);
+}
+@media (min-width: 768px) {
+  .along-surface-card {
+    padding: 1.5rem;
+  }
 }
 
 body {
-  background: var(--color-background);
+  background: var(--color-shell);
   color: var(--color-foreground);
   font-family: var(--font-sans);
 }

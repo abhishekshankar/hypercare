@@ -1,7 +1,7 @@
-import { createDbClient, safetyFlags, userSuppression } from "@hypercare/db";
+import { createDbClient, safetyFlags, userSuppression } from "@alongside/db";
 import { desc, eq } from "drizzle-orm";
 
-import type { RetrievedChunk } from "@hypercare/rag";
+import type { RetrievedChunk } from "@alongside/rag";
 
 export async function getUserSuppressionExists(
   databaseUrl: string,

@@ -2,7 +2,7 @@
 
 - **Fixture:** `redteam-v2.yaml`
 - **Mode:** offline
-- **Commit:** `76ad2c9bab4f445047b51aa0edb8201044480d75`
+- **Commit:** `38da190fd69511c890153df85f5f7ec4dc6a2f6c`
 - **REDTEAM_SEED:** 1
 - **Pass rate:** 100.0% (250/250)
 - **Gate (≥90% overall, recall buckets 100%):** overall true | recall-3 true

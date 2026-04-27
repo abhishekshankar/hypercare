@@ -2,7 +2,7 @@
 
 import Link from "next/link";
 import { useEffect } from "react";
-import type { SafetyTriageReason } from "@hypercare/rag";
+import type { SafetyTriageReason } from "@alongside/rag";
 
 import { setCrisisStripPulse } from "@/components/crisis-strip-pulse";
 
@@ -108,7 +108,7 @@ export function TriageCard({
     >
       <p className="font-serif text-xl">{heading}</p>
       <p className="mt-2 text-sm leading-relaxed text-red-900">
-        Hypercare can’t answer this — please reach a person who can help right now.
+        Alongside can’t answer this — please reach a person who can help right now.
       </p>
       <div className="mt-4">
         <a

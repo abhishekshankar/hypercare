@@ -1,6 +1,6 @@
 /**
  * Default dependency wiring for `answer()`. Pulls real implementations:
- *   - embed: Titan v2 via `@hypercare/content`
+ *   - embed: Titan v2 via `@alongside/content`
  *   - search: pgvector ANN via local `db/search.ts`
  *   - loadStage: care_profile lookup via `care/profile.ts`
  *   - generate: Bedrock Claude via `bedrock/claude.ts`
@@ -9,9 +9,9 @@
  * call `runPipeline` directly.
  */
 
-import { createDbClient } from "@hypercare/db";
-import { embedTitanV2 } from "@hypercare/content";
-import { defaultInvoke, makeDbPersist, makeFtShadowLogger } from "@hypercare/safety";
+import { createDbClient } from "@alongside/db";
+import { embedTitanV2 } from "@alongside/content";
+import { defaultInvoke, makeDbPersist, makeFtShadowLogger } from "@alongside/safety";
 
 import { ANSWER_MODEL_ID } from "./config.js";
 import { invokeClaude, invokeClaudeStream } from "./bedrock/claude.js";

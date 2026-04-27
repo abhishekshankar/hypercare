@@ -12,28 +12,25 @@ export default async function AppSectionLayout({
   await maybeLogUserSessionForApp(s.userId);
   return (
     <div>
-      <nav
-        aria-label="App"
-        className="mb-8 border-b border-border pb-3 text-sm"
-      >
-        <ul className="flex flex-wrap gap-4 text-muted-foreground">
+      <nav aria-label="App" className="mb-10 border-t border-border pt-6">
+        <ul className="flex flex-wrap gap-6 text-sm text-foreground-muted md:gap-8">
           <li>
-            <Link className="hover:text-foreground" href="/app">
+            <Link className="font-medium text-foreground no-underline hover:underline" href="/app">
               Home
             </Link>
           </li>
           <li>
-            <Link className="hover:text-foreground" href="/app/library">
+            <Link className="text-foreground-muted no-underline hover:text-foreground hover:underline" href="/app/library">
               Library
             </Link>
           </li>
           <li>
-            <Link className="hover:text-foreground" href="/app/profile">
+            <Link className="text-foreground-muted no-underline hover:text-foreground hover:underline" href="/app/profile">
               Care profile
             </Link>
           </li>
           <li>
-            <Link className="hover:text-foreground" href="/app/help">
+            <Link className="text-foreground-muted no-underline hover:text-foreground hover:underline" href="/app/help">
               Help &amp; feedback
             </Link>
           </li>

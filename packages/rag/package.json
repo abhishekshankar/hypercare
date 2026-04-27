@@ -1,5 +1,5 @@
 {
-  "name": "@hypercare/rag",
+  "name": "@alongside/rag",
   "version": "0.0.0",
   "private": true,
   "type": "module",
@@ -12,19 +12,19 @@
     }
   },
   "scripts": {
-    "build": "tsc -p tsconfig.json && node ./scripts/copy-prompts.mjs",
+    "build": "node ./scripts/generate-embedded-prompts.mjs && node ../../node_modules/typescript/lib/tsc.js -p tsconfig.json && node ./scripts/copy-prompts.mjs",
     "lint": "eslint src test --max-warnings 0",
-    "typecheck": "tsc -p tsconfig.json --noEmit && tsc -p tsconfig.test.json --noEmit",
-    "test": "vitest run",
+    "typecheck": "node ../../node_modules/typescript/lib/tsc.js -p tsconfig.json --noEmit && node ../../node_modules/typescript/lib/tsc.js -p tsconfig.test.json --noEmit",
+    "test": "node ../../node_modules/vitest/vitest.mjs run",
     "bedrock-check": "tsx scripts/bedrock-check.ts",
     "smoke": "tsx scripts/smoke.ts"
   },
   "dependencies": {
     "@aws-sdk/client-bedrock-runtime": "^3.1034.0",
-    "@hypercare/content": "workspace:*",
-    "@hypercare/db": "workspace:*",
-    "@hypercare/model-router": "workspace:*",
-    "@hypercare/safety": "workspace:*",
+    "@alongside/content": "workspace:*",
+    "@alongside/db": "workspace:*",
+    "@alongside/model-router": "workspace:*",
+    "@alongside/safety": "workspace:*",
     "drizzle-orm": "^0.45.2",
     "zod": "^4.3.6"
   },

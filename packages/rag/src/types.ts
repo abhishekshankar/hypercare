@@ -1,4 +1,4 @@
-import type { ClassifierVerdict } from "@hypercare/model-router";
+import type { ClassifierVerdict } from "@alongside/model-router";
 
 /** Stage labels used for retrieval filtering. Mirrors apps/web/src/lib/onboarding/stage.ts. */
 export type Stage = "early" | "middle" | "late";
@@ -100,7 +100,7 @@ export type SafetyTriageReason = {
   source: "rule" | "llm";
   /** Deduplicated repeat inside the 5-minute window (TASK-025). */
   repeat_in_window?: boolean;
-  /** Set by apps/web from `@hypercare/safety` scripts; omitted until enrichment. */
+  /** Set by apps/web from `@alongside/safety` scripts; omitted until enrichment. */
   script?: SafetyEscalationScript;
 };
 

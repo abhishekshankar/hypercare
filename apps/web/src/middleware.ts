@@ -1,6 +1,6 @@
 import { NextRequest, NextResponse } from "next/server";
 
-import { redirectToCanonicalAuthOrigin } from "@/lib/auth/canonical-origin";
+import { publicAppOrigin, redirectToCanonicalAuthOrigin } from "@/lib/auth/canonical-origin";
 import { logRedirectDebug } from "@/lib/auth/redirect-debug";
 import { isSessionCookieValid, SESSION_COOKIE_NAME } from "@/lib/auth/middleware-edge";
 
@@ -59,7 +59,7 @@ export async function middleware(request: NextRequest) {
     hadSessionCookie: Boolean(raw?.length),
     edgeSessionOk: false,
   });
-  const login = new URL("/api/auth/login", request.nextUrl.origin);
+  const login = new URL("/api/auth/login", publicAppOrigin(request));
   login.searchParams.set("next", fullPath);
   return NextResponse.redirect(login);
 }

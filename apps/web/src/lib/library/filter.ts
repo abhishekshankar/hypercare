@@ -1,7 +1,7 @@
 import {
   librarySubstringMatchScore,
   normalizeLibrarySearchQuery,
-} from "@hypercare/db/library-search-score";
+} from "@alongside/db/library-search-score";
 
 import type { LibraryModuleListItem, StageKey } from "./types";
 

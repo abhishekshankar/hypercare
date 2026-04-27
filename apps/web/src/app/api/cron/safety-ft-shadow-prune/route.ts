@@ -1,7 +1,7 @@
 import { sql } from "drizzle-orm";
 import { NextResponse } from "next/server";
 
-import { createDbClient } from "@hypercare/db";
+import { createDbClient } from "@alongside/db";
 
 import { serverEnv } from "@/lib/env.server";
 

@@ -1,5 +1,5 @@
 import { and, desc, eq, gte, inArray, isNotNull } from "drizzle-orm";
-import { createDbClient } from "@hypercare/db";
+import { createDbClient } from "@alongside/db";
 import {
   careProfile,
   careProfileChanges,
@@ -10,9 +10,9 @@ import {
   listHouseholdActorUserIds,
   moduleTopics,
   modules,
-} from "@hypercare/db";
-import { inferInferredStage, type CareProfileStageSnapshot } from "@hypercare/content/stage-rules";
-import { getRecentTopicSignal } from "@hypercare/rag";
+} from "@alongside/db";
+import { inferInferredStage, type CareProfileStageSnapshot } from "@alongside/content/stage-rules";
+import { getRecentTopicSignal } from "@alongside/rag";
 import { pickThisWeeksFocusFromData, type PickerModuleRow } from "./pick-candidates.js";
 import { applySrsPrefilterToModules, type SrsLastOutcome, type SrsScheduleRow } from "./srs.js";
 import type { PickerResult, PickerStage } from "./types.js";

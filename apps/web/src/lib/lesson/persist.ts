@@ -5,12 +5,12 @@ import {
   lessonProgress,
   lessonReviewSchedule,
   modules,
-} from "@hypercare/db";
+} from "@alongside/db";
 import {
   dueAtToApproximateLabel,
   scheduleOnLessonComplete,
   scheduleOnLessonStart,
-} from "@hypercare/picker";
+} from "@alongside/picker";
 
 import { serverEnv } from "@/lib/env.server";
 import type { LessonSource } from "./source";

@@ -9,7 +9,7 @@ import {
   logTransparencyUserAction,
   TRANSPARENCY_REFRESH_ACTION,
 } from "@/lib/transparency/user-actions";
-import { countUserMessagesInConversation, invokeClaude, runConversationMemoryRefresh } from "@hypercare/rag";
+import { countUserMessagesInConversation, invokeClaude, runConversationMemoryRefresh } from "@alongside/rag";
 
 export const dynamic = "force-dynamic";
 

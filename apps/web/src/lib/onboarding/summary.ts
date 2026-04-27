@@ -1,4 +1,4 @@
-import { isAloneUnsafe } from "@hypercare/content/stage-rules";
+import { isAloneUnsafe } from "@alongside/content/stage-rules";
 
 import type { CareProfileRow } from "./status";
 import type { StageAnswersRecord } from "./stage-keys";

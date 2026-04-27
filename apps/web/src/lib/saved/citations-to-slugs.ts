@@ -1,4 +1,4 @@
-import type { Citation } from "@hypercare/rag";
+import type { Citation } from "@alongside/rag";
 
 export function moduleSlugsFromCitations(citations: unknown): string[] {
   if (!Array.isArray(citations)) return [];

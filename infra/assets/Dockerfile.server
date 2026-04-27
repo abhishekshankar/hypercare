@@ -1,0 +1,19 @@
+# Container image for the Alongside SSR Lambda. We deploy as a container instead
+# of a zip because Next.js standalone with pnpm uses a symlink farm
+# (apps/web/node_modules/next -> ../../../node_modules/.pnpm/next/...) that does
+# not survive Lambda's zip extraction — Node's require.resolve fails on peer
+# deps like styled-jsx. Docker images preserve symlinks by design.
+#
+# Build context is `.open-next/server-functions/default/`. The cold-start
+# wrapper is at `bootstrap.mjs` (copied in by `WebStack` constructor).
+#
+# Base image: public.ecr.aws/lambda/nodejs:22 — the official AWS-maintained
+# Node 22 Lambda runtime image, ARM64 + AMD64 multi-arch. Stays in sync with
+# the standard managed runtime.
+
+FROM public.ecr.aws/lambda/nodejs:22
+
+# LAMBDA_TASK_ROOT is /var/task
+COPY . ${LAMBDA_TASK_ROOT}/
+
+CMD [ "bootstrap.handler" ]

@@ -23,7 +23,7 @@ PRD §10.2 and TASK-039 require a fine-tuned path on Bedrock (strawman), shadow 
 
 4. **Train/eval split:** 80/20 stratified by bucket for the training job; the committed `redteam-v2.yaml` fixture remains the **release gate** corpus (not consumed as training-only unlabeled noise).
 
-5. **Gate (manual / CI job, not blocking PR CI):** `EVAL_LIVE=1 pnpm --filter @hypercare/eval start -- redteam --fixture redteam-v2.yaml --gate --classifier fine_tuned` must meet TASK-039 §6 (overall ≥90%, three crisis buckets 100% recall, latency ratio vs zero-shot, gray-zone floor). Results are pasted into this ADR at cutover time.
+5. **Gate (manual / CI job, not blocking PR CI):** `EVAL_LIVE=1 pnpm --filter @alongside/eval start -- redteam --fixture redteam-v2.yaml --gate --classifier fine_tuned` must meet TASK-039 §6 (overall ≥90%, three crisis buckets 100% recall, latency ratio vs zero-shot, gray-zone floor). Results are pasted into this ADR at cutover time.
 
 6. **Telemetry retention:** `safety_ft_shadow_decisions` retains 30 days; prune via `POST /api/cron/safety-ft-shadow-prune` (same `CRON_SECRET` pattern as feedback SLA).
 
@@ -31,7 +31,7 @@ PRD §10.2 and TASK-039 require a fine-tuned path on Bedrock (strawman), shadow 
 
 ## Consequences
 
-- `@hypercare/rag` `buildDefaultDeps` always attaches `logFtShadow`; inserts occur only when `SAFETY_FT_SHADOW=1`.
+- `@alongside/rag` `buildDefaultDeps` always attaches `logFtShadow`; inserts occur only when `SAFETY_FT_SHADOW=1`.
 - Eval CLI accepts `--classifier fine_tuned|zero_shot` for live red-team runs.
 - New migration `0019_safety_ft_shadow_decisions.sql`.
 

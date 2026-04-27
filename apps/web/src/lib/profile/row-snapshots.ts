@@ -1,4 +1,4 @@
-import { mapStageAnswersV0ToV1 } from "@hypercare/content/stage-rules";
+import { mapStageAnswersV0ToV1 } from "@alongside/content/stage-rules";
 
 import type { CareProfileRow } from "@/lib/onboarding/status";
 import type { StageAnswersRecord } from "@/lib/onboarding/stage-keys";

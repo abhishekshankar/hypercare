@@ -1,6 +1,6 @@
 import { readFile } from "node:fs/promises";
 
-import { buildDefaultDeps, runPipeline, type Deps, type RetrievedChunk } from "@hypercare/rag";
+import { buildDefaultDeps, runPipeline, type Deps, type RetrievedChunk } from "@alongside/rag";
 
 import { DEFAULT_RECALL_AT_K } from "../config.js";
 import { goldenPath } from "../paths.js";

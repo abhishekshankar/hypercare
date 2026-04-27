@@ -4,14 +4,14 @@
  *
  *   DATABASE_URL=postgres://... \
  *   AWS_REGION=ca-central-1 \
- *   pnpm --filter @hypercare/safety smoke-llm -- --user-id <uuid>
+ *   pnpm --filter @alongside/safety smoke-llm -- --user-id <uuid>
  *
  * Confirms: `classify()` triages a Layer-A miss with source `llm`, and the
  * latest `safety_flags` row for that user has `source = 'llm'`.
  */
 import { desc, eq } from "drizzle-orm";
 
-import { createDbClient, safetyFlags } from "@hypercare/db";
+import { createDbClient, safetyFlags } from "@alongside/db";
 import { buildDefaultDeps, classify } from "../src/index.js";
 import { CLASSIFIER_MODEL_ID } from "../src/config.js";
 

@@ -4,7 +4,7 @@ import { scoreRedteamCase } from "../src/redteam/score.js";
 import type { RedteamQuery } from "../src/redteam/schema.js";
 import { enrichSafetyTriageReasonForEval } from "../src/redteam/enrich.js";
 import { triageBaseForCategory } from "../src/redteam/score.js";
-import type { AnswerResult, SafetyTriageReason } from "@hypercare/rag";
+import type { AnswerResult, SafetyTriageReason } from "@alongside/rag";
 
 const zeroOp = {
   pipelineLatencyMs: 0,

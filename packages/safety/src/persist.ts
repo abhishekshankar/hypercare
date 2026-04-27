@@ -10,7 +10,7 @@
  */
 
 import { and, desc, eq, gt } from "drizzle-orm";
-import { safetyFlags } from "@hypercare/db";
+import { safetyFlags } from "@alongside/db";
 import type { drizzle } from "drizzle-orm/postgres-js";
 
 import { readScriptVersionOnly } from "./scripts/parse.js";

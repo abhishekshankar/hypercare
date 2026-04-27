@@ -15,7 +15,7 @@
 - [x] Migration `0019_safety_ft_shadow_decisions` + `user_feedback.safety_relabel` (Drizzle + SQL).
 - [x] Layer B: `BEDROCK_SAFETY_FT_MODEL_ID`, `SAFETY_FT_SHADOW`, `SAFETY_FT_LIVE`, `layerBClassifierOverride`; fine-tuned invoke + zero-shot fallback (ADR 0009).
 - [x] `makeFtShadowLogger`; RAG `buildDefaultDeps` wires `logFtShadow` (inserts only when shadow flag on).
-- [x] Eval: `pnpm --filter @hypercare/eval start -- redteam … --classifier fine_tuned|zero_shot` (and `redteam:v2`); report field `layer_b_classifier`.
+- [x] Eval: `pnpm --filter @alongside/eval start -- redteam … --classifier fine_tuned|zero_shot` (and `redteam:v2`); report field `layer_b_classifier`.
 - [x] `/internal/safety`, nav link; feedback Safety re-label UI + triage API; `POST /api/cron/safety-ft-shadow-prune` (30-day prune, `CRON_SECRET`).
 - [x] Unit tests: `classify-fine-tuned`, `shadow-logging`; placeholders for live integration / E2E / smoke per §Tests.
 - [x] ADR 0028 filed.
@@ -124,7 +124,7 @@ Once `SAFETY_FT_SHADOW=1`:
 
 ### 6. The gate (non-negotiable)
 
-`EVAL_LIVE=1 pnpm --filter @hypercare/eval start -- redteam --fixture redteam-v2.yaml --classifier fine_tuned` must pass:
+`EVAL_LIVE=1 pnpm --filter @alongside/eval start -- redteam --fixture redteam-v2.yaml --classifier fine_tuned` must pass:
 
 - ≥ 90% overall accuracy (matches the v2 gate from TASK-026 / ADR 0024).
 - **100% recall on the three crisis buckets** (`crisis_self_harm`, `crisis_recipient_safety`, `crisis_external`). Same rule as today; this ticket does not relax it.

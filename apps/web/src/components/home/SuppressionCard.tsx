@@ -8,7 +8,7 @@ export function SuppressionCard() {
   return (
     <section
       aria-label="Gentle support"
-      className="rounded-lg border border-border bg-muted/30 px-4 py-5"
+      className="rounded-lg border border-moss-wash bg-moss-wash/50 p-5 shadow-sm md:p-6"
       data-testid="suppression-card"
     >
       <h2 className="font-serif text-lg font-medium text-foreground">I’m here when you’re ready</h2>

@@ -340,6 +340,34 @@ Migration **`0007_user_suppression_and_flag_dedupe.sql`**. Drizzle: [`packages/d
 
 ---
 
+## Hermes heavy modules (TASK-044 / migration `0023_heavy_modules.sql`)
+
+Wave-1 **heavy** library modules ship as a **directory bundle** on disk (`content/modules/<slug>/`: `module.md`, `branches/*.md`, `tools/*.json`, `evidence.json`, `relations.json`) and are loaded by `@alongside/content` (`pnpm --filter @alongside/content load -- --heavy <slug>`) or published via JSON through `POST /api/internal/content/publish-bundle`. Drizzle lives under `packages/db/src/schema/module-*.ts` (plus extended `modules` / `module_evidence`). Contract reference: [ADR 0031](adr/0031-hermes-disk-bundle-and-module-tools-jsonb.md); operator steps: [heavy-modules-runbook.md](heavy-modules-runbook.md).
+
+### `modules` (heavy columns)
+
+Migration adds nullable / defaulted columns used only when `heavy = true`: `heavy`, `bundle_version`, SRS scheduling hints (`srs_interval_days`, `srs_difficulty_bucket`, `srs_initial_ease_factor`), JSON/topic arrays (`primary_topics`, `secondary_topics`, `clinical_substrate`, `lived_experience_passages`, `synthesis_notes`), and optional `brief_path` / `critique_path` pointers. Existing light modules keep `heavy` false and prior behavior.
+
+### `module_branches`
+
+One row per **care-profile axis tuple** for a heavy module: `stage_key`, `relationship_key`, `living_situation_key` (each `text`, including literal `any` for fallbacks), plus `body_md` (markdown shown when this branch wins `selectHeavyBranchMarkdown`). Unique on `(module_id, stage_key, relationship_key, living_situation_key)`.
+
+### `module_tools`
+
+Structured tools keyed by `slug` + `tool_type` (`checklist`, `decision_tree`, `script`, `template`, `flowchart`, …); full JSON from disk is stored in **`module_tools.payload` (jsonb)** after Zod validation in `@alongside/content`.
+
+### `module_evidence`
+
+Evidence rows keyed by `claim_anchor` (e.g. `[1]`); migration extends rows with `quoted_excerpt`, optional `url_snapshot`, and `claim_anchor` alignment to the markdown citation set.
+
+### `module_relations`
+
+Directed edges from the owning module to another **`modules.slug`**: `to_module_slug`, `relation_type` (`prerequisite`, `follow_up`, `deeper`, `contradicts`, `soft_flag_companion`), optional `rationale`. Publish path may optionally insert **stub** target modules when `--seed-relation-targets` is used on the CLI (internal HTTP publish defaults to `false`).
+
+**Retention:** follow the same posture as `modules` / library catalog content (no separate rolling window in `RETENTION_SCHEDULE` for these child tables in v1).
+
+---
+
 ## Relationships (v2 update)
 
 Updates the relationship subsection from [`schema-v1.md`](schema-v1.md). v1's diagram still applies for the v0/v1 surface; the additions below describe the Sprint 5 deltas.
@@ -350,6 +378,7 @@ Updates the relationship subsection from [`schema-v1.md`](schema-v1.md). v1's di
 - A `user_feedback` row may have a `safety_relabel` value if the originating turn had a `safety_flags` row. `safety_relabel` is null for thumbs-down rows whose original turn never tripped the safety classifier.
 - A `lesson_progress` row corresponds to **at most one** `lesson_review_schedule` row per `(user, module)`. The reverse is also true: a schedule row exists only after at least one lesson start; the unique index on `(user_id, module_id)` makes the relationship 1:0..1 in both directions.
 - A `care_profile_members` (pending) row has **0..N** `invite_tokens` rows over its lifetime (revoke + mint replaces the active token; older rows linger until the 30-day post-consumption window closes).
+- A heavy `modules` row (`heavy = true`) has **1..N** `module_branches` rows (including one `(any, any, any)` fallback), **0..N** `module_tools`, **0..N** `module_evidence`, and **0..N** `module_relations` edges. Library read picks the highest-specificity branch matching `care_profile` stage / relationship / `living_situation`.
 
 ---
 

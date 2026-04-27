@@ -1,13 +1,13 @@
 import "server-only";
-import { answer as defaultAnswer } from "@hypercare/rag";
-import type { AnswerInput, AnswerResult } from "@hypercare/rag";
+import { answer as defaultAnswer } from "@alongside/rag";
+import type { AnswerInput, AnswerResult } from "@alongside/rag";
 
 import { isE2ETestRuntime } from "@/lib/env.test-runtime";
 
 /**
  * Server-side adapter around `rag.answer()`.
  *
- * Routes import this instead of `@hypercare/rag` directly for two reasons:
+ * Routes import this instead of `@alongside/rag` directly for two reasons:
  *   1. **One mocking seam.** The Playwright E2E spec sets a process-level
  *      override via `/api/test/conversation-mock` so it can run end-to-end
  *      against the real DB without a live Bedrock account (TASK-011 acceptance:

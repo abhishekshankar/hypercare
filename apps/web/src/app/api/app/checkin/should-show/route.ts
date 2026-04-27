@@ -1,4 +1,4 @@
-import { createDbClient } from "@hypercare/db";
+import { createDbClient } from "@alongside/db";
 import { NextResponse } from "next/server";
 
 import { getSession } from "@/lib/auth/session";

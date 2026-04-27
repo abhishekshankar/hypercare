@@ -90,7 +90,7 @@ Migration only, no other changes to `messages`.
 
 ### Server boundary
 
-- All calls from the browser into the RAG pipeline go through Route Handlers under `app/api/app/conversation/**`. The browser **never** imports `@hypercare/rag` directly; keep Bedrock/DB off the client bundle.
+- All calls from the browser into the RAG pipeline go through Route Handlers under `app/api/app/conversation/**`. The browser **never** imports `@alongside/rag` directly; keep Bedrock/DB off the client bundle.
 - Every handler calls `requireSession()` and returns 401 if absent.
 - Use `zod` to validate request bodies; return 400 with a structured error on bad input.
 
@@ -142,7 +142,7 @@ docs/adr/0010-conversation-ui-v0.md
 
 ```
 packages/db/src/schema/messages.ts                                     # add citations + refusal columns
-apps/web/package.json                                                  # depend on @hypercare/rag, @hypercare/safety (type-only ok for types)
+apps/web/package.json                                                  # depend on @alongside/rag, @alongside/safety (type-only ok for types)
 TASKS.md
 ```
 

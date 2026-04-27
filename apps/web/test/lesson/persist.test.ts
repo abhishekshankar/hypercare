@@ -15,7 +15,7 @@ let scheduleSelectRows: { bucket: number }[] = [];
 let returningInsert: { id: string }[] = [{ id: "prog-1" }];
 let returningUpdate: { id: string; moduleId: string }[] = [{ id: "prog-1", moduleId: "mod-1" }];
 
-vi.mock("@hypercare/db", () => {
+vi.mock("@alongside/db", () => {
   return {
     TOPICS_V0: [],
     modules: { _: "modules", slug: "modules.slug", id: "modules.id" },

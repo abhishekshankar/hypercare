@@ -15,7 +15,7 @@ import { messages } from "./messages.js";
 import { users } from "./users.js";
 
 /**
- * Safety triage rows written by `@hypercare/safety` (TASK-010).
+ * Safety triage rows written by `@alongside/safety` (TASK-010).
  *
  * The classifier runs at RAG layer 0 — *before* a user message is persisted —
  * so `message_id` and `conversation_id` are nullable. They are wired up by

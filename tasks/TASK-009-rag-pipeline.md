@@ -142,7 +142,7 @@ Keep the original question on the returned object as `input.question` for the ci
 
 ## Acceptance criteria
 
-- `pnpm --filter @hypercare/rag typecheck && pnpm --filter @hypercare/rag lint && pnpm --filter @hypercare/rag test` all green.
+- `pnpm --filter @alongside/rag typecheck && pnpm --filter @alongside/rag lint && pnpm --filter @alongside/rag test` all green.
 - Running `answer({ question: "my mom gets agitated every afternoon, what do i do?", userId: <seed-user-id> })` against a DB seeded by TASK-008 returns `{ kind: "answered", text: <string with [n] citations>, citations: [...] }`.
 - Running `answer({ question: "what is the capital of france?", userId: <seed-user-id> })` returns `{ kind: "refused", reason: { code: "low_confidence" | "off_topic" | "no_content", ... } }`. Never a hallucinated answer.
 - Stage filter is verifiable: seeding a user whose `stage_answers` imply `late` causes a behavior-sundowning chunk (tagged `["early","middle"]`) to be **excluded**; seeding a user whose answers imply `early` or `middle` causes it to be included.
@@ -178,7 +178,7 @@ docs/adr/0008-rag-pipeline-v0.md
 ### Modify
 
 ```
-packages/rag/package.json                # add deps: @hypercare/db, @hypercare/content, @aws-sdk/client-bedrock-runtime, zod, drizzle-orm
+packages/rag/package.json                # add deps: @alongside/db, @alongside/content, @aws-sdk/client-bedrock-runtime, zod, drizzle-orm
 packages/rag/tsconfig.json               # enable composite / test config as needed
 TASKS.md                                 # flip status
 ```
@@ -206,7 +206,7 @@ TASKS.md                                 # flip status
 
 ## How PM verifies after Cursor reports back
 
-1. `pnpm --filter @hypercare/rag test` passes offline (no network).
+1. `pnpm --filter @alongside/rag test` passes offline (no network).
 2. With DB seeded and Bedrock reachable, a tiny scratch script (e.g. `packages/rag/scripts/smoke.ts` — Cursor adds it if it wants) runs `answer()` for the three golden questions and prints the result:
    - "my mom gets agitated every afternoon" → answered, cites sundowning chunks.
    - "how do I deal with bathing resistance" → answered, cites daily-bathing chunks.

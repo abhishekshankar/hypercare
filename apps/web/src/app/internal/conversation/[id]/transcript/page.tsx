@@ -1,5 +1,5 @@
 import { eq, asc } from "drizzle-orm";
-import { conversations, createDbClient, messages } from "@hypercare/db";
+import { conversations, createDbClient, messages } from "@alongside/db";
 import { notFound } from "next/navigation";
 
 import { serverEnv } from "@/lib/env.server";

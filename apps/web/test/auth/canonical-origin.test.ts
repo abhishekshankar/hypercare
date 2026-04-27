@@ -1,6 +1,11 @@
+import type { NextRequest } from "next/server";
 import { afterEach, describe, expect, it, vi } from "vitest";
 
-import { canonicalLoopbackRedirectUrl } from "@/lib/auth/canonical-origin";
+import { canonicalLoopbackRedirectUrl, publicAppOrigin } from "@/lib/auth/canonical-origin";
+
+function fakeRequest(url: string): NextRequest {
+  return { nextUrl: new URL(url) } as unknown as NextRequest;
+}
 
 describe("canonicalLoopbackRedirectUrl", () => {
   afterEach(() => {
@@ -125,5 +130,37 @@ describe("canonicalLoopbackRedirectUrl", () => {
         "localhost:3000",
       ),
     ).toBeNull();
+  });
+});
+
+describe("publicAppOrigin", () => {
+  afterEach(() => {
+    vi.unstubAllEnvs();
+  });
+
+  it("returns AUTH_BASE_URL origin when set (production CloudFront case)", () => {
+    // Behind CloudFront → ALB → Lambda, request.url's host is the ALB internal DNS,
+    // so without this helper, in-app redirects would send users to the ALB → 403.
+    vi.stubEnv("AUTH_BASE_URL", "https://d3o5s11j7mm79v.cloudfront.net");
+    const req = fakeRequest("http://hyperc-alb16-internal.elb.amazonaws.com/onboarding");
+    expect(publicAppOrigin(req)).toBe("https://d3o5s11j7mm79v.cloudfront.net");
+  });
+
+  it("strips path/query from AUTH_BASE_URL", () => {
+    vi.stubEnv("AUTH_BASE_URL", "https://app.example.com/care1/?x=1");
+    const req = fakeRequest("http://internal.local/anything");
+    expect(publicAppOrigin(req)).toBe("https://app.example.com");
+  });
+
+  it("falls back to request origin when AUTH_BASE_URL is unset", () => {
+    vi.stubEnv("AUTH_BASE_URL", "");
+    const req = fakeRequest("http://localhost:3001/app");
+    expect(publicAppOrigin(req)).toBe("http://localhost:3001");
+  });
+
+  it("falls back to request origin when AUTH_BASE_URL is malformed", () => {
+    vi.stubEnv("AUTH_BASE_URL", "not-a-url");
+    const req = fakeRequest("http://localhost:3000/app");
+    expect(publicAppOrigin(req)).toBe("http://localhost:3000");
   });
 });

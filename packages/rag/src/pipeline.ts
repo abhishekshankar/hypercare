@@ -11,7 +11,7 @@
  * so unit tests can run the entire pipeline offline with mocks.
  */
 
-import type { ClassifyDeps as SafetyClassifyDeps } from "@hypercare/safety";
+import type { ClassifyDeps as SafetyClassifyDeps } from "@alongside/safety";
 import {
   defaultPolicyPath,
   loadPolicyFromFile,
@@ -19,7 +19,7 @@ import {
   type ClassifierVerdict,
   type ModelRoutingPolicy,
   type RouteDecision,
-} from "@hypercare/model-router";
+} from "@alongside/model-router";
 
 import type { GenerateInput, GenerateOutput, StreamChunk } from "./bedrock/claude.js";
 import { DEFAULT_CONFIG, type RagConfig } from "./config.js";
@@ -78,7 +78,7 @@ export type Deps = {
     input: GenerateInput,
     opts?: { signal?: AbortSignal },
   ) => AsyncIterable<StreamChunk>;
-  /** Safety classifier wiring (TASK-010). See `@hypercare/safety`. */
+  /** Safety classifier wiring (TASK-010). See `@alongside/safety`. */
   safety: SafetyClassifyDeps;
   /**
    * Operator observability for top-level pipeline failures (`internal_error`).

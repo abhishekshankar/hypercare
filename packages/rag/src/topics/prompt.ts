@@ -1,4 +1,4 @@
-import { TOPICS_V0 } from "@hypercare/db";
+import { TOPICS_V0 } from "@alongside/db";
 
 type TopicRow = (typeof TOPICS_V0)[number];
 

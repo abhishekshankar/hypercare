@@ -6,7 +6,7 @@ import {
   conversationMemoryForgotten,
   conversations,
   createDbClient,
-} from "@hypercare/db";
+} from "@alongside/db";
 import { stripForgottenBulletsFromSummary } from "./memory-display";
 
 export type TransparencyConversationOption = {

@@ -1,5 +1,5 @@
 import { eq } from "drizzle-orm";
-import { conversationMemory, createDbClient } from "@hypercare/db";
+import { conversationMemory, createDbClient } from "@alongside/db";
 import ReactMarkdown from "react-markdown";
 
 import { serverEnv } from "@/lib/env.server";

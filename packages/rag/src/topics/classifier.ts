@@ -1,6 +1,6 @@
-import { TOPICS_V0 } from "@hypercare/db";
+import { TOPICS_V0 } from "@alongside/db";
 import { z } from "zod";
-import { defaultInvoke } from "@hypercare/safety";
+import { defaultInvoke } from "@alongside/safety";
 
 import { buildTopicClassifierSystemPrompt } from "./prompt.js";
 
@@ -30,7 +30,7 @@ export type TopicClassifyResult = {
 export type TopicClassifyDeps = {
   /**
    * Bedrock (or test double). Same contract as the safety LLM: system + user message.
-   * If omitted, `defaultInvoke` from `@hypercare/safety` is used.
+   * If omitted, `defaultInvoke` from `@alongside/safety` is used.
    */
   invoke?: (input: { systemPrompt: string; userMessage: string }) => Promise<string>;
   warn?: (msg: string, ctx?: Record<string, unknown>) => void;

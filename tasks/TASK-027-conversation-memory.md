@@ -154,7 +154,7 @@ Keep the refresh **async-after-reply** in the route handler: the user's answer r
 - Integration (`apps/web/test/api/conversation-memory.test.ts`):
   - 3-turn conversation about sundowning. Assert: after turn 3, `conversation_memory` row exists with "sundowning" in `summary_md.Current focus`. Turn 4 response prompt (captured via log) contains the memory block.
   - Care profile edit (change-log write) → next turn's response prompt has no stale memory; memory row has `invalidated = true` then gets refreshed.
-- Live eval (`EVAL_LIVE=1 pnpm --filter @hypercare/eval start -- answers` with the new `conversation_memory` scenario file): the `answers` mode gains a multi-turn conversation scenario; pass criterion = the turn-2 answer references turn-1 context (scored by keyword presence + a spot-check assertion that the refusal path did not fire).
+- Live eval (`EVAL_LIVE=1 pnpm --filter @alongside/eval start -- answers` with the new `conversation_memory` scenario file): the `answers` mode gains a multi-turn conversation scenario; pass criterion = the turn-2 answer references turn-1 context (scored by keyword presence + a spot-check assertion that the refusal path did not fire).
 
 ---
 
@@ -210,5 +210,5 @@ Keep the refresh **async-after-reply** in the route handler: the user's answer r
 4. Visit `/internal/conversation/<id>/memory` — see the rendered summary.
 5. Open `/app/profile`, change "Where does Margaret live?" to "memory care." Save.
 6. Send a next-turn message. Expect `conversation_memory.invalidated` momentarily true, then refreshed. The answer prompt (visible in debug logs) reflects the new profile.
-7. Eval: `EVAL_LIVE=1 pnpm --filter @hypercare/eval start -- answers --scenarios multiturn-memory` — passes.
+7. Eval: `EVAL_LIVE=1 pnpm --filter @alongside/eval start -- answers --scenarios multiturn-memory` — passes.
 8. Read ADR 0017.

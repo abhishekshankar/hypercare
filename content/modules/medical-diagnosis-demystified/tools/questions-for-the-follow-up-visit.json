@@ -1,0 +1,47 @@
+[
+  {
+    "question": "What specific test or tests were used to reach this diagnosis?",
+    "rationale": "Understanding the diagnostic method (cognitive testing, blood biomarkers like pTau217, imaging like PET/MRI, or clinical judgment) helps you grasp the strength and basis of the diagnosis. This is foundational for understanding what your results mean.",
+    "what_to_listen_for": "Listen for: the name of the test (e.g., MMSE, MoCA, Lumipulse, Elecsys, amyloid PET). Ask follow-up: 'Is this a standard test?' If they mention blood work, ask: 'Which biomarker?' If imaging, ask: 'When was it done?' If they say 'clinical judgment based on history,' that's valid — ask them to clarify what symptoms or history led to the diagnosis."
+  },
+  {
+    "question": "What do my test results actually show — in plain language?",
+    "rationale": "Clinical results are often reported in technical language (amyloid-beta levels, tau phosphorylation, positive biomarkers). You need a plain-English translation: What is elevated or abnormal? What does that mean about what's happening in the brain?",
+    "what_to_listen_for": "Listen for clear language about abnormalities. Red flags: if the doctor uses only technical jargon and doesn't translate. Good sign: they compare to normal range or explain 'this level suggests amyloid accumulation.' If they say 'positive biomarkers,' ask: 'Does that mean I definitely have Alzheimer's disease?' or 'Does that mean I will develop symptoms?'"
+  },
+  {
+    "question": "Are there other conditions or causes you ruled out before reaching this diagnosis?",
+    "rationale": "Dementia-like symptoms can come from thyroid disease, B12 deficiency, depression, medication side effects, or other treatable conditions. Good practice includes ruling these out. Knowing they were tested rules out reversible causes and confirms the diagnosis is well-grounded.",
+    "what_to_listen_for": "Listen for mention of: thyroid function, B12 levels, depression screening, medication review, or imaging that ruled out stroke or tumor. If they say 'No, we didn't test for those,' that's a yellow flag — ask: 'Should we?' A thorough diagnosis rules out reversible causes first."
+  },
+  {
+    "question": "What stage is this diagnosis — and what does that mean for right now?",
+    "rationale": "Alzheimer's disease progresses through mild cognitive impairment, mild dementia, moderate, and severe stages. Knowing your stage clarifies what to expect in the next few months to a year, what safety precautions matter now, and what to prepare for.",
+    "what_to_listen_for": "Listen for: 'mild cognitive impairment,' 'mild dementia,' 'moderate dementia,' or similar language. If they say 'early stage,' ask: 'Does that mean mild cognitive impairment or mild dementia?' Ask also: 'What changes should I expect in the next 6–12 months?' and 'What should we plan for now to stay safe?'"
+  },
+  {
+    "question": "Are there any medications (like aducanumab, lecanemab, or donanemab) that might slow this down, and am I eligible for them?",
+    "rationale": "New disease-modifying therapies (DMTs) can slow cognitive decline in early-stage Alzheimer's with biomarker confirmation. These drugs are not right for everyone — eligibility depends on stage, biomarkers, age, and kidney function. Knowing your eligibility is essential for care planning.",
+    "what_to_listen_for": "Listen for names of drugs (lecanemab/Leqembi, donanemab/Kisunla, aducanumab/Aduhelm). If they offer or recommend one, ask: 'How will this slow my decline?' and 'What are the side effects?' If they don't mention any, ask directly: 'Should I be eligible for any of the newer Alzheimer's drugs?' and 'What would make me ineligible?' Red flag: if they dismiss the question without explanation."
+  },
+  {
+    "question": "What happens at the next appointment — what should I track or prepare?",
+    "rationale": "A clear plan for the next visit gives structure and helps you gather information (cognitive symptoms, mood changes, medication side effects) between appointments. It sets expectations and shows continuity of care.",
+    "what_to_listen_for": "Listen for: frequency of follow-up (3 months, 6 months, 1 year), what testing will happen next (repeat cognitive test, repeat imaging, biomarker recheck), and what you should monitor (memory, confusion, medication effects). If they don't mention a follow-up visit, ask directly: 'When should I come back?' and 'How often will we repeat tests to see if anything is changing?'"
+  },
+  {
+    "question": "Who should be in the loop about this diagnosis, and what should they know?",
+    "rationale": "Early-stage diagnosis is often shared with family, close friends, primary care doctor, and sometimes employer or driving authorities. Clarity on who knows, what they know, and when to tell them reduces confusion and supports planning.",
+    "what_to_listen_for": "Listen for guidance on: telling family, updating your primary care doctor, whether to inform your workplace, driving eligibility (ask: 'Do I need to report this to the DMV?'), and legal planning (power of attorney, advanced directives). If they don't address these, ask: 'Should I tell my family now or wait?' and 'Are there legal steps I should take soon?'"
+  },
+  {
+    "question": "How might this diagnosis affect my daily life, driving, work, or living situation in the coming months?",
+    "rationale": "Early awareness of likely changes helps with proactive planning: safety modifications at home, work accommodations, driving reassessment, or advance care planning. This bridges diagnosis to real-world adaptation.",
+    "what_to_listen_for": "Listen for: specific advice on driving (reassessment when, if needed), work accommodations (memory aids, schedule changes), home safety (medication management, wandering risk), and financial/legal planning. If vague, ask: 'In the next 6 months, what changes should I plan for?' and 'What's the one most important thing I should do now to stay safe?'"
+  },
+  {
+    "question": "Are there clinical trials or research studies I might join — and how do I find them?",
+    "rationale": "Clinical trials offer access to emerging therapies and the benefit of closer monitoring. For early-stage Alzheimer's, many trials are actively recruiting. This opens a pathway to cutting-edge care.",
+    "what_to_listen_for": "Listen for: mention of trials your clinic offers, or referral to clinicaltrials.gov or the Alzheimer's Association trial finder. If they don't mention trials, ask: 'Are there any trials I'm eligible for?' and 'How do I find out?' Red flag: if they say trials aren't worth your time without explanation."
+  }
+]

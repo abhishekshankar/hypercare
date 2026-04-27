@@ -124,7 +124,7 @@ Prompt and few-shots live in `packages/safety/src/prompts/classifier.md`, checke
 
 ## Acceptance criteria
 
-- `pnpm --filter @hypercare/safety typecheck lint test` green.
+- `pnpm --filter @alongside/safety typecheck lint test` green.
 - Calling `classify({ userId, text: "I want to kill myself, I can't do this anymore" })` returns `triaged: true, category: "self_harm_user", severity: "high", suggestedAction: "call_988"` **without** hitting Bedrock (Layer A catches it).
 - Calling `classify({ userId, text: "Things have been really hard and I don't see the point some days" })` — a subtler signal — returns `triaged: true` via Layer B when `SAFETY_LIVE=1`. Offline test mocks this.
 - Calling `classify({ userId, text: "how do I help my mom with bathing" })` returns `triaged: false` via Layer A (no match) AND Layer B (when live). This is the most important negative test — do not over-trigger on routine caregiver questions.
@@ -165,7 +165,7 @@ docs/adr/0009-safety-classifier-v0.md
 ```
 packages/rag/src/layers/0-safety.ts             # replace stub body with classify() call
 packages/rag/src/types.ts                       # refusal reason "safety_triaged" now carries category + suggestedAction
-packages/safety/package.json                    # deps: @hypercare/db, @aws-sdk/client-bedrock-runtime, zod, drizzle-orm
+packages/safety/package.json                    # deps: @alongside/db, @aws-sdk/client-bedrock-runtime, zod, drizzle-orm
 packages/db/src/schema/safety-flags.ts          # reflect the new columns + CHECKs
 TASKS.md
 ```
@@ -191,7 +191,7 @@ TASKS.md
 ## How PM verifies
 
 1. Read the 6 rule files; sanity-check patterns for obvious false positives (e.g. "she fell" → *not* acute_medical on its own; "she fell and isn't responsive" → yes).
-2. `pnpm --filter @hypercare/safety test` — all green.
+2. `pnpm --filter @alongside/safety test` — all green.
 3. With Bedrock access:
    - Paste the two golden crisis sentences from the acceptance criteria; expect `triaged: true`.
    - Paste 5 normal caregiver questions; expect `triaged: false` on every one.

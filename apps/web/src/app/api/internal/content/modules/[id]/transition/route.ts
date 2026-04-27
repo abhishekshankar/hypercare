@@ -1,7 +1,7 @@
 import { count, eq } from "drizzle-orm";
 import { NextResponse } from "next/server";
-import { createDbClient, moduleEvidence, moduleStateTransitions, modules } from "@hypercare/db";
-import { isDraftStatus, validateTransitionRequest, type AppRole } from "@hypercare/content";
+import { createDbClient, moduleEvidence, moduleStateTransitions, modules } from "@alongside/db";
+import { isDraftStatus, validateTransitionRequest, type AppRole } from "@alongside/content";
 import { serverEnv } from "@/lib/env.server";
 import { requireInternalContentUser } from "@/lib/internal/content-access";
 import { postTransitionBody } from "@/lib/internal/content-schemas";

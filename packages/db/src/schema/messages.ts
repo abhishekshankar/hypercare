@@ -25,7 +25,7 @@ export const messages = pgTable(
       .notNull()
       .default(sql`'[]'::jsonb`),
     /**
-     * RefusalReason payload from `@hypercare/rag` when the assistant turn
+     * RefusalReason payload from `@alongside/rag` when the assistant turn
      * refused (any non-`answered` outcome). Null when the assistant
      * answered or for non-assistant rows.
      */

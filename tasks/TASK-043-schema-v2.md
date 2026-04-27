@@ -161,5 +161,5 @@ This ticket ships documentation, not code. The "tests" are:
 2. Spot-check three cross-references — open `prd.md`, `ARCHITECTURE.md`, and ADR 0027 — confirm each points at v2 in the right place.
 3. Confirm `care_profile.user_id` is documented as deprecated with the Sprint 6 removal plan.
 4. Run `pnpm docs:lint` locally; confirm green.
-5. Run `pnpm --filter @hypercare/db test packages/db/test/schema-doc-coverage.test.ts`; confirm green. Then mutate `schema-v2.md` to remove one table heading and confirm the test fails — proves the coverage assertion is real.
+5. Run `pnpm --filter @alongside/db test packages/db/test/schema-doc-coverage.test.ts`; confirm green. Then mutate `schema-v2.md` to remove one table heading and confirm the test fails — proves the coverage assertion is real.
 6. Confirm the retention table matches the ticket-level retention claims for all five new tables.

@@ -4,7 +4,7 @@ import { join, dirname } from "node:path";
 import { fileURLToPath } from "node:url";
 import { existsSync } from "node:fs";
 
-import { resolveScriptFilename } from "@hypercare/safety";
+import { resolveScriptFilename } from "@alongside/safety";
 import { loadRedteamFixture } from "../src/redteam/load-yaml.js";
 import { REDTEAM_BUCKETS } from "../src/redteam/schema.js";
 

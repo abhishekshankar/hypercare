@@ -2,7 +2,7 @@
  * Layer 0 — Safety classifier hook (PRD §10, TASK-010).
  *
  * This file is the only plug point between the RAG pipeline and the
- * `@hypercare/safety` classifier. The pipeline calls `classifySafety()` per
+ * `@alongside/safety` classifier. The pipeline calls `classifySafety()` per
  * question; if the result is triaged the orchestrator short-circuits and
  * returns a `safety_triaged` refusal carrying the category + suggestedAction.
  *
@@ -10,9 +10,9 @@
  * `packages/safety`. This layer is just the adapter.
  */
 
-import type { SafetyResult } from "@hypercare/safety";
-import { classify } from "@hypercare/safety";
-import type { ClassifyDeps } from "@hypercare/safety";
+import type { SafetyResult } from "@alongside/safety";
+import { classify } from "@alongside/safety";
+import type { ClassifyDeps } from "@alongside/safety";
 
 export type SafetyInput = {
   userId: string;

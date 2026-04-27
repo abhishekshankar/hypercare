@@ -183,7 +183,7 @@ export function TransparencyProfileClient() {
   return (
     <div className="space-y-10">
       <section className="space-y-3" data-testid="transparency-memory-section">
-        <h2 className="text-lg font-medium text-foreground">What Hypercare remembers from our conversations</h2>
+        <h2 className="text-lg font-medium text-foreground">What Alongside remembers from our conversations</h2>
         <p className="text-sm text-muted-foreground">
           Rolling summary for one chat at a time. Facts you store in your{" "}
           <Link className="underline underline-offset-2" href="/app/profile">
@@ -321,7 +321,7 @@ export function TransparencyProfileClient() {
       <section className="space-y-3" data-testid="transparency-citations-section">
         <h2 className="text-lg font-medium text-foreground">What we&apos;ve cited to you recently</h2>
         <p className="text-sm text-muted-foreground">
-          Modules Hypercare has pointed to in assistant answers over the last 30 days (by citation footers).
+          Modules Alongside has pointed to in assistant answers over the last 30 days (by citation footers).
         </p>
         {citations.length === 0 ? (
           <p className="text-sm text-foreground">No module citations in the last 30 days yet.</p>

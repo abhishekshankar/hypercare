@@ -1,6 +1,6 @@
 import { eq, max } from "drizzle-orm";
 import type { InferSelectModel } from "drizzle-orm";
-import { createDbClient, moduleReviews, moduleTopics, modules, moduleVersions } from "@hypercare/db";
+import { createDbClient, moduleReviews, moduleTopics, modules, moduleVersions } from "@alongside/db";
 import { chunkModuleBody } from "./chunk.js";
 import { loadExistingChunkMap, replaceModuleChunkRowsInTx, resolveEmbeddings, type Embeddable } from "./upsert.js";
 import { moduleFrontMatterSchema, type ModuleFrontMatter } from "./schema.js";

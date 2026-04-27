@@ -11,8 +11,8 @@ import {
   userFeedback,
   users,
   weeklyCheckins,
-} from "@hypercare/db";
-import type { Citation, RefusalReason } from "@hypercare/rag";
+} from "@alongside/db";
+import type { Citation, RefusalReason } from "@alongside/rag";
 
 import { serverEnv } from "@/lib/env.server";
 

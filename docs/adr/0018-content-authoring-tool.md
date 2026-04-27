@@ -5,7 +5,7 @@
 
 ## Decision
 
-Ship an **internal** surface at `/internal/content` in `apps/web` (shared Cognito session and Postgres — no second deploy, no second auth plane) that stores briefs, evidence, review verdicts, workflow state, and version snapshots in Postgres. **Publish** reuses the same chunking + Titan embedding path as the operator `load` tool (`@hypercare/content` ingest), factored as `replaceModuleChunkRowsInTx` + `publishModuleFromDatabase`.
+Ship an **internal** surface at `/internal/content` in `apps/web` (shared Cognito session and Postgres — no second deploy, no second auth plane) that stores briefs, evidence, review verdicts, workflow state, and version snapshots in Postgres. **Publish** reuses the same chunking + Titan embedding path as the operator `load` tool (`@alongside/content` ingest), factored as `replaceModuleChunkRowsInTx` + `publishModuleFromDatabase`.
 
 ## Why not Contentful / Sanity (etc.)
 
@@ -15,7 +15,7 @@ Ship an **internal** surface at `/internal/content` in `apps/web` (shared Cognit
 
 ## Workflow states
 
-Linear progression (state machine enforced in `@hypercare/content` `validateTransitionRequest` and API routes):
+Linear progression (state machine enforced in `@alongside/content` `validateTransitionRequest` and API routes):
 
 ```text
 draft → content_lead_review → expert_review → lived_experience_review → approved

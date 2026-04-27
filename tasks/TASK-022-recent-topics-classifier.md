@@ -115,7 +115,7 @@ Pure function over the DB read; no LLM calls.
 - Topic classifier failure does **not** break answer generation — it logs and persists empty.
 - Unit tests cover the empty-input, LLM-error, off-vocab, and recency cases above.
 - ADR 0013 written; ADR 0008 updated with the pointer.
-- One live-eval run (`EVAL_LIVE=1 pnpm --filter @hypercare/eval start -- answers`) on a dev DB shows non-empty `classified_topics` on the seeded golden questions.
+- One live-eval run (`EVAL_LIVE=1 pnpm --filter @alongside/eval start -- answers`) on a dev DB shows non-empty `classified_topics` on the seeded golden questions.
 
 ---
 
@@ -182,11 +182,11 @@ TASKS.md
 ## How PM verifies
 
 1. `pnpm install`; live DB up.
-2. `pnpm --filter @hypercare/db migrate` — new migration applies.
+2. `pnpm --filter @alongside/db migrate` — new migration applies.
 3. `psql -c '\d+ messages'` — new columns present.
 4. `pnpm --filter web dev`, log in, send three questions about bathing across a fresh conversation.
 5. `psql -c "select content, classified_topics from messages where role='user' order by created_at desc limit 3;"` — three rows, each with `bathing-resistance` (or close) in `classified_topics`.
-6. Open a node REPL: `import { getRecentTopicSignal } from '@hypercare/rag'; await getRecentTopicSignal('<your user id>')` — returns `topTopics` with `bathing-resistance` at top weight 1.
+6. Open a node REPL: `import { getRecentTopicSignal } from '@alongside/rag'; await getRecentTopicSignal('<your user id>')` — returns `topTopics` with `bathing-resistance` at top weight 1.
 7. Read ADR 0013.
 
 ---

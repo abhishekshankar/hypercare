@@ -1,4 +1,4 @@
-import type { Citation } from "@hypercare/rag";
+import type { Citation } from "@alongside/rag";
 
 /**
  * Parses an assistant `text` (from `AnswerResult`) into a sequence of

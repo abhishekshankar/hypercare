@@ -1,7 +1,7 @@
 import "server-only";
 
-import { userSuppression } from "@hypercare/db";
-import { createDbClient } from "@hypercare/db";
+import { userSuppression } from "@alongside/db";
+import { createDbClient } from "@alongside/db";
 import { eq } from "drizzle-orm";
 
 import { serverEnv } from "@/lib/env.server";

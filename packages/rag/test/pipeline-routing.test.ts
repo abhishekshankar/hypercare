@@ -1,5 +1,5 @@
-import type { PersistFn } from "@hypercare/safety";
-import { loadPolicyFromFile, defaultPolicyPath } from "@hypercare/model-router";
+import type { PersistFn } from "@alongside/safety";
+import { loadPolicyFromFile, defaultPolicyPath } from "@alongside/model-router";
 import { afterEach, beforeEach, describe, expect, it, vi } from "vitest";
 
 import { runPipeline, type Deps } from "../src/pipeline.js";

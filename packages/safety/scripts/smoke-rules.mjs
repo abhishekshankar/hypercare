@@ -1,6 +1,6 @@
 // Offline smoke battery for the rule-only path. No Bedrock needed.
 // Usage: node packages/safety/scripts/smoke-rules.mjs
-// Builds first: `pnpm --filter @hypercare/safety build`.
+// Builds first: `pnpm --filter @alongside/safety build`.
 import { classify } from "../dist/index.js";
 
 const fakePersist = async () => undefined;

@@ -49,7 +49,7 @@ export default async function ProfilePage({ searchParams }: Props) {
         </p>
       ) : null}
       <ScreenHeader
-        subHeadline="This is the transparency layer for personalization: what Hypercare is using, and your controls."
+        subHeadline="This is the transparency layer for personalization: what Alongside is using, and your controls."
         title="Care profile"
       />
       <div>

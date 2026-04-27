@@ -9,7 +9,7 @@
  * — this table only carries the message text used by other reasons.
  */
 
-import type { RefusalReason } from "@hypercare/rag";
+import type { RefusalReason } from "@alongside/rag";
 
 export type NonTriageRefusalCode = Exclude<RefusalReason["code"], "safety_triaged">;
 

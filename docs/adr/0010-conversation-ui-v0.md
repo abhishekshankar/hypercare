@@ -77,7 +77,7 @@ POST   /api/app/conversation/[id]/message           → persist turn, call rag.a
 GET    /api/app/conversation/[id]                   → reload thread (currently used only by tests)
 ```
 
-The browser never imports `@hypercare/rag` or `@hypercare/safety`. `lib/conversation/answer-client.ts` is the only file that touches `rag.answer()` and is `server-only`. Bedrock + DB stay off the client bundle. Every handler validates with zod and returns 401 if the session cookie is absent.
+The browser never imports `@alongside/rag` or `@alongside/safety`. `lib/conversation/answer-client.ts` is the only file that touches `rag.answer()` and is `server-only`. Bedrock + DB stay off the client bundle. Every handler validates with zod and returns 401 if the session cookie is absent.
 
 ### 9. RAG mock for E2E, scoped to NODE_ENV=test
 

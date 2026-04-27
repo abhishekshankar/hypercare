@@ -1,5 +1,5 @@
-import type { ClassifyDeps } from "@hypercare/safety";
-import type { Deps, RetrievedChunk } from "@hypercare/rag";
+import type { ClassifyDeps } from "@alongside/safety";
+import type { Deps, RetrievedChunk } from "@alongside/rag";
 
 import type { AnswerGoldenCase } from "../types.js";
 import { makeRetrievedChunk } from "./chunk.js";

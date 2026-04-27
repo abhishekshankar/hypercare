@@ -1,0 +1,12 @@
+# Container image for the OpenNext image-optimization Lambda. Deployed as a
+# container alongside the SSR Lambda for symmetry — the image-opt function
+# bundles `sharp` with native binaries, which works in zip mode but the
+# container build is more predictable across pnpm/npm/yarn variants.
+#
+# Build context is `.open-next/image-optimization-function/`.
+
+FROM public.ecr.aws/lambda/nodejs:22
+
+COPY . ${LAMBDA_TASK_ROOT}/
+
+CMD [ "index.handler" ]

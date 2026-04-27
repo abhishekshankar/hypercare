@@ -1,7 +1,7 @@
 import { eq } from "drizzle-orm";
 import { NextResponse } from "next/server";
-import { createDbClient, moduleTopics, modules } from "@hypercare/db";
-import { hasAnyRole, publishModuleFromDatabase, type AppRole } from "@hypercare/content";
+import { createDbClient, moduleTopics, modules } from "@alongside/db";
+import { hasAnyRole, publishModuleFromDatabase, type AppRole } from "@alongside/content";
 import { contentPublishDatabaseUrl, serverEnv } from "@/lib/env.server";
 import { requireInternalContentUser } from "@/lib/internal/content-access";
 

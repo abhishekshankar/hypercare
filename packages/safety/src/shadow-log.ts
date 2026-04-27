@@ -1,4 +1,4 @@
-import { safetyFtShadowDecisions } from "@hypercare/db";
+import { safetyFtShadowDecisions } from "@alongside/db";
 
 import type { LlmClassification } from "./llm/classifier.js";
 import type { SafetyDb } from "./persist.js";

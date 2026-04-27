@@ -6,8 +6,8 @@ import {
   createDbClient,
   messages,
   savedAnswers,
-} from "@hypercare/db";
-import type { RefusalReason } from "@hypercare/rag";
+} from "@alongside/db";
+import type { RefusalReason } from "@alongside/rag";
 
 import { serverEnv } from "@/lib/env.server";
 
