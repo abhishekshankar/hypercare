@@ -24,6 +24,9 @@ jobs:
       - name: Install dependencies
         run: pnpm install --frozen-lockfile
 
+      - name: Build workspace packages (emit dist for typecheck and Vitest)
+        run: pnpm -r --filter './packages/*' run build
+
       - name: Lint
         run: pnpm lint
 
