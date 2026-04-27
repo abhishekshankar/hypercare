@@ -1,5 +1,6 @@
 import { NextRequest, NextResponse } from "next/server";
 
+import { publicAppOrigin } from "@/lib/auth/canonical-origin";
 import { OAUTH_SCOPES_STRING } from "@/lib/auth/config";
 import { OAUTH_COOKIE_TTL_SEC, OAUTH_COOKIE_NAME } from "@/lib/auth/constants";
 import { signPayload } from "@/lib/auth/cookie";
@@ -36,7 +37,7 @@ export async function GET(request: NextRequest) {
         next,
         userId: existing.userId,
       });
-      return NextResponse.redirect(new URL(next, request.nextUrl.origin));
+      return NextResponse.redirect(new URL(next, publicAppOrigin(request)));
     }
     logRedirectDebug("login", { action: "start_oauth", next });
     const verifier = createCodeVerifier();
@@ -85,7 +86,7 @@ export async function GET(request: NextRequest) {
     return NextResponse.redirect(
       new URL(
         `/auth/error?reason=${encodeURIComponent(reason)}`,
-        request.nextUrl.origin,
+        publicAppOrigin(request),
       ),
     );
   }

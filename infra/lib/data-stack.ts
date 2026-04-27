@@ -1,5 +1,5 @@
 /**
- * Hypercare data plane: VPC, Aurora PostgreSQL Serverless v2 + pgvector bootstrap, SSM bastion.
+ * Alongside data plane: VPC, Aurora PostgreSQL Serverless v2 + pgvector bootstrap, SSM bastion.
  *
  * Bootstrap: custom-resource Lambda (CDK Provider) runs CREATE DATABASE + CREATE EXTENSION vector.
  * Alternatives considered: RDS Data API (incompatible with pgvector); extra construct libs avoided
@@ -20,7 +20,7 @@ import { Provider } from "aws-cdk-lib/custom-resources";
 /** Aurora PostgreSQL 16.6 — pgvector supported on Aurora PostgreSQL (see AWS Aurora release notes). */
 const AURORA_PG_VERSION = rds.AuroraPostgresEngineVersion.VER_16_6;
 
-const TAG_APP = "hypercare";
+const TAG_APP = "alongside";
 const TAG_ENV = "dev";
 
 export class DataStack extends cdk.Stack {

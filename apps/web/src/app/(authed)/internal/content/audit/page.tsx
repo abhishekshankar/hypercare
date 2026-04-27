@@ -1,5 +1,5 @@
 import { and, asc, desc, eq, isNotNull, ne } from "drizzle-orm";
-import { createDbClient, messages, modules, safetyFlags } from "@hypercare/db";
+import { createDbClient, messages, modules, safetyFlags } from "@alongside/db";
 import { serverEnv } from "@/lib/env.server";
 
 export default async function ContentAuditPage() {

@@ -1,3 +1,27 @@
+# =============================================================================
+# DEPRECATED — see docs/adr/0032-amplify-hosting-deprecated.md (April 2026)
+# -----------------------------------------------------------------------------
+# AWS Amplify Hosting is no longer the deployment target for Alongside.
+# The canonical production path is CloudFront -> ALB -> OpenNext Lambda,
+# defined in infra/lib/web-stack.ts and deployed via:
+#
+#     cd infra && pnpm exec cdk deploy HypercareWeb-dev   (or -prod)
+#
+# This amplify.yml is preserved for two reasons:
+#   1. Operators with manually-wired Amplify branch-preview environments may
+#      still rely on it. Deletion would break those silently.
+#   2. It is a useful reference if Amplify Hosting is ever revived (e.g., for
+#      PR previews only) once the underlying account-level Lambda Function URL
+#      block or Amplify SSR-detection issues are resolved. See ADR 0032
+#      § "Future considerations" for the two scenarios.
+#
+# Failure modes for this build spec in the current AWS account are cataloged
+# in CLAUDE.md § "Amplify Hosting (build succeeds, site is 404)".
+#
+# DO NOT add CI/CD wiring to Amplify. DO NOT update the README to point at
+# an Amplify URL. New hosting work goes into infra/lib/web-stack.ts.
+# =============================================================================
+
 version: 1
 applications:
   - appRoot: apps/web
@@ -14,11 +38,11 @@ applications:
             - corepack prepare pnpm@10.0.0 --activate
             - pnpm --version
             # Install the entire workspace from the repo root so workspace:^ deps
-            # (@hypercare/db, @hypercare/picker, @hypercare/rag, @hypercare/safety) resolve.
+            # (@alongside/db, @alongside/picker, @alongside/rag, @alongside/safety) resolve.
             - pnpm install --frozen-lockfile
         build:
           commands:
-            # Build workspace libraries first (`@hypercare/db` / `@hypercare/content`
+            # Build workspace libraries first (`@alongside/db` / `@alongside/content`
             # ship `dist/` only; `next build` does not run their `tsc`).
             - pnpm --filter web... run build
         postBuild:

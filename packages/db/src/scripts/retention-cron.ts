@@ -1,6 +1,6 @@
 /**
  * Daily retention job. Prefer EventBridge → Lambda in production; run locally with:
- *   pnpm --filter @hypercare/db exec tsx src/scripts/retention-cron.ts --dry-run
+ *   pnpm --filter @alongside/db exec tsx src/scripts/retention-cron.ts --dry-run
  */
 import { parseArgs } from "node:util";
 import { count, lt } from "drizzle-orm";

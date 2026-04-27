@@ -1,6 +1,7 @@
 import { NextRequest, NextResponse } from "next/server";
 import { Buffer } from "node:buffer";
 
+import { publicAppOrigin } from "@/lib/auth/canonical-origin";
 import { OAUTH_COOKIE_NAME } from "@/lib/auth/constants";
 import { verifyPayload } from "@/lib/auth/cookie";
 import { verifyCognitoIdToken } from "@/lib/auth/jwks";
@@ -35,7 +36,7 @@ function errRedirect(
     ...(detail != null ? { message: detail } : {}),
   });
   return NextResponse.redirect(
-    new URL(`/auth/error?reason=${encodeURIComponent(code)}`, request.nextUrl.origin),
+    new URL(`/auth/error?reason=${encodeURIComponent(code)}`, publicAppOrigin(request)),
   );
 }
 
@@ -44,7 +45,17 @@ export async function GET(request: NextRequest) {
   const code = request.nextUrl.searchParams.get("code");
   const state = request.nextUrl.searchParams.get("state");
   if (code == null || state == null) {
-    return errRedirect(request, requestId, "missing_code", "code or state missing");
+    // Cognito returns `?error=...&error_description=...` (and no `code`) when it rejects the
+    // /oauth2/authorize request — most commonly `invalid_scope` (app requesting a scope the
+    // user-pool client doesn't allow) or `redirect_mismatch`. Surface those into the log so
+    // we don't have to guess between "Cognito-level error" vs "user-cancelled" vs "direct hit".
+    const params = request.nextUrl.searchParams;
+    const cognitoErr = params.get("error");
+    const detail =
+      cognitoErr != null
+        ? `cognito error=${cognitoErr} description=${params.get("error_description") ?? ""}`
+        : "code or state missing";
+    return errRedirect(request, requestId, "missing_code", detail);
   }
   const oauthRaw = request.cookies.get(OAUTH_COOKIE_NAME)?.value;
   const oauth = await verifyPayload<OauthStatePayload>(
@@ -127,7 +138,7 @@ export async function GET(request: NextRequest) {
   const res = NextResponse.redirect(
     new URL(
       safeNextPath(oauth.next, "/app"),
-      request.nextUrl.origin,
+      publicAppOrigin(request),
     ).toString(),
   );
   clearOnboardingAckOnResponse(res);

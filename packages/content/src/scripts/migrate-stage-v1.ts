@@ -1,7 +1,7 @@
 #!/usr/bin/env node
 /**
  * TASK-034: migrate legacy `stage_answers` (v0) to v1 ordinals + recompute `inferred_stage`.
- * Usage: `pnpm --filter @hypercare/content migrate:stage-v1` (dry-run) or `--commit`.
+ * Usage: `pnpm --filter @alongside/content migrate:stage-v1` (dry-run) or `--commit`.
  */
 import { eq } from "drizzle-orm";
 
@@ -9,7 +9,7 @@ import {
   careProfile,
   createDbClient,
   requireDatabaseUrl,
-} from "@hypercare/db";
+} from "@alongside/db";
 import {
   inferInferredStage,
   mapStageAnswersV0ToV1,

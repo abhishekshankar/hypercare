@@ -1,7 +1,7 @@
 import "server-only";
 import { eq } from "drizzle-orm";
 
-import { createDbClient, users } from "@hypercare/db";
+import { createDbClient, users } from "@alongside/db";
 
 import { serverEnv } from "../env.server";
 

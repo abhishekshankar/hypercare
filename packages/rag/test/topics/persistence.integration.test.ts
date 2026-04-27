@@ -1,15 +1,15 @@
 import { and, eq } from "drizzle-orm";
 import { describe, expect, it } from "vitest";
 
-import { createDbClient } from "@hypercare/db";
-import { conversations, messages, users } from "@hypercare/db";
+import { createDbClient } from "@alongside/db";
+import { conversations, messages, users } from "@alongside/db";
 import { runPipeline, type Deps } from "../../src/pipeline.js";
 import { classifyTopics } from "../../src/topics/classifier.js";
 
 const enabled = process.env.TOPICS_INTEGRATION === "1" && Boolean(process.env.DATABASE_URL);
 
 /**
- * Gated: `TOPICS_INTEGRATION=1 DATABASE_URL=... pnpm --filter @hypercare/rag test test/topics/persistence.integration.test.ts`
+ * Gated: `TOPICS_INTEGRATION=1 DATABASE_URL=... pnpm --filter @alongside/rag test test/topics/persistence.integration.test.ts`
  */
 describe("topic classification + messages row (integration)", () => {
   it.skipIf(!enabled)("result fields round-trip to jsonb on update (mirrors web persist)", async () => {

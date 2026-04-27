@@ -9,7 +9,7 @@ Playwright and CI may use **test-only** Route Handlers under `apps/web/src/app/a
 
 Do not relax these checks for “local convenience”; extend the pattern or fix local env (see ADR 0010 known-issue footnote for Playwright + canonical redirect).
 
-## Database integration tests (`@hypercare/db`)
+## Database integration tests (`@alongside/db`)
 
 Some tests hit real Postgres and are **skipped** unless you opt in:
 
@@ -20,9 +20,9 @@ Some tests hit real Postgres and are **skipped** unless you opt in:
 
 Example (tunnel or local URL):
 
-`CITATIONS_DENORM_INTEGRATION=1 DATABASE_URL=postgres://... pnpm --filter @hypercare/db test test/citations-denorm.integration.test.ts`
+`CITATIONS_DENORM_INTEGRATION=1 DATABASE_URL=postgres://... pnpm --filter @alongside/db test test/citations-denorm.integration.test.ts`
 
-`ROUTING_INTEGRATION=1 DATABASE_URL=postgres://... pnpm --filter @hypercare/db test test/model-routing-decisions.integration.test.ts`
+`ROUTING_INTEGRATION=1 DATABASE_URL=postgres://... pnpm --filter @alongside/db test test/model-routing-decisions.integration.test.ts`
 
 ## Schema deltas (TASK-043)
 
@@ -39,4 +39,4 @@ Example (tunnel or local URL):
 
 ## Route-handler tests without Postgres
 
-Some Vitest suites call Route Handlers that open Drizzle (`createDbClient`) while still using a dummy `DATABASE_URL`. Prefer **mocking `@hypercare/db`’s `createDbClient`** (stub `select` / `limit` chains) instead of requiring a live `hc_test` database. For `@/lib/env.server`, prefer **`vi.mock` with `importOriginal`** and override only `serverEnv` fields so helpers like `streamingAnswersEnabled()` and `modelRoutingEnabled()` stay aligned with production code (`test/safety/conversation-escalation.test.ts`).
+Some Vitest suites call Route Handlers that open Drizzle (`createDbClient`) while still using a dummy `DATABASE_URL`. Prefer **mocking `@alongside/db`’s `createDbClient`** (stub `select` / `limit` chains) instead of requiring a live `hc_test` database. For `@/lib/env.server`, prefer **`vi.mock` with `importOriginal`** and override only `serverEnv` fields so helpers like `streamingAnswersEnabled()` and `modelRoutingEnabled()` stay aligned with production code (`test/safety/conversation-escalation.test.ts`).

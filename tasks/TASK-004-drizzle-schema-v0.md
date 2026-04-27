@@ -25,7 +25,7 @@ The schema is **v0**, not final. Sprint 1 only needs enough columns to prove the
 
 ## What "done" looks like
 
-A migration that, when applied to a fresh `hypercare_dev` and `hypercare_prod`, produces seven tables with the columns, types, constraints, and indexes specified below; a Drizzle schema in `packages/db/src/schema/` that exactly mirrors those tables; a `drizzle.config.ts` and working `pnpm --filter @hypercare/db migrate` script; and a least-privilege app role that the application will use at runtime (not the admin user).
+A migration that, when applied to a fresh `hypercare_dev` and `hypercare_prod`, produces seven tables with the columns, types, constraints, and indexes specified below; a Drizzle schema in `packages/db/src/schema/` that exactly mirrors those tables; a `drizzle.config.ts` and working `pnpm --filter @alongside/db migrate` script; and a least-privilege app role that the application will use at runtime (not the admin user).
 
 ## Acceptance criteria
 
@@ -37,7 +37,7 @@ A migration that, when applied to a fresh `hypercare_dev` and `hypercare_prod`, 
 - [ ] `packages/db/src/client.ts` exports a typed Drizzle client factory (takes a `DATABASE_URL`, returns `drizzle(...)`). Not a singleton — the app will call the factory inside request scope in a later ticket.
 - [ ] `packages/db/src/env.ts` validates `DATABASE_URL` with `zod` and exits the process with a clear error on missing/malformed values.
 - [ ] Scripts in `packages/db/package.json`: `generate` (`drizzle-kit generate`), `migrate` (`drizzle-kit migrate` or a small runner script under `src/migrate.ts` — pick one and document in the PR), `studio` (`drizzle-kit studio`).
-- [ ] `pnpm --filter @hypercare/db typecheck`, `lint`, and `build` pass with zero warnings.
+- [ ] `pnpm --filter @alongside/db typecheck`, `lint`, and `build` pass with zero warnings.
 
 ### Migration
 
@@ -250,14 +250,14 @@ docs/
 ## How the PM will verify
 
 1. `pnpm install` at the repo root — clean.
-2. `pnpm --filter @hypercare/db typecheck && pnpm --filter @hypercare/db lint && pnpm --filter @hypercare/db build` — all green.
+2. `pnpm --filter @alongside/db typecheck && pnpm --filter @alongside/db lint && pnpm --filter @alongside/db build` — all green.
 3. `pnpm test` — green.
 4. Open the SSM tunnel (`./scripts/db-tunnel.sh`). In a second terminal, as `hypercare_admin` against `hypercare_dev`:
-   - `DATABASE_URL=... pnpm --filter @hypercare/db migrate`
+   - `DATABASE_URL=... pnpm --filter @alongside/db migrate`
    - `psql ... -c '\dt'` — lists the seven tables plus `__drizzle_migrations`.
    - `psql ... -c '\dx'` — shows `vector` and `pgcrypto`.
    - `psql ... -c '\d module_chunks'` — shows the `embedding vector(N)` column and the HNSW (or IVFFlat) index.
-5. Re-run `pnpm --filter @hypercare/db migrate` — reports no changes.
+5. Re-run `pnpm --filter @alongside/db migrate` — reports no changes.
 6. Repeat step 4 (migrate only) against `hypercare_prod`.
 7. Connect as `hypercare_admin`, run `packages/db/scripts/bootstrap-app-role.sql` with a PM-supplied password, then verify as `hypercare_app` that a `SELECT` on `users` succeeds and a `DROP TABLE users` fails with a permission error.
 8. Read the two new docs (`ADR 0002`, `schema-v0.md`) — each decision listed above has a paragraph.

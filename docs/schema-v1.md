@@ -63,7 +63,7 @@ Unchanged from v0 (`pgcrypto`, `vector`).
 
 ## Topic seed
 
-Twenty rows are seeded in `0003` (v0 set; `transitions` has no topic rows yet). Expand via `pnpm --filter @hypercare/db seed:topics` from `src/seed/topic-seed-data.ts` until a taxonomy break warrants a new migration + ADR.
+Twenty rows are seeded in `0003` (v0 set; `transitions` has no topic rows yet). Expand via `pnpm --filter @alongside/db seed:topics` from `src/seed/topic-seed-data.ts` until a taxonomy break warrants a new migration + ADR.
 
 ## `conversation_memory` (TASK-027)
 

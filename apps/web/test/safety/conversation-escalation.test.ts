@@ -3,7 +3,7 @@
  * (TASK-025). Drives `POST /api/app/conversation/[id]/message` in-process with
  * the auth/answer-client/persist layers stubbed, so we can assert:
  *   - The route enriches a `safety_triaged` refusal with the parsed
- *     `@hypercare/safety` script (direct_answer + primary_resources + version).
+ *     `@alongside/safety` script (direct_answer + primary_resources + version).
  *   - The route applies 24h home-screen suppression for caregiver-distress
  *     categories and is a no-op for others.
  *   - The status route reflects the suppression that was just set.
@@ -14,7 +14,7 @@
  * boundary; the script parser, enrichment, and suppression *logic* are real.
  */
 import { afterEach, beforeEach, describe, expect, it, vi } from "vitest";
-import type { AnswerInput, AnswerResult, SafetyTriageReason } from "@hypercare/rag";
+import type { AnswerInput, AnswerResult, SafetyTriageReason } from "@alongside/rag";
 
 vi.mock("next/server", async (importOriginal) => {
   const m = await importOriginal<typeof import("next/server")>();
@@ -39,8 +39,8 @@ vi.mock("@/lib/env.server", async (importOriginal) => {
 });
 
 /** Route loads `routingCohort` from Drizzle; avoid real Postgres (CI may not have `hc_test`). */
-vi.mock("@hypercare/db", async (importOriginal) => {
-  const actual = await importOriginal<typeof import("@hypercare/db")>();
+vi.mock("@alongside/db", async (importOriginal) => {
+  const actual = await importOriginal<typeof import("@alongside/db")>();
   const routingRow = [{ routingCohort: null as string | null }];
   const dbStub = {
     select: () => dbStub,
@@ -50,7 +50,7 @@ vi.mock("@hypercare/db", async (importOriginal) => {
   };
   return {
     ...actual,
-    createDbClient: () => dbStub as ReturnType<typeof actual.createDbClient>,
+    createDbClient: () => dbStub as unknown as ReturnType<typeof actual.createDbClient>,
   };
 });
 
@@ -74,8 +74,8 @@ vi.mock("@/lib/conversation/prior-user-message", () => ({
   getPriorUserMessageContent: async () => null,
 }));
 
-vi.mock("@hypercare/rag", async () => {
-  const actual = await vi.importActual<typeof import("@hypercare/rag")>("@hypercare/rag");
+vi.mock("@alongside/rag", async () => {
+  const actual = await vi.importActual<typeof import("@alongside/rag")>("@alongside/rag");
   return {
     ...actual,
     loadConversationMemoryForAnswer: async () => null,

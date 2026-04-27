@@ -1,4 +1,4 @@
--- Least-privilege application role for Hypercare (TASK-004).
+-- Least-privilege application role for Alongside (TASK-004).
 -- Prerequisites: PM has created the role (password never committed):
 --   CREATE ROLE hypercare_app LOGIN PASSWORD '<pm-provided>';
 -- Then run this script **twice** as `hypercare_admin` (SSM tunnel): once targeting

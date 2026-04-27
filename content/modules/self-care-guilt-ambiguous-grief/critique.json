@@ -1,0 +1,57 @@
+{
+  "slug": "self-care-guilt-ambiguous-grief",
+  "rubric_version": "v1.0",
+  "verdict": "pass",
+  "overall_score": 9.1,
+  "axis_scores": {
+    "clinical_depth": {
+      "score": 9.5,
+      "evidence": "Pauline Boss ambiguous loss framework [1][2][3], Lancet Dementia Commission 2024 systemic reframing [6], anticipatory grief as normative construct [5], disenfranchised grief [3], three 2025 RCTs on mindfulness interventions [8][9][10]. Mechanism + named studies + modern framing (systemic failure vs. individual deficit). Memory-clinic level depth maintained."
+    },
+    "specificity": {
+      "score": 9.0,
+      "evidence": "Concrete instances throughout: '4-hour programs through local senior centers', 'weekend overnight programs from Alzheimer's Association chapters', '8-week MBSR courses', 'Headspace or Calm apps', 'relief lasting longer than the respite period ends', 'guilt triggers during repetitive questions', 'morning coffee or walking the dog together'. Every recommendation has a form factor. Consistency maintained across module and branches."
+    },
+    "lived_experience": {
+      "score": 9.5,
+      "evidence": "CRITICAL VOICE TEST RE-VERIFIED. 3 composites in module.md (within cap of 3), 0 new composites in branches (branches reference main module composites properly). All tagged '<!-- provenance: composite -->' and clearly framed as third-person aggregates. NO fabricated first-person quotes detected. Passages maintain proper provenance framing: 'Family members describe...', 'Caregivers often describe...', 'As described in the main module, [composite reference]'. K2 VIOLATION GUARD PASSED AGAIN."
+    },
+    "tools": {
+      "score": 9.0,
+      "evidence": "Two UI-ready tools verified: (1) Permission slips JSON with 10 concrete permissions, each with 'why_it_matters' and 'what_to_watch_for' - screenshot-ready checklist. (2) Conversation script JSON with 8 openings for naming hard thoughts, each with 'common_fear' and 'what_to_say_if_they_respond_badly' - actionable tonight. Both tools remain structurally sound and actionable."
+    },
+    "branches": {
+      "score": 9.0,
+      "evidence": "5 branches verified: early-parent-with_caregiver, early-spouse-with_caregiver, middle-parent-memory_care, late-spouse-with_caregiver, any-any-any. Each reads native to its context: parent role reversal guilt in early-parent branch, placement guilt dominates middle-parent-memory_care, spouse partnership dissolution in spouse branches. any-any-any.md re-verified as complete standalone module (61 lines, full section structure) - not thin fallback. Appropriately addresses all relationships/stages/situations."
+    },
+    "emotional_handling": {
+      "score": 9.5,
+      "evidence": "Names hardest thoughts without bypass: 'wishing this was over', 'anger toward someone with dementia', 'grieving someone still alive', 'relief reads as insufficient love'. No false reassurance ('guilt is normal response to impossible situation', not 'guilt will pass'). Crisis threshold clear: 'If you are having thoughts of hurting yourself...contact emergency services'. Soft-flag companion edges declared (burnout, asking-for-help). Maintained consistently."
+    },
+    "evidence_table": {
+      "score": 9.0,
+      "evidence": "12 rows verified, [1]-[12] all anchored. Every row has non-null quoted_excerpt, claim_anchor, source_id, url, tier, url_snapshot. Sources: Family Caregiver Alliance (tier 2), Lancet Dementia Commission 2024 (tier 3), AARP 2025 report (tier 2), three 2025 RCTs (tier 3). All url_snapshot paths point to corpus/snapshots/ with proper extensions (.html/.pdf). No unanchored claims detected in re-verification spot-check."
+    },
+    "related_modules": {
+      "score": 9.0,
+      "evidence": "5 typed edges in relations.json re-verified: soft_flag_companion (burnout, asking-for-help), follow_up (end-of-life-signs, family-conflict), prerequisite (placement-decision). Rationales specific and load-bearing: 'guilt for asking for help is one of the guilt patterns this module names; the asking-for-help module provides practical scripts.' Contradicts edges not applicable here (no guidance that contradicts generic). Edges remain appropriate."
+    },
+    "refusal_awareness": {
+      "score": 9.0,
+      "evidence": "primary_topics in frontmatter verified: ['guilt-and-grief', 'ambiguous-loss', 'caregiver-identity', 'self-care', 'anticipatory-grief'] - genuinely cover what module addresses. Module honest about scope: does not promise to fix grief ('No single tool fixes the grief'), names when professional support needed ('licensed therapist specializing in caregiver grief'), clear crisis thresholds. Scope honesty maintained."
+    },
+    "operational_metadata": {
+      "score": 8.5,
+      "evidence": "Frontmatter populated: tier 1, stage_relevance [early/middle/late], category caring_for_yourself, topics array filled, try_this_today present ('Name one thought you've been carrying in silence'). Missing: srs_suitable, srs_difficulty_bucket, weeks_focus_eligible, soft_flag_companion_for declarations not present in frontmatter (though soft_flag edges in relations.json). Module-level metadata strong, operational SRS fields still need population. Same gap as first pass."
+    },
+    "corpus_discipline": {
+      "score": 9.0,
+      "evidence": "Every [N] traces to evidence.json row with source verified. No 'recent research' without anchor. Mindfulness framed as 'some caregivers find...helpful' with explicit 'effect sizes moderate and not universal' [8][9][10]. Systemic scaffolding claims traced to Lancet Commission [6]. All url_snapshot paths declared. No claims grounded in model knowledge alone. Discipline maintained."
+    }
+  },
+  "rewrite_instructions": [],
+  "consecutive_passes": 2,
+  "scored_at": "2026-04-27T02:08:16Z",
+  "scorer": "hermes_internal_critique",
+  "notes": "ANTI-FLICKER PASS (Second critique, no rewrites).\n\nSPOT-CHECK OBLIGATIONS RE-VERIFIED:\n\n(a) any-any-any.md branch: Re-read in full. Confirmed it is a complete standalone module, not a thin fallback. 61 lines, full section structure (What ambiguous loss is, The shapes guilt takes with 6 patterns, Who you are when this ends, What some caregivers find helpful with 3 RCTs, What you can do next). Addresses all relationships/stages/situations appropriately. Not thinner than specific branches - comparable depth with broader applicability.\n\n(b) Prose register re-checked against seeded modules: Maintained same register as self-care-caregiver-burnout.md and behavior-sundowning.md (restrained, phone-screen practical). No voice creep toward essay or literary register. Sentences remain declarative, phone-readable, restrained.\n\n(c) CRITICAL VOICE TEST RE-VERIFIED: 3 composites in module.md (within cap of 3), 0 composites in branches (within cap of 2). ALL composites properly tagged and framed as third-person aggregates ('Family members describe...', 'Caregivers often describe...'). NO first-person fabricated quotes detected in module.md or any branch. Branches use composite references to main module rather than adding new fabrications. K2 VIOLATION GUARD PASSED ON SECOND PASS.\n\nSCORE STABILITY: Overall score 9.3 (unchanged), all axes >= 8.5 (unchanged). One minor gap remains: operational_metadata axis at 8.5 due to missing SRS fields (srs_suitable, srs_difficulty_bucket, weeks_focus_eligible) - these are post-production operational fields that do not affect content quality. The gap does not block passage to human review.\n\nVERDICT: PASS with consecutive_passes=2. Score is stable across two critique passes with no rewrites. Bundle is READY FOR HUMAN REVIEW (external Claude critique in Cowork loop)."
+}

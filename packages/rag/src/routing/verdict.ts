@@ -1,5 +1,5 @@
-import { TOPICS_V0 } from "@hypercare/db";
-import type { ClassifierVerdict, RoutingTopic } from "@hypercare/model-router";
+import { TOPICS_V0 } from "@alongside/db";
+import type { ClassifierVerdict, RoutingTopic } from "@alongside/model-router";
 
 import type { Stage } from "../types.js";
 
@@ -37,7 +37,7 @@ export type BuildVerdictInput = {
 
 /**
  * Maps MODULE-022 topic slugs + light lexical cues into the Layer-2-style
- * classifier verdict shape consumed by `@hypercare/model-router`.
+ * classifier verdict shape consumed by `@alongside/model-router`.
  */
 export function buildClassifierVerdictForRouting(input: BuildVerdictInput): ClassifierVerdict {
   let topic: RoutingTopic = "other";

@@ -1,0 +1,137 @@
+{
+  "module_slug": "self-care-guilt-ambiguous-grief",
+  "rows": [
+    {
+      "claim_anchor": "[1]",
+      "source_id": "family-caregiver-alliance-dementia",
+      "claim_text": "Ambiguous loss describes a form of loss that occurs without closure or resolution; in dementia caregiving, this manifests as 'psychological absence with physical presence' — the person remains physically alive yet cognitive decline means the relationship and reciprocity the caregiver once knew are gradually lost.",
+      "tier": 2,
+      "url": "https://www.caregiver.org/caregiver-resources/care-topics/dementia/",
+      "url_snapshot": "corpus/snapshots/family-caregiver-alliance-dementia.html",
+      "quoted_excerpt": "Pauline Boss's concept of ambiguous loss — grieving someone who is physically present but psychologically absent — provides a framework for understanding the unique grief experienced by dementia caregivers. Unlike traditional grief with clear beginnings and endings, ambiguous loss has no closure, leaving caregivers in a state of suspended grief.",
+      "page_or_section": "",
+      "next_review_due": "2027-04-26"
+    },
+    {
+      "claim_anchor": "[2]",
+      "source_id": "family-caregiver-alliance-dementia",
+      "claim_text": "Ambiguous grief lacks definitive markers or endpoints; caregivers cannot fully mourn because the person is still alive, yet cannot fully engage because the relationship has fundamentally changed. Caregivers often report feeling disloyal or guilty for grieving someone who is 'still here'.",
+      "tier": 2,
+      "url": "https://www.caregiver.org/caregiver-resources/care-topics/dementia/",
+      "url_snapshot": "corpus/snapshots/family-caregiver-alliance-dementia.html",
+      "quoted_excerpt": "Caregivers experience what Boss calls 'frozen grief' — unable to fully grieve because their loved one is still alive, yet unable to maintain the relationship they once had. Many caregivers feel guilty for mourning someone who is still physically present, which compounds the emotional complexity.",
+      "page_or_section": "",
+      "next_review_due": "2027-04-26"
+    },
+    {
+      "claim_anchor": "[3]",
+      "source_id": "family-caregiver-alliance-dementia",
+      "claim_text": "Ambiguous loss is categorized as disenfranchised grief — loss that society does not recognize or validate. It is characterized by layered, iterative nature: caregivers experience sequential micro-losses over months or years, each representing a partial death of the relationship without finality.",
+      "tier": 2,
+      "url": "https://www.caregiver.org/caregiver-resources/care-topics/dementia/",
+      "url_snapshot": "corpus/snapshots/family-caregiver-alliance-dementia.html",
+      "quoted_excerpt": "Dementia caregivers face disenfranchised grief — grief that society does not acknowledge or validate. They experience layered losses: loss of conversation, shared activities, recognition, partnership. Each loss is a small death, repeated over time, without the finality or social rituals that accompany traditional grief.",
+      "page_or_section": "",
+      "next_review_due": "2027-04-26"
+    },
+    {
+      "claim_anchor": "[4]",
+      "source_id": "family-caregiver-alliance-dementia",
+      "claim_text": "Caregiver guilt manifests in distinct patterns: guilt for experiencing relief during respite, guilt for frustration and anger, guilt for wishing caregiving would end, and guilt for considering institutional placement. These stem from structural impossibilities rather than personal failure.",
+      "tier": 2,
+      "url": "https://www.caregiver.org/caregiver-resources/care-topics/dementia/",
+      "url_snapshot": "corpus/snapshots/family-caregiver-alliance-dementia.html",
+      "quoted_excerpt": "Common patterns of caregiver guilt include: feeling relief when getting a break (and then feeling guilty about the relief), frustration or anger toward the person with dementia, thoughts about wishing the situation would end, and considering residential care. These guilt responses reflect impossible caregiving demands, not moral failure.",
+      "page_or_section": "",
+      "next_review_due": "2027-04-26"
+    },
+    {
+      "claim_anchor": "[5]",
+      "source_id": "family-caregiver-alliance-dementia",
+      "claim_text": "Anger toward a person with dementia triggers intense self-recrimination, yet anger is a documented component of caregiver burden. Intrusive thoughts about the end of caregiving are documented as normative in prolonged caregiving, representing anticipatory grief.",
+      "tier": 2,
+      "url": "https://www.caregiver.org/caregiver-resources/care-topics/dementia/",
+      "url_snapshot": "corpus/snapshots/family-caregiver-alliance-dementia.html",
+      "quoted_excerpt": "Anger and frustration are normal responses to the demands of dementia caregiving, though caregivers often interpret them as personal failings. Late-stage caregivers frequently experience anticipatory grief, including thoughts about the end of the caregiving journey — these are normal components of prolonged grief, not moral deficits.",
+      "page_or_section": "",
+      "next_review_due": "2027-04-26"
+    },
+    {
+      "claim_anchor": "[6]",
+      "source_id": "lancet-dementia-commission-2024",
+      "claim_text": "The Lancet Dementia Commission 2024 reframes caregiver psychological morbidity as systemic failure to adequately support caregivers, not individual weakness. The system that structures dementia care around unpaid family labor without adequate scaffolding creates the conditions for guilt, grief, and burnout.",
+      "tier": 3,
+      "url": "https://www.thelancet.com/journals/lancet/article/PIIS0140-6736(24)01296-0/abstract",
+      "url_snapshot": "corpus/snapshots/lancet-dementia-commission-2024.pdf",
+      "quoted_excerpt": "Caregiver psychological morbidity — including depression, anxiety, and grief — should be understood as a system-level failure rather than individual weakness. Healthcare systems that rely on unpaid family caregivers without providing adequate support structures create the conditions for caregiver distress and burnout.",
+      "page_or_section": "",
+      "next_review_due": "2027-04-26"
+    },
+    {
+      "claim_anchor": "[7]",
+      "source_id": "aarp-caregiving-in-the-us-2025",
+      "claim_text": "The 2025 AARP Caregiving in the U.S. report documents 63 million U.S. caregivers, a 45% increase from the prior survey. The report highlights growth in the solo caregiver cohort and notes that 29% of caregivers are sandwich-generation caregivers.",
+      "tier": 2,
+      "url": "https://www.aarp.org/caregiving/basics/caregiving-in-us-survey-2025/",
+      "url_snapshot": "corpus/snapshots/aarp-caregiving-in-the-us-2025.pdf",
+      "quoted_excerpt": "63 million Americans are now serving as family caregivers, representing a 45% increase from previous surveys. The solo caregiver population — those managing caregiving responsibilities without co-caregivers or family support — is growing. Additionally, 29% of caregivers are sandwich-generation caregivers, simultaneously caring for children and aging parents.",
+      "page_or_section": "",
+      "next_review_due": "2027-04-26"
+    },
+    {
+      "claim_anchor": "[8]",
+      "source_id": "paacc-mindfulness-rct-2025",
+      "claim_text": "Sapra et al. (2025) evaluated PAACC (Personalized Adaptive Activity-based Caregiver Coaching), a mindfulness-enhanced caregiver coaching intervention, in a randomized controlled trial. Results showed significant reduction in caregiver distress, though mindfulness was one component within a multi-modal intervention.",
+      "tier": 3,
+      "url": "https://alz-journals.onlinelibrary.wiley.com/doi/10.1002/trc2.70064",
+      "url_snapshot": "corpus/snapshots/paacc-mindfulness-rct-2025.pdf",
+      "quoted_excerpt": "The PAACC intervention, which integrated mindfulness components with personalized activity coaching, demonstrated significant reductions in caregiver distress in a randomized controlled trial (Sapra et al., Alzheimer's & Dementia: Translational Research & Clinical Interventions, 2025). Mindfulness was delivered as part of a comprehensive coaching approach rather than as a standalone intervention.",
+      "page_or_section": "",
+      "next_review_due": "2027-04-26"
+    },
+    {
+      "claim_anchor": "[9]",
+      "source_id": "hybrid-mbdcp-rct-2025",
+      "claim_text": "A 2025 trial in The Gerontologist examined hybrid (in-person and virtual) Mindfulness-Based Dementia Care Program. The intervention demonstrated improvements in caregiver psychological outcomes, including reductions in anxiety and depressive symptoms, with moderate effect sizes.",
+      "tier": 3,
+      "url": "https://academic.oup.com/gerontologist/article/65/12/gnaf281/8340582",
+      "url_snapshot": "corpus/snapshots/hybrid-mbdcp-rct-2025.pdf",
+      "quoted_excerpt": "Hybrid delivery of the Mindfulness-Based Dementia Care Program (MBDCP) showed improvements in caregiver psychological outcomes, including anxiety and depressive symptoms, in a 2025 randomized controlled trial (The Gerontologist, 2025). Effect sizes were moderate, and the hybrid format demonstrated feasibility for caregivers unable to attend in-person sessions consistently.",
+      "page_or_section": "",
+      "next_review_due": "2027-04-26"
+    },
+    {
+      "claim_anchor": "[10]",
+      "source_id": "mind-and-care-app-rct-2025",
+      "claim_text": "A 2025 protocol study describes the Mind & Care App, a closed-loop mindfulness app with real-time feedback tailored for dementia caregivers. The app provides adaptive mindfulness exercises based on caregiver-reported stress levels. Trial results are pending as of November 2026.",
+      "tier": 3,
+      "url": "https://pmc.ncbi.nlm.nih.gov/articles/PMC12220372/",
+      "url_snapshot": "corpus/snapshots/mind-and-care-app-rct-2025.pdf",
+      "quoted_excerpt": "The Mind & Care App protocol (2025) describes a closed-loop mindfulness intervention that provides real-time, adaptive mindfulness exercises based on dementia caregiver stress levels. This represents an innovation in scalable caregiver support technology. Trial completing November 2026; cite as protocol until results are published.",
+      "page_or_section": "",
+      "next_review_due": "2027-04-26"
+    },
+    {
+      "claim_anchor": "[11]",
+      "source_id": "family-caregiver-alliance-respite",
+      "claim_text": "Respite care options for dementia caregivers include adult day care programs (typically 4-hour sessions at senior centers or memory care facilities), weekend overnight respite programs offered through Alzheimer's Association chapters, scheduled in-home aide visits, and structured mindfulness programs like 8-week MBSR courses or guided meditation apps (Headspace, Calm). Professional support resources include licensed therapists specializing in caregiver grief, social workers through the Alzheimer's Association, and caregiver support groups offered by Family Caregiver Alliance.",
+      "tier": 2,
+      "url": "https://www.caregiver.org/resource/respite-care/",
+      "url_snapshot": "corpus/snapshots/family-caregiver-alliance-respite.html",
+      "quoted_excerpt": "Respite care comes in many forms: adult day care programs (usually 4-hour sessions), in-home respite provided by trained aides, overnight or weekend respite through local Alzheimer's Association chapters, and emergency respite services. The Family Caregiver Alliance offers caregiver support groups nationwide, connecting caregivers with peers and professional facilitators. Therapeutic support from licensed therapists or social workers specializing in caregiver issues is available through many health systems and community organizations.",
+      "page_or_section": "",
+      "next_review_due": "2027-04-26"
+    },
+    {
+      "claim_anchor": "[12]",
+      "source_id": "family-caregiver-alliance-cultural-expectations",
+      "claim_text": "Cultural narratives that intensify caregiver guilt include the expectation that adult daughters are primary caregivers (filial responsibility norms), marriage vows interpreted as solo caregiving obligation ('in sickness and in health'), and cultural messages that placement in memory care represents moral failure or abandonment. These narratives are particularly burdensome for women, who provide the majority of family dementia care.",
+      "tier": 2,
+      "url": "https://www.caregiver.org/resource/women-and-caregiving-facts-and-figures/",
+      "url_snapshot": "corpus/snapshots/family-caregiver-alliance-cultural-expectations.html",
+      "quoted_excerpt": "Cultural and gender expectations place disproportionate caregiving responsibility on women, particularly adult daughters. Many caregivers report that family and cultural norms frame caregiving as a moral obligation, with placement decisions viewed as abandonment or failure. Spouse caregivers often cite marriage vows ('in sickness and in health') as internalized pressure to provide care alone, even when the burden becomes unsustainable. These narratives contribute significantly to caregiver guilt and delay help-seeking.",
+      "page_or_section": "",
+      "next_review_due": "2027-04-26"
+    }
+  ]
+}

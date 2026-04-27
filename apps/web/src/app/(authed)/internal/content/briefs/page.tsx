@@ -1,4 +1,4 @@
-import { createDbClient, moduleBriefs } from "@hypercare/db";
+import { createDbClient, moduleBriefs } from "@alongside/db";
 import { serverEnv } from "@/lib/env.server";
 import { desc } from "drizzle-orm";
 

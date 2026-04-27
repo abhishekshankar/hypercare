@@ -1,7 +1,7 @@
 "use client";
 
 import Link from "next/link";
-import type { Citation } from "@hypercare/rag";
+import type { Citation } from "@alongside/rag";
 
 /**
  * Section heading is the chunk's heading from the seeded module markdown.

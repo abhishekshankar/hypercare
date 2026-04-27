@@ -1,5 +1,5 @@
 {
-  "name": "@hypercare/content",
+  "name": "@alongside/content",
   "version": "0.0.0",
   "private": true,
   "type": "module",
@@ -16,18 +16,18 @@
     }
   },
   "scripts": {
-    "build": "tsc -p tsconfig.json",
-    "load": "tsx src/cli.ts",
-    "migrate:stage-v1": "tsx src/scripts/migrate-stage-v1.ts",
-    "check:ingest": "tsx src/scripts/check-ingest.ts",
-    "seed:roles": "tsx src/scripts/seed-roles.ts",
+    "build": "node ../../node_modules/typescript/lib/tsc.js -p tsconfig.json",
+    "load": "node ../../node_modules/tsx/dist/cli.mjs src/cli.ts",
+    "migrate:stage-v1": "node ../../node_modules/tsx/dist/cli.mjs src/scripts/migrate-stage-v1.ts",
+    "check:ingest": "node ../../node_modules/tsx/dist/cli.mjs src/scripts/check-ingest.ts",
+    "seed:roles": "node ../../node_modules/tsx/dist/cli.mjs src/scripts/seed-roles.ts",
     "lint": "eslint src test --max-warnings 0",
-    "typecheck": "tsc -p tsconfig.json --noEmit",
-    "test": "vitest run"
+    "typecheck": "node ../../node_modules/typescript/lib/tsc.js -p tsconfig.json --noEmit",
+    "test": "node ../../node_modules/vitest/vitest.mjs run"
   },
   "dependencies": {
     "@aws-sdk/client-bedrock-runtime": "^3.1034.0",
-    "@hypercare/db": "workspace:*",
+    "@alongside/db": "workspace:*",
     "drizzle-orm": "^0.45.2",
     "gray-matter": "^4.0.3",
     "zod": "^4.3.6"

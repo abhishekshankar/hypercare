@@ -4,7 +4,7 @@
  * and interpolates the CR's name into the body.
  */
 import { describe, expect, it, vi } from "vitest";
-import type { SafetyTriageReason } from "@hypercare/rag";
+import type { SafetyTriageReason } from "@alongside/rag";
 
 vi.mock("@/lib/env.server", () => ({
   serverEnv: { DATABASE_URL: "postgresql://127.0.0.1:5432/hc_test" },

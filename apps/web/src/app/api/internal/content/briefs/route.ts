@@ -1,7 +1,7 @@
 import { NextResponse } from "next/server";
-import { moduleBriefs } from "@hypercare/db";
-import { hasAnyRole, type AppRole } from "@hypercare/content";
-import { createDbClient } from "@hypercare/db";
+import { moduleBriefs } from "@alongside/db";
+import { hasAnyRole, type AppRole } from "@alongside/content";
+import { createDbClient } from "@alongside/db";
 import { serverEnv } from "@/lib/env.server";
 import { requireInternalContentUser } from "@/lib/internal/content-access";
 import { postBriefBody } from "@/lib/internal/content-schemas";

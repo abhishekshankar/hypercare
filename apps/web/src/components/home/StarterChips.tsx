@@ -42,7 +42,7 @@ export function HomeAsk({
   const { startConversation, pending, error } = useStartConversation();
   return (
     <div className="space-y-4" data-testid="home-ask-block">
-      <section aria-label="Ask Hypercare a question" className="space-y-3">
+      <section aria-label="Ask Alongside a question" className="space-y-3">
         <Composer
           onSubmit={startConversation}
           pending={pending}
@@ -56,7 +56,7 @@ export function HomeAsk({
         ) : null}
       </section>
       <div>
-        <p className="mb-2 text-xs uppercase tracking-wide text-muted-foreground">Or start with…</p>
+        <p className="along-section-label mb-3">Or start with…</p>
         <ul className="flex flex-wrap gap-2" data-testid="starter-chips">
           {starters.map((text) => (
             <li key={text}>

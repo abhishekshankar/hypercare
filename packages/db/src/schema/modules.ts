@@ -5,7 +5,9 @@ import {
   date,
   index,
   integer,
+  jsonb,
   pgTable,
+  smallint,
   text,
   timestamp,
   uuid,
@@ -30,6 +32,16 @@ export const modules = pgTable(
     nextReviewDue: date("next_review_due"),
     /** One-line prompt for lesson "try this" card; from front-matter, optional (TASK-023). */
     tryThisToday: text("try_this_today"),
+    /** Hermes heavy-module flag; light modules stay false. */
+    heavy: boolean("heavy").notNull().default(false),
+    /** Monotonic bundle version for idempotent heavy publishes. */
+    bundleVersion: integer("bundle_version").notNull().default(1),
+    srsSuitable: boolean("srs_suitable").default(true),
+    srsDifficultyBucket: smallint("srs_difficulty_bucket"),
+    weeksFocusEligible: boolean("weeks_focus_eligible").default(true),
+    softFlagCompanionFor: jsonb("soft_flag_companion_for").$type<string[]>().default(sql`'[]'::jsonb`),
+    secondaryTopics: jsonb("secondary_topics").$type<string[]>().default(sql`'[]'::jsonb`),
+    primaryTopics: jsonb("primary_topics").$type<string[]>().default(sql`'[]'::jsonb`),
     published: boolean("published").notNull().default(false),
     /** TASK-028 authoring workflow state (distinct from `published` boolean for library/retire). */
     draftStatus: text("draft_status").notNull().default("draft"),

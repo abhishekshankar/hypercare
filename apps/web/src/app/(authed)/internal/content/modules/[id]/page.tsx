@@ -1,5 +1,5 @@
 import { count, desc, eq } from "drizzle-orm";
-import { createDbClient, moduleChunks, moduleEvidence, moduleReviews, moduleStateTransitions, modules } from "@hypercare/db";
+import { createDbClient, moduleChunks, moduleEvidence, moduleReviews, moduleStateTransitions, modules } from "@alongside/db";
 import { serverEnv } from "@/lib/env.server";
 
 type PageProps = { params: Promise<{ id: string }> };

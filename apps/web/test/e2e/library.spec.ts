@@ -33,7 +33,7 @@ test.describe("library (requires seeded modules in DATABASE_URL)", () => {
     if ((await moduleCards.count()) < 1) {
       test.skip(
         true,
-        "No module cards — run pnpm --filter @hypercare/content load against this DATABASE_URL with TASK-023 front-matter",
+        "No module cards — run pnpm --filter @alongside/content load against this DATABASE_URL with TASK-023 front-matter",
       );
     }
 

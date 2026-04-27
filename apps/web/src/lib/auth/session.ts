@@ -2,7 +2,7 @@ import "server-only";
 import { randomUUID } from "node:crypto";
 import type { NextResponse } from "next/server";
 import { and, eq } from "drizzle-orm";
-import { createDbClient, sessionRevocations, userAuthSessions } from "@hypercare/db";
+import { createDbClient, sessionRevocations, userAuthSessions } from "@alongside/db";
 import { cookies, headers } from "next/headers";
 import { cache } from "react";
 import { redirect } from "next/navigation";

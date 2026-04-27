@@ -128,7 +128,7 @@ The PRD requires quarterly re-review of the elder-abuse flow "personally, by the
   - `next_review_due` is `reviewed_on + 90 days` or later (the 90-day minimum is set in the ADR).
   - `reviewed_by` is a non-empty string.
   - Body hash is recorded in `packages/safety/src/scripts/.review-manifest.json` alongside `reviewed_on`. If the body changes without `reviewed_on` bumping, fail the check.
-- Wire it into `pnpm --filter @hypercare/safety check:scripts` and into CI (`.github/workflows/ci.yml` adds it as a step).
+- Wire it into `pnpm --filter @alongside/safety check:scripts` and into CI (`.github/workflows/ci.yml` adds it as a step).
 - One-time: commit the manifest for all six scripts with today's `reviewed_on`.
 
 A safety script change that bypasses the check (e.g. someone edits a script in the same PR that bumps `reviewed_on`) is expected — the check catches **silent edits**, not intentional ones. ADR 0015 records this.
@@ -244,7 +244,7 @@ The API route renders the script server-side from the .md file (not the client) 
 - The CI `check:scripts` step fails on a silent body edit; passes on a body edit with matching `reviewed_on` bump.
 - PRD §10.6 disclosure sentence appears in the elder-abuse script.
 - ADR 0015 written: script format, versioning/review discipline, suppression table vs column decision, dedupe-window rationale.
-- `pnpm lint typecheck test` green; `EVAL_LIVE=1 pnpm --filter @hypercare/eval start -- answers` does not regress; `EVAL_LIVE=1 pnpm --filter @hypercare/eval start -- safety` (TASK-010's existing mode) reports the 5 new categories with correct flow rendering at ≥ 90% for the seeded queries that hit them.
+- `pnpm lint typecheck test` green; `EVAL_LIVE=1 pnpm --filter @alongside/eval start -- answers` does not regress; `EVAL_LIVE=1 pnpm --filter @alongside/eval start -- safety` (TASK-010's existing mode) reports the 5 new categories with correct flow rendering at ≥ 90% for the seeded queries that hit them.
 
 ---
 
@@ -280,7 +280,7 @@ The API route renders the script server-side from the .md file (not the client) 
 
 ## How PM verifies
 
-1. `pnpm --filter @hypercare/safety check:scripts` — green.
+1. `pnpm --filter @alongside/safety check:scripts` — green.
 2. Mutate one script body without bumping `reviewed_on` → `check:scripts` fails. Revert.
 3. Log in as a seeded user. For each of the 5 new categories, post a representative message and eyeball the rendered card.
 4. After the self-harm or elder-abuse card, `/app` renders the suppression surface. `psql -c "select * from user_suppression where user_id = '…';"` shows a row.

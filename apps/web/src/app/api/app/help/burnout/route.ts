@@ -1,4 +1,4 @@
-import { createDbClient, safetyFlags } from "@hypercare/db";
+import { createDbClient, safetyFlags } from "@alongside/db";
 import { NextResponse } from "next/server";
 import { z } from "zod";
 

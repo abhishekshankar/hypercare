@@ -1,5 +1,5 @@
 import { and, count, desc, eq, gte } from "drizzle-orm";
-import { createDbClient, safetyFlags, weeklyCheckins } from "@hypercare/db";
+import { createDbClient, safetyFlags, weeklyCheckins } from "@alongside/db";
 
 const MS_DAY = 24 * 60 * 60 * 1000;
 

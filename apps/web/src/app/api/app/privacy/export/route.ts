@@ -1,6 +1,6 @@
 import { randomUUID } from "node:crypto";
 import { desc, eq } from "drizzle-orm";
-import { createDbClient, privacyExportRequests } from "@hypercare/db";
+import { createDbClient, privacyExportRequests } from "@alongside/db";
 import { NextResponse } from "next/server";
 
 import { getSession } from "@/lib/auth/session";

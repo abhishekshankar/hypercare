@@ -70,7 +70,7 @@ test("onboarding: full wizard, summary, home, then /onboarding redirects to /app
   await page.getByLabel(/hardest thing/i).fill("Sundowning most evenings.");
   await page.getByRole("button", { name: "Continue" }).click();
 
-  await page.getByRole("button", { name: /See what I told Hypercare/i }).click();
+  await page.getByRole("button", { name: /See what I told Alongside/i }).click();
 
   await expect(page.getByRole("heading", { level: 1 })).toContainText("what we heard");
   await expect(page.getByText(/Okay\./)).toBeVisible();

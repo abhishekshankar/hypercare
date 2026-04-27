@@ -1,4 +1,4 @@
-import type { CareProfileStageSnapshot } from "@hypercare/content/stage-rules";
+import type { CareProfileStageSnapshot } from "@alongside/content/stage-rules";
 
 import type { CareProfileRow } from "@/lib/onboarding/status";
 

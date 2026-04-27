@@ -4,6 +4,41 @@ import { logRedirectDebug } from "./redirect-debug";
 
 const LOOPBACK = new Set(["localhost", "127.0.0.1", "::1"]);
 
+/**
+ * Origin to use when constructing in-app redirect URLs (e.g. → /api/auth/login,
+ * → /auth/error, → /onboarding).
+ *
+ * Why this exists:
+ *   In production behind CloudFront → ALB → Lambda, the `Host` header inside the
+ *   Lambda is the ALB's internal DNS (CloudFront strips Host per its origin
+ *   request policy). `request.nextUrl.origin` therefore resolves to the ALB
+ *   hostname, and emitting redirects against it sends the browser to a URL it
+ *   can't reach (the ALB returns 403 to anyone missing the X-Origin-Verify
+ *   secret). Forwarding the original `Host` header through CloudFront would
+ *   work but inflates the cache key and breaks the host-strip pattern that
+ *   keeps S3/ALB origins clean — easier to anchor to the env var that's
+ *   already the canonical public URL.
+ *
+ * Behavior:
+ *   - Production / staging: returns `AUTH_BASE_URL` (post-deploy script pins
+ *     this to the CloudFront URL).
+ *   - Dev / Playwright / unit tests: falls back to `request.nextUrl.origin`
+ *     so loopback ports keep working naturally.
+ *
+ * Edge-safe: only touches `process.env` and the request URL, no Node APIs.
+ */
+export function publicAppOrigin(request: NextRequest): string {
+  const fromEnv = process.env.AUTH_BASE_URL?.trim();
+  if (fromEnv != null && fromEnv.length > 0) {
+    try {
+      return new URL(fromEnv).origin;
+    } catch {
+      // malformed AUTH_BASE_URL — fall through rather than poison every redirect
+    }
+  }
+  return request.nextUrl.origin;
+}
+
 function normalizeHost(hostname: string): string {
   const h = hostname.toLowerCase();
   return h.startsWith("[") && h.endsWith("]") ? h.slice(1, -1) : h;

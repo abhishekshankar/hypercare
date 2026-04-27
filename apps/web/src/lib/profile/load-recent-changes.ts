@@ -7,7 +7,7 @@ import {
   getCareProfileForUser,
   listHouseholdActorUserIds,
   users,
-} from "@hypercare/db";
+} from "@alongside/db";
 
 import { serverEnv } from "../env.server";
 

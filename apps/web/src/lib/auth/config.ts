@@ -5,11 +5,17 @@ import { baseUrl, serverEnv } from "../env.server";
 
 const oauthDomain = new URL(serverEnv.COGNITO_DOMAIN).host;
 
-const scopes: ("openid" | "email" | "profile" | "phone")[] = [
+// Must stay in sync with the Cognito app client's `AllowedOAuthScopes`.
+// Adding a scope the user pool client doesn't allow makes Cognito reject the
+// /oauth2/authorize request with `error=invalid_request&error_description=invalid_scope`,
+// which surfaces in our app as `?reason=missing_code` on the error page (Cognito
+// redirects back with no `code`, only the `error_*` params).
+// `phone` was previously requested but the shared Cognito client only permits
+// openid/email/profile, and no code path reads the `phone_number` claim.
+const scopes: ("openid" | "email" | "profile")[] = [
   "openid",
   "email",
   "profile",
-  "phone",
 ];
 
 /**
@@ -33,7 +39,7 @@ export const AMPLIFY_AUTH_CONFIG: ResourcesConfig = {
   },
 };
 
-export const OAUTH_SCOPES_STRING = "openid email profile phone";
+export const OAUTH_SCOPES_STRING = "openid email profile";
 
 export function getRegionForDocs(): string {
   return serverEnv.COGNITO_REGION;

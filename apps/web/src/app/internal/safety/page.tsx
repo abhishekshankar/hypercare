@@ -1,4 +1,4 @@
-import { createDbClient, safetyFtShadowDecisions } from "@hypercare/db";
+import { createDbClient, safetyFtShadowDecisions } from "@alongside/db";
 import { desc, gte } from "drizzle-orm";
 
 import { serverEnv } from "@/lib/env.server";

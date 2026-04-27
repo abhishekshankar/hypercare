@@ -1,6 +1,6 @@
 import { z } from "zod";
 
-import { SAFETY_CLASSIFIER_CATEGORIES } from "@hypercare/safety";
+import { SAFETY_CLASSIFIER_CATEGORIES } from "@alongside/safety";
 
 const classifier = z.enum(SAFETY_CLASSIFIER_CATEGORIES);
 

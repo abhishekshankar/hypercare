@@ -3,7 +3,7 @@ import { dirname, join } from "node:path";
 import { fileURLToPath } from "node:url";
 import { parse as parseYaml } from "yaml";
 
-import { resolveScriptFilename, type SafetyClassifierCategory } from "@hypercare/safety";
+import { resolveScriptFilename, type SafetyClassifierCategory } from "@alongside/safety";
 
 import { redteamSetSchema, type RedteamQuery } from "./schema.js";
 

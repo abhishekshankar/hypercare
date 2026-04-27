@@ -1,4 +1,4 @@
-# Hypercare — Project Brief for Cursor
+# Alongside — Project Brief for Cursor
 
 > Read this file before touching any ticket. It defines the contract.
 
@@ -23,7 +23,7 @@ PM does not write feature code. Cursor does not invent stack choices. If a ticke
 | API           | Next.js Route Handlers (server actions where they fit)                                                                                      | No separate AppSync layer in v1; revisit if mobile arrives.                                                 |
 | DB            | Aurora PostgreSQL Serverless v2                                                                                                             | One cluster, two databases: `hypercare_dev`, `hypercare_prod`.                                              |
 | Vector        | `pgvector` extension on the same Aurora cluster                                                                                             | One store, simpler ops. PRD §9.4.                                                                           |
-| Auth          | **AWS Cognito user pool — shared with the other project (the "main" project).** Hypercare is a **second app client** on that existing pool. | See §4.                                                                                                     |
+| Auth          | **AWS Cognito user pool — shared with the other project (the "main" project).** Alongside is a **second app client** on that existing pool. | See §4.                                                                                                     |
 | LLM           | AWS Bedrock                                                                                                                                 | Claude Sonnet/Opus for generation; Claude Haiku for the safety classifier and the post-generation verifier. |
 | Embeddings    | Bedrock-hosted embedding model (Titan Text Embeddings v2 to start)                                                                          | Tickets may revisit if retrieval quality is weak.                                                           |
 | Reranker      | Cohere Rerank via Bedrock if available, else skip in v1                                                                                     | Decision deferred to the retrieval ticket.                                                                  |
@@ -58,11 +58,11 @@ The monorepo is **pnpm workspaces**. No Turborepo / Nx in v1 — keep it boring.
 
 ## 4. Auth integration with the other project
 
-Hypercare does **not** own user identity. The other project ("main project") owns the Cognito user pool. Hypercare is a second app client.
+Alongside does **not** own user identity. The other project ("main project") owns the Cognito user pool. Alongside is a second app client.
 
 Cognito handoff for TASK-002 is **documented in `docs/auth-contract.md`** (pool ID, region, app client, OAuth scopes, callback and sign-out URLs, Hosted UI domain, JWKS, custom attributes — none — and client-secret notes).
 
-Implementation: `aws-amplify` v6 with the `auth` category configured against the existing pool. Server-side session validation via the Cognito JWKS. **No password fields in the Hypercare UI** — sign-in routes through the shared Hosted UI (or a token bridge if the main project provides one). If the main project hands off via a redirect with a Cognito session cookie or a one-time code, the auth ticket will detail that flow when implemented.
+Implementation: `aws-amplify` v6 with the `auth` category configured against the existing pool. Server-side session validation via the Cognito JWKS. **No password fields in the Alongside UI** — sign-in routes through the shared Hosted UI (or a token bridge if the main project provides one). If the main project hands off via a redirect with a Cognito session cookie or a one-time code, the auth ticket will detail that flow when implemented.
 
 **Session model (entry point):** PKCE authorization code flow, token exchange and JWKS verification on the server, **`hc_session` opaque HMAC cookie** (not a browser-visible Cognito JWT) — see [`docs/adr/0004-auth-session-model.md`](docs/adr/0004-auth-session-model.md).
 
@@ -74,7 +74,7 @@ Implementation: `aws-amplify` v6 with the `auth` category configured against the
 - **`DATABASE_URL_ADMIN`**: Optional **operator/bootstrap** URL (admin or migration role) for tunnels, `drizzle-kit`, and one-off DBA tasks. **Do not** point the web app or `env.server.ts` at this; keep app traffic on the least-privileged role. Details: `docs/infra-runbook.md`.
 - **`BEDROCK_ANSWER_MODEL_ID`**: Optional override for the RAG answering model (Claude on Bedrock). Default is the Haiku 4.5 `us.*` system inference profile id in `packages/rag` config; set this if your account exposes a different profile id. See `docs/adr/0008-rag-pipeline-v0.md` §4.
 - **`BEDROCK_CLASSIFIER_MODEL_ID`**: Optional override for the safety classifier’s Layer B model (same default family / inference-profile pattern as the answerer). Default in `packages/safety/src/config.ts`; see `docs/adr/0008-rag-pipeline-v0.md` §4 and `docs/adr/0009-safety-classifier-v0.md` §5.
-- **`EVAL_LIVE`**: Set to `1` to run the `@hypercare/eval` harness against **real** Postgres (`DATABASE_URL`) and Bedrock (unset = offline fixtures, deterministic). See `docs/adr/0011-eval-harness-v0.md`.
+- **`EVAL_LIVE`**: Set to `1` to run the `@alongside/eval` harness against **real** Postgres (`DATABASE_URL`) and Bedrock (unset = offline fixtures, deterministic). See `docs/adr/0011-eval-harness-v0.md`.
 - **`EVAL_USER_ID`**: Optional; when set with `EVAL_LIVE=1`, passed through as the `userId` in answer eval so `loadStage` can resolve a real `care_profile` (defaults to a synthetic `eval-answers:…` id if unset).
 - **`MODEL_ROUTING`**: Set to `1` or `true` to enable **Layer-5 model routing** (topic-aware policy + A/B cohort). Requires migration **`0021_model_routing.sql`** (`users.routing_cohort`, `model_routing_decisions`). When unset, answering uses `BEDROCK_ANSWER_MODEL_ID` / package default only and no routing decision rows are written. Policy file: `packages/model-router/config/model-routing.yaml`. Contract: `docs/adr/0030-per-user-model-routing.md`.
 

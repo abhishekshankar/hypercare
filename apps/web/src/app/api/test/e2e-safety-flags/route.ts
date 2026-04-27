@@ -3,7 +3,7 @@ import { NextRequest, NextResponse } from "next/server";
 
 import { isE2ETestRuntime } from "@/lib/env.test-runtime";
 import { serverEnv } from "@/lib/env.server";
-import { createDbClient, safetyFlags, users } from "@hypercare/db";
+import { createDbClient, safetyFlags, users } from "@alongside/db";
 
 export const dynamic = "force-dynamic";
 

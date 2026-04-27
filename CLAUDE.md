@@ -2,9 +2,9 @@
 
 ## Database
 
-- After pulling: `pnpm --filter @hypercare/db migrate` — never reset the DB; apply new migrations only.
+- After pulling: `pnpm --filter @alongside/db migrate` — never reset the DB; apply new migrations only.
 - **TASK-041:** migration `0020_library_search_streams.sql` creates telemetry for library SSE search (counts and latency only; no query text).
-- **Stage v1 data migration:** `pnpm --filter @hypercare/content migrate:stage-v1` (was `@hypercare/db`; script lives in `packages/content` so `@hypercare/db` can build before `@hypercare/content`).
+- **Stage v1 data migration:** `pnpm --filter @alongside/content migrate:stage-v1` (was `@alongside/db`; script lives in `packages/content` so `@alongside/db` can build before `@alongside/content`).
 
 ## Web app (`apps/web`)
 
@@ -18,9 +18,15 @@
 
 Library: both must be `1` or `true` for SSE. Route is `POST /api/app/library/search` with `Accept: text/event-stream`. Server-only flag off → **404**; client falls back to client-side filtering.
 
-Conversation messages: `POST /api/app/conversation/[id]/message` reads `users.routing_cohort` for Layer-5 routing when `MODEL_ROUTING=1`. Unit tests that invoke this route without Postgres mock `@hypercare/db` `createDbClient` and partially mock `@/lib/env.server` (see `test/safety/conversation-escalation.test.ts`).
+Conversation messages: `POST /api/app/conversation/[id]/message` reads `users.routing_cohort` for Layer-5 routing when `MODEL_ROUTING=1`. Unit tests that invoke this route without Postgres mock `@alongside/db` `createDbClient` and partially mock `@/lib/env.server` (see `test/safety/conversation-escalation.test.ts`).
 
-### Amplify Hosting (build succeeds, site is 404)
+### Amplify Hosting — DEPRECATED (see ADR 0032)
+
+> **AWS Amplify Hosting is no longer a supported deployment path for this app.** The canonical production path is the CDK stack at `infra/lib/web-stack.ts` (CloudFront → ALB → OpenNext Lambda). See [`docs/adr/0032-amplify-hosting-deprecated.md`](docs/adr/0032-amplify-hosting-deprecated.md) for the decision and the two future-revival scenarios.
+>
+> The diagnostic notes below are preserved because (a) operators may still have manually-wired Amplify branch-preview environments running, and (b) if Amplify is ever revived for PR previews, these are the failure modes to expect. **Do not** add new CI/CD wiring to Amplify or update the README to point at an Amplify URL.
+
+### Amplify Hosting (legacy diagnostics — build succeeds, site is 404)
 
 If `curl -sI https://<branch>.<appId>.amplifyapp.com/` shows **404** and **`server: AmazonS3`**, Amplify deployed the `.next` folder as a **static** site (platform **WEB**). This app needs **SSR + API routes** (platform **WEB_COMPUTE**, framework **Next.js - SSR**). S3 cannot run Next.js, so there is no document at `/`.
 
@@ -52,6 +58,22 @@ If platform/framework/env are already correct but the URL **still** returns **`s
 The current `amplify.yml` does both. The `postBuild` also prints per-subtree `du -sh` (`.next`, `.next/server`, `.next/static`, `.next/standalone`) bracketed by `=== postBuild start/done ===` markers — if the next size failure happens, those lines tell you which subtree grew. If you don't see them in the build log, `postBuild` didn't run; check the Amplify console for a phase-level error before debugging size.
 
 **If deploy succeeds but `/_next/static/chunks/...` 404:** the compute bundle may not be laying out `static/` where the standalone `server.js` expects it. **Option B** is to align paths (e.g. ensure `.next/static` ends up as `standalone/apps/web/.next/static` relative to the process cwd, or follow AWS Next SSR + standalone layout docs for your image). Confirm with a real deploy first — Option A is the smaller diff.
+
+## Hosting vs local dev
+
+- **Shipped app (AWS, default for “using” Alongside):** CloudFront → ALB → OpenNext Lambda; DB is Aurora in the VPC (`DATABASE_URL` from Secrets Manager at cold start). No SSM tunnel. After deploy: `./infra/scripts/post-deploy-web.sh`, Cognito URLs, then **`./scripts/open-hosted-app.sh`** (prints/opens **CloudFrontUrl**). Stack IDs may still be named `HypercareWeb-dev` in brownfield — see `docs/infra-rename.md`.
+- **Local `pnpm --filter web dev`:** For **code changes** only — Node on your machine; `DATABASE_URL` in `.env.local` usually targets **`127.0.0.1:15432`** via **`./scripts/db-tunnel.sh`**. See `docs/infra-runbook.md`.
+
+## Next.js dev: stale `.next` (ENOENT `app-build-manifest.json`)
+
+If you see missing manifests under a nested path under `apps/web/.next/server/...`, stop dev servers, then:
+
+```bash
+rm -rf apps/web/.next
+pnpm --filter web dev
+```
+
+Use `next start` only after a successful `next build`. Avoid two `next dev` processes on the same app tree.
 
 ## Product / architecture pointers
 

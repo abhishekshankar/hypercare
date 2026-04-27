@@ -46,12 +46,12 @@ This is not CI enforcement in v0 — we're not blocking PRs. We're producing a n
    - `answers.ts`
 4. A CLI entry `packages/eval/src/cli.ts`. **pnpm needs a script name** before `--`; do not use bare `pnpm run -- …` (that passes args to the wrong place). **Canonical** (safer to cite; `start` is not a language keyword):
    ```bash
-   pnpm --filter @hypercare/eval start -- retrieval
-   pnpm --filter @hypercare/eval start -- safety
-   pnpm --filter @hypercare/eval start -- answers
-   pnpm --filter @hypercare/eval start -- all
+   pnpm --filter @alongside/eval start -- retrieval
+   pnpm --filter @alongside/eval start -- safety
+   pnpm --filter @alongside/eval start -- answers
+   pnpm --filter @alongside/eval start -- all
    ```
-   **Alias (ticket’s original `run eval` shape):** `eval` in `package.json` runs the same `tsx src/cli.ts`. `pnpm --filter @hypercare/eval run eval -- …` is valid; do **not** inline bare `eval` in shells (JS reserved word; some environments surprise you). Prefer documenting **`start`** in README/ADR; keep **`eval`** as the backward-compatible script name only.
+   **Alias (ticket’s original `run eval` shape):** `eval` in `package.json` runs the same `tsx src/cli.ts`. `pnpm --filter @alongside/eval run eval -- …` is valid; do **not** inline bare `eval` in shells (JS reserved word; some environments surprise you). Prefer documenting **`start`** in README/ADR; keep **`eval`** as the backward-compatible script name only.
 5. Each runner writes a timestamped JSON report to `packages/eval/reports/<runner>/<iso-timestamp>.json` **and** updates `packages/eval/reports/<runner>/latest.json` (symlink or copy — pick one and be consistent; copy is simpler for git).
 6. A simple regression detector: if `latest.json` shows a **drop** in recall@5 (retrieval), F1 (safety), or answer-hit-rate (answers) of more than 5 percentage points vs. the previous committed report — **or** a *rise* in verification-refusal rate of more than 5 pp — the CLI exits 1 with a clear message listing the regressed cases.
 7. Each golden case is traceable — the report cites case id and expected vs. actual.
@@ -180,7 +180,7 @@ guards both, but if you change DBs or runners, walk this list:
    ```bash
    DATABASE_URL_ADMIN="$DATABASE_URL" \
    CONTENT_MODULES_DIR="$(pwd)/content/modules" \
-   pnpm --filter @hypercare/content load
+   pnpm --filter @alongside/content load
    ```
    Then verify:
    ```sql
@@ -249,9 +249,9 @@ misconfigured baseline.
 
 ## Acceptance criteria
 
-- `pnpm --filter @hypercare/eval typecheck lint test` green.
-- `pnpm --filter @hypercare/eval start -- all` (offline, mocked) exits 0 on a clean tree and writes 3 `latest.json` files.
-- `EVAL_LIVE=1 pnpm --filter @hypercare/eval start -- all` (live Bedrock + DB) also exits 0 on a clean tree; numbers may be lower but the runner doesn't crash.
+- `pnpm --filter @alongside/eval typecheck lint test` green.
+- `pnpm --filter @alongside/eval start -- all` (offline, mocked) exits 0 on a clean tree and writes 3 `latest.json` files.
+- `EVAL_LIVE=1 pnpm --filter @alongside/eval start -- all` (live Bedrock + DB) also exits 0 on a clean tree; numbers may be lower but the runner doesn't crash.
 - Deliberately breaking the retrieval threshold (e.g. set the ground threshold to 0.0 in `packages/rag/src/config.ts`, then run the answers eval) produces a regression exit code 1 with a readable diff.
 - Reports are readable — a PM should be able to open `packages/eval/reports/answers/latest.json` and tell at a glance what passed and what failed.
 - ADR 0011 answers: why these three scopes; why these metrics; why not CI-gated.
@@ -285,7 +285,7 @@ docs/adr/0011-eval-harness-v0.md
 ### Modify
 
 ```
-packages/eval/package.json                   # deps: @hypercare/rag, @hypercare/safety, @hypercare/db, zod
+packages/eval/package.json                   # deps: @alongside/rag, @alongside/safety, @alongside/db, zod
 TASKS.md
 ```
 
@@ -310,10 +310,10 @@ TASKS.md
 
 ## How PM verifies
 
-1. `pnpm --filter @hypercare/eval start -- all` — offline, exits 0.
+1. `pnpm --filter @alongside/eval start -- all` — offline, exits 0.
 2. Open `packages/eval/reports/answers/latest.json` — case table is readable, summary shows `answer_hit_rate`, `cited_module_hit_rate`, and `verification_refusal_rate`.
-3. Introduce a deliberate regression (edit a rule to never trigger for `self_harm_user`), run `pnpm --filter @hypercare/eval start -- safety` — exits 1 with a listed case diff. Revert.
-4. **`EVAL_LIVE=1`** (with `DATABASE_URL`, tunnel, Bedrock credentials): `pnpm --filter @hypercare/eval start -- all` — should complete without crash; read live **`verification_refusal_rate`** and **`refusal_reasons`** in `answers/latest.json` (offline 1.0/1.0/1.0 is expected; live is the truth check for what fixtures hide).
+3. Introduce a deliberate regression (edit a rule to never trigger for `self_harm_user`), run `pnpm --filter @alongside/eval start -- safety` — exits 1 with a listed case diff. Revert.
+4. **`EVAL_LIVE=1`** (with `DATABASE_URL`, tunnel, Bedrock credentials): `pnpm --filter @alongside/eval start -- all` — should complete without crash; read live **`verification_refusal_rate`** and **`refusal_reasons`** in `answers/latest.json` (offline 1.0/1.0/1.0 is expected; live is the truth check for what fixtures hide).
 5. Read ADR 0011.
 
 **Board “done” gate (sprint 1):** same spirit as TASK-010 (live smoke) / TASK-011 (screens): flip TASK-012 to **done** only after you have run **step 4** at least once and reviewed live vs offline, not on offline scores alone.

@@ -6,7 +6,7 @@
  */
 import { z } from "zod";
 import { eq, inArray } from "drizzle-orm";
-import { createDbClient, users } from "@hypercare/db";
+import { createDbClient, users } from "@alongside/db";
 
 const appRole = z.enum([
   "caregiver",

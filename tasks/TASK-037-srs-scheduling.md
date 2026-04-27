@@ -1,7 +1,7 @@
 # TASK-037 — Spaced-repetition scheduling for "this week's focus"
 
 - **Owner:** Cursor
-- **Depends on:** TASK-019 (`lesson_progress` schema — `started_at`, `completed_at`, `revisit` columns are the source of truth this filter reads), TASK-024 (the picker policy in `@hypercare/picker`; we layer on top, do not replace), TASK-027 (conversation memory — surfaces a "topic recurrence" signal that informs `revisit`)
+- **Depends on:** TASK-019 (`lesson_progress` schema — `started_at`, `completed_at`, `revisit` columns are the source of truth this filter reads), TASK-024 (the picker policy in `@alongside/picker`; we layer on top, do not replace), TASK-027 (conversation memory — surfaces a "topic recurrence" signal that informs `revisit`)
 - **Unblocks:** PRD §1.3 deferral of SRS; the Sprint 4 cohort complaint that "she keeps showing me the same lesson"; future "remind me when this is due" notification channels (out of scope here, but the schedule rows are what they will read)
 - **Status:** in progress (core shipped; see gaps below)
 - **ADR:** `docs/adr/0026-srs-scheduling-policy.md` (new — algorithm choice, schedule semantics, interaction with the existing picker)
@@ -73,7 +73,7 @@ ADR 0026 records: SM-2-lite over Leitner because we want to honor "I asked to re
 
 ### 3. Picker integration
 
-`@hypercare/picker` gains a pre-filter step:
+`@alongside/picker` gains a pre-filter step:
 
 - Before the existing scoring loop, fetch all `lesson_review_schedule` rows for the user.
 - Mark each candidate module as `dueState: 'due' | 'not_yet_due' | 'never_seen'` based on its row (or absence).

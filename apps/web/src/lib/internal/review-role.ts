@@ -1,4 +1,4 @@
-import type { AppRole } from "@hypercare/content";
+import type { AppRole } from "@alongside/content";
 
 export type ModuleReviewRole =
   | "content_lead"

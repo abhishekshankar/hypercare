@@ -7,7 +7,7 @@
 ## Packet sent to reviewer
 
 - Full 250-query corpus: `packages/eval/fixtures/redteam-v2.yaml`
-- Assistant responses: produced by `pnpm --filter @hypercare/eval start -- redteam:export --v2` (and live `EVAL_LIVE=1` for full text when `pnpm --filter @hypercare/eval start -- redteam:export --v2 --export-responses` is wired to capture model output)
+- Assistant responses: produced by `pnpm --filter @alongside/eval start -- redteam:export --v2` (and live `EVAL_LIVE=1` for full text when `pnpm --filter @alongside/eval start -- redteam:export --v2 --export-responses` is wired to capture model output)
 - This rubric (below)
 
 ## Rubric

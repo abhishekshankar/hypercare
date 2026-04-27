@@ -1,4 +1,4 @@
-import { createDbClient, weeklyCheckins } from "@hypercare/db";
+import { createDbClient, weeklyCheckins } from "@alongside/db";
 import { NextResponse } from "next/server";
 import { z } from "zod";
 

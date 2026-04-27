@@ -60,7 +60,7 @@ export function CheckinCard() {
     return (
       <section
         aria-label="Weekly check-in"
-        className="rounded-xl border border-border bg-background p-5 shadow-sm"
+        className="along-surface-card"
         data-testid="weekly-checkin-card"
       >
         <h2 className="font-serif text-lg font-medium text-foreground">How are you doing this week?</h2>
@@ -109,7 +109,7 @@ export function CheckinCard() {
   return (
     <section
       aria-label="Weekly check-in"
-      className="rounded-xl border border-border bg-background p-5 shadow-sm"
+      className="along-surface-card"
       data-testid="weekly-checkin-card"
     >
       <p className="text-sm text-foreground">What helped? (optional)</p>

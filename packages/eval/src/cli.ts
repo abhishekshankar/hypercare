@@ -98,7 +98,7 @@ async function main() {
   }
   if (!["retrieval", "safety", "answers", "all"].includes(a)) {
     console.error(
-      "Usage: pnpm --filter @hypercare/eval start -- <retrieval|safety|answers|all|redteam|redteam:v2|redteam:export>  [--classifier fine_tuned|zero_shot] [--fixture …] (ADR 0011 / 0024 / TASK-039)",
+      "Usage: pnpm --filter @alongside/eval start -- <retrieval|safety|answers|all|redteam|redteam:v2|redteam:export>  [--classifier fine_tuned|zero_shot] [--fixture …] (ADR 0011 / 0024 / TASK-039)",
     );
     process.exit(2);
   }

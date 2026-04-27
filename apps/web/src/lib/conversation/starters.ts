@@ -8,7 +8,7 @@
  * `null` is treated as `"early"` per TASK-011 ("If `inferStage(...) === 'early'` or `null`").
  */
 
-import type { Stage } from "@hypercare/rag";
+import type { Stage } from "@alongside/rag";
 
 export const STARTER_PROMPTS: Record<Stage, readonly [string, string, string]> = {
   early: [

@@ -1,8 +1,14 @@
+import { existsSync } from "node:fs";
 import { readdir } from "node:fs/promises";
 import path from "node:path";
 import { fileURLToPath } from "node:url";
+import { inArray } from "drizzle-orm";
 import { z } from "zod";
+import { createDbClient, modules } from "@alongside/db";
 import { chunkModuleBody } from "./chunk.js";
+import { parseHeavyModuleFromDisk } from "./heavy/parse-heavy-module-from-disk.js";
+import { publishHeavyModuleFromDisk } from "./heavy/publish-heavy-module.js";
+import { validateHeavyModule } from "./heavy/validate-heavy-module.js";
 import { parseModuleFile } from "./parse.js";
 import { loadExistingChunkMap, resolveEmbeddings, upsertModuleWithChunks } from "./upsert.js";
 
@@ -45,6 +51,19 @@ export function resolveModulesDir(cwd: string, env = process.env): string {
   return path.resolve(cwd, "content", "modules");
 }
 
+function monorepoRootFromCliCwd(cwd: string): string {
+  let dir = cwd;
+  for (let i = 0; i < 12; i++) {
+    if (existsSync(path.join(dir, "pnpm-workspace.yaml"))) {
+      return dir;
+    }
+    const parent = path.dirname(dir);
+    if (parent === dir) break;
+    dir = parent;
+  }
+  return cwd;
+}
+
 async function listModuleFiles(dir: string): Promise<string[]> {
   const names = await readdir(dir, { withFileTypes: true });
   return names
@@ -77,9 +96,48 @@ export async function runLoad(
   }
 }
 
+export async function runHeavyLoadFromArgv(argv: string[]): Promise<void> {
+  const dry = argv.includes("--dry-run");
+  const seed = argv.includes("--seed-relation-targets");
+  const positional = argv.filter((a) => !a.startsWith("--"));
+  const slug = positional[positional.length - 1];
+  if (!slug) {
+    console.error("Usage: pnpm --filter @alongside/content load -- --heavy [--dry-run] [--seed-relation-targets] <slug>");
+    process.exit(1);
+  }
+  const cwd = process.cwd();
+  const repoRoot = monorepoRootFromCliCwd(cwd);
+  const databaseUrl = requireDatabaseUrlAdmin();
+  const parsed = await parseHeavyModuleFromDisk({ repoRoot, slug });
+  if (dry) {
+    const db = createDbClient(databaseUrl);
+    const edgeSlugs = parsed.relations.edges.map((e) => e.to_module_slug);
+    const rows = await db.select({ slug: modules.slug }).from(modules).where(inArray(modules.slug, edgeSlugs));
+    const slugSet = new Set(rows.map((r) => r.slug));
+    const { errors, warnings } = validateHeavyModule(parsed, slugSet);
+    process.stdout.write(`${JSON.stringify({ ok: errors.length === 0, errors, warnings }, null, 2)}\n`);
+    process.exit(errors.length > 0 ? 1 : 0);
+  }
+  const res = await publishHeavyModuleFromDisk({
+    repoRoot,
+    slug,
+    databaseUrl,
+    seedRelationTargets: seed,
+  });
+  process.stdout.write(`ok heavy ${slug}: moduleId=${res.moduleId} chunks=${String(res.chunkCount)}\n`);
+  for (const w of res.warnings) {
+    process.stderr.write(`warn: ${w}\n`);
+  }
+}
+
 const isMain =
   typeof process.argv[1] === "string" &&
   path.resolve(process.argv[1]) === fileURLToPath(import.meta.url);
 if (isMain) {
-  void runLoad();
+  const argv = process.argv.slice(2);
+  if (argv.includes("--heavy")) {
+    void runHeavyLoadFromArgv(argv);
+  } else {
+    void runLoad();
+  }
 }

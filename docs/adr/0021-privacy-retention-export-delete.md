@@ -13,11 +13,11 @@ Closed beta needs named retention, self-serve export, and account deletion befor
 1. **Retention**
    - Every application table is listed in `packages/db/src/retention/schedule.ts` with either `active_lifetime` (no rolling purge while the system owns the data) or `rolling` with a `days` window. CI / tests compare this map to the live public table list when `DATABASE_URL` is set.
    - Windows use the column in the `RETENTION_RULE` (usually `created_at`). Exceptions: `conversation_memory.last_refreshed_at`, `user_sessions.visited_at`, `user_suppression.set_at`, `user_auth_sessions.last_seen_at`, `session_revocations.revoked_at`.
-   - A daily **retention cron** (`pnpm --filter @hypercare/db retention:cron`) performs deletes; first production run should be dry-run, then enabled on a schedule (recommend: EventBridge → Lambda; implementation is ops-owned).
+   - A daily **retention cron** (`pnpm --filter @alongside/db retention:cron`) performs deletes; first production run should be dry-run, then enabled on a schedule (recommend: EventBridge → Lambda; implementation is ops-owned).
 
 2. **Export**
    - `POST /api/app/privacy/export` rate-limits to one completed export per user per 24h.
-   - Work runs when `GET /api/app/privacy/export/status` is polled for a `pending` row; the artifact is a ZIP with `hypercare_export.json`, stored in S3 with a presigned download URL. Env: `PRIVACY_EXPORT_S3_BUCKET`, `AWS_REGION` (or default).
+   - Work runs when `GET /api/app/privacy/export/status` is polled for a `pending` row; the artifact is a ZIP with `alongside_export.json`, stored in S3 with a presigned download URL. Env: `PRIVACY_EXPORT_S3_BUCKET`, `AWS_REGION` (or default).
 
 3. **Account delete**
    - In one transaction: de-identify `safety_flags` (null `user_id` / `message_id` / `conversation_id`, clear `last_message_text` PII using email, care-recipient first name, phone regex), set `deidentified_at`, then delete all other user-scoped rows, revoke sessions, insert `admin_audit`, delete `users`.
@@ -28,7 +28,7 @@ Closed beta needs named retention, self-serve export, and account deletion befor
    - `user_auth_sessions` rows (per cookie `sid`) support device list; `session_revocations` invalidates a `sid` before signature expiry. Middleware still checks only signature+exp; API/RSC `getSession()` enforces revocations and touches `last_seen_at`.
 
 5. **Admin parity**
-   - `pnpm --filter @hypercare/db admin:forget` runs the same `deleteUserAccount` function with `source: "admin_cli"` and a `reason` string in audit `meta`.
+   - `pnpm --filter @alongside/db admin:forget` runs the same `deleteUserAccount` function with `source: "admin_cli"` and a `reason` string in audit `meta`.
 
 ## Consequences
 

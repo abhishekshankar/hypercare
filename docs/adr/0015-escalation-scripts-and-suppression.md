@@ -26,4 +26,4 @@ PRD §10.3 requires six expert-authored, versioned escalation flows. TASK-025 wi
 
 - PM replaces placeholder `reviewed_by` names before production.
 - Legal may revise mandatory disclosure; bump `reviewed_on` when the sentence changes.
-- CI must run `pnpm --filter @hypercare/safety check:scripts`.
+- CI must run `pnpm --filter @alongside/safety check:scripts`.

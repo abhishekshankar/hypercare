@@ -2,7 +2,7 @@ import { eq } from "drizzle-orm";
 import { NextResponse } from "next/server";
 import { z } from "zod";
 
-import { adminAudit, createDbClient, modules, userFeedback } from "@hypercare/db";
+import { adminAudit, createDbClient, modules, userFeedback } from "@alongside/db";
 
 import { baseUrl } from "@/lib/env.server";
 import { postSlackFeedbackMessage } from "@/lib/feedback/slack";

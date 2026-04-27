@@ -43,7 +43,7 @@ async function main(): Promise<void> {
     process.exit(2);
   }
 
-  await exec("pnpm", ["--filter", "@hypercare/eval", "run", "redteam:live", "--", "redteam", "--fixture", "redteam-v2.yaml"], {
+  await exec("pnpm", ["--filter", "@alongside/eval", "run", "redteam:live", "--", "redteam", "--fixture", "redteam-v2.yaml"], {
     cwd: root,
     maxBuffer: 1 << 20,
     env: { ...process.env, EVAL_LIVE: "1" },

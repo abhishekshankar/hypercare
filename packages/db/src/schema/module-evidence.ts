@@ -14,8 +14,14 @@ export const moduleEvidence = pgTable(
     citation: text("citation").notNull(),
     url: text("url"),
     quotedSupport: text("quoted_support"),
+    quotedExcerpt: text("quoted_excerpt"),
+    urlSnapshot: text("url_snapshot"),
+    claimAnchor: text("claim_anchor"),
     addedBy: uuid("added_by").references(() => users.id, { onDelete: "set null" }),
     addedAt: timestamp("added_at", { withTimezone: true }).defaultNow().notNull(),
   },
-  (t) => [index("module_evidence_module_id_idx").on(t.moduleId)],
+  (t) => [
+    index("module_evidence_module_id_idx").on(t.moduleId),
+    index("module_evidence_module_claim_idx").on(t.moduleId, t.claimAnchor),
+  ],
 );

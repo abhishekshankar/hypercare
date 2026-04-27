@@ -1,7 +1,7 @@
 import { describe, expect, it } from "vitest";
 
 import { getStage2DefaultsForProfile } from "@/lib/onboarding/stage2-defaults";
-import { careProfile } from "@hypercare/db";
+import { careProfile } from "@alongside/db";
 
 type Row = typeof careProfile.$inferSelect;
 

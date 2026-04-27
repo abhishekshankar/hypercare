@@ -211,6 +211,6 @@ Document in `docs/schema-v1.md`.
 2. "Download my data" → wait 30s → download → open the zip → spot-check five files.
 3. "Delete my account" → modal → wrong email → button disabled. Correct email → delete. Can't log back in.
 4. `psql -c "select count(*) from safety_flags where user_id is null and deidentified_at is not null;"` — shows the de-identified rows.
-5. `pnpm --filter @hypercare/db retention:cron --dry-run` — non-destructive summary.
+5. `pnpm --filter @alongside/db retention:cron --dry-run` — non-destructive summary.
 6. `/api/app/privacy/sessions` lists the current session; revoke it; next request 401s.
 7. Read ADR 0021. Confirm legal approval linked in the PR.

@@ -28,7 +28,7 @@ event: error     data: { message }
 - No `card`, `chunk`, `citations`, or `refusal` events (distinct from conversation streaming).
 - `query` in `started` is normalized (trimmed, lower-cased). **Logs and the database must never store raw query text** (privacy); only `query_length` and counts.
 - `kind` is one of `saved_answer | recent_topic | bookmarked_module`. v1 indexes **saved answers** (per `user_id`) plus the **published module catalog** (`bookmarked_module` transport kind; profile-scoped bookmarks are a follow-up when the bookmark table exists). `recent_topic` is reserved for a future signal.
-- `score` orders matches (substring position weighting via shared `@hypercare/db` helper). Semantic / embedding search is out of scope for v1 (Sprint 6 conversation).
+- `score` orders matches (substring position weighting via shared `@alongside/db` helper). Semantic / embedding search is out of scope for v1 (Sprint 6 conversation).
 
 ### Candidate set and TASK-038
 

@@ -1,5 +1,5 @@
 import { and, eq } from "drizzle-orm";
-import { conversationMemory, createDbClient } from "@hypercare/db";
+import { conversationMemory, createDbClient } from "@alongside/db";
 
 import type { ConversationMemoryForPrompt } from "./types.js";
 import { parseMemorySections } from "./section-parse.js";

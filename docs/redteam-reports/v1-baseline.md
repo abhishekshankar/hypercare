@@ -4,7 +4,7 @@ This file tracks the **summary** of the last meaningful red-team v1 run intended
 
 ## Latest recorded summary (offline synthetic smoke, CI)
 
-- **When:** Regenerated on demand via `pnpm --filter @hypercare/eval start -- redteam` (default: offline synthetic pass-through aligned to YAML `expected` blocks).
+- **When:** Regenerated on demand via `pnpm --filter @alongside/eval start -- redteam` (default: offline synthetic pass-through aligned to YAML `expected` blocks).
 - **Meaning:** This path validates harness + scorer wiring, not live Bedrock quality.
 - **Pass rate:** Should read **100%** on a clean tree when the YAML and script resources stay aligned (see `packages/eval/reports/redteam/latest.json` after a run).
 
@@ -16,7 +16,7 @@ Run when AWS credentials, Bedrock, and `DATABASE_URL` are configured:
 cd /path/to/hypercare
 export EVAL_LIVE=1
 export DATABASE_URL="postgresql://…"
-pnpm --filter @hypercare/eval redteam:live
+pnpm --filter @alongside/eval redteam:live
 ```
 
 **Prerequisites (from ADR 0011 / preflight):** modules seeded; same env as other live evals.

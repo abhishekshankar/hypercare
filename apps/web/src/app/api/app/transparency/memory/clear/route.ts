@@ -9,7 +9,7 @@ import {
   logTransparencyUserAction,
   TRANSPARENCY_CLEAR_ACTION,
 } from "@/lib/transparency/user-actions";
-import { conversationMemory, conversationMemoryForgotten, createDbClient } from "@hypercare/db";
+import { conversationMemory, conversationMemoryForgotten, createDbClient } from "@alongside/db";
 
 export const dynamic = "force-dynamic";
 

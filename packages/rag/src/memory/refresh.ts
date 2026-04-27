@@ -1,8 +1,5 @@
-import { readFileSync } from "node:fs";
-import { dirname, join } from "node:path";
-import { fileURLToPath } from "node:url";
 import { and, asc, count, desc, eq, inArray } from "drizzle-orm";
-import { conversationMemory, conversationMemoryForgotten, createDbClient, messages } from "@hypercare/db";
+import { conversationMemory, conversationMemoryForgotten, createDbClient, messages } from "@alongside/db";
 
 import { MEMORY_MAX_TOKENS, MEMORY_MODEL_ID, MEMORY_MODEL_REGION, MEMORY_REFRESH_EVERY_N } from "../config.js";
 import type { GenerateInput, GenerateOutput } from "../bedrock/claude.js";
@@ -12,14 +9,10 @@ import { verifyMemorySummaryBannedContent } from "./verify-banned.js";
 import { verifyMemorySummaryForgottenContent } from "./verify-forgotten.js";
 import { estimateTokenCount } from "./tokens.js";
 import type { MemoryRefreshLog } from "./types.js";
+import { MEMORY_REFRESH_SYSTEM_PROMPT } from "./embedded.generated.js";
 
-const _dir = dirname(fileURLToPath(import.meta.url));
-let cachedSystem: string | null = null;
 function getMemorySystemPrompt(): string {
-  if (cachedSystem) return cachedSystem;
-  const p = join(_dir, "prompt.md");
-  cachedSystem = readFileSync(p, "utf8");
-  return cachedSystem;
+  return MEMORY_REFRESH_SYSTEM_PROMPT;
 }
 
 function buildTranscriptLines(

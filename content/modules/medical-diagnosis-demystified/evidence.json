@@ -1,0 +1,280 @@
+{
+  "module_slug": "medical-diagnosis-demystified",
+  "rows": [
+    {
+      "claim_anchor": "[1]",
+      "source_id": "mayo-clinic-dementia",
+      "claim_text": "Dementia is not a diagnosis itself but rather a clinical syndrome describing a pattern of cognitive decline severe enough to interfere with daily functioning.",
+      "tier": 2,
+      "url": "https://www.mayoclinic.org/diseases-conditions/dementia/symptoms-causes/syc-20352013",
+      "url_snapshot": "packages/content/corpus/snapshots/mayo-clinic-dementia.html",
+      "quoted_excerpt": "Dementia is a general term for a decline in mental ability severe enough to interfere with daily life. Memory loss is an example.",
+      "page_or_section": "Overview",
+      "next_review_due": "2027-04-26"
+    },
+    {
+      "claim_anchor": "[2]",
+      "source_id": "nia-caregiving",
+      "claim_text": "Cognitive decline reflects progressive loss of one or more cognitive domains\u2014memory, language, visuospatial skills, executive function, or social cognition.",
+      "tier": 2,
+      "url": "https://www.nia.nih.gov/health/what-is-dementia",
+      "url_snapshot": "packages/content/corpus/snapshots/nia-dementia-overview.html",
+      "quoted_excerpt": "The term dementia describes a group of symptoms associated with a decline in memory, reasoning, or other thinking skills.",
+      "page_or_section": "Overview",
+      "next_review_due": "2027-04-26"
+    },
+    {
+      "claim_anchor": "[3]",
+      "source_id": "aaic-2025-blood-biomarker-guideline",
+      "claim_text": "Over 100 distinct neuropathological conditions can produce dementia; the most common involve accumulation of misfolded proteins (amyloid-beta, tau) or vascular events in the brain.",
+      "tier": 1,
+      "url": "https://www.alz.org/aaic/2025/releases/clinical-practice-guideline-blood-biomarkers.html",
+      "url_snapshot": "packages/content/corpus/snapshots/aaic-2025-blood-biomarker-guideline.html",
+      "quoted_excerpt": "Multiple neuropathological substrates underlie dementia syndromes. Amyloid-beta and tau pathology are hallmarks of Alzheimer disease; vascular pathology, alpha-synuclein inclusions, and TDP-43 characterize other forms.",
+      "page_or_section": "Overview",
+      "next_review_due": "2027-04-26"
+    },
+    {
+      "claim_anchor": "[4]",
+      "source_id": "nia-caregiving",
+      "claim_text": "Mild cognitive impairment (MCI) refers to objective cognitive decline\u2014detectable on neuropsychological testing or via informant report\u2014that does not yet impair instrumental activities of daily living.",
+      "tier": 2,
+      "url": "https://www.nia.nih.gov/health/mild-cognitive-impairment",
+      "url_snapshot": "packages/content/corpus/snapshots/nia-mci-overview.html",
+      "quoted_excerpt": "Mild cognitive impairment (MCI) is the stage between normal cognitive aging and dementia. People with MCI have noticeable declines in memory or thinking skills, but can still carry out daily activities.",
+      "page_or_section": "Overview",
+      "next_review_due": "2027-04-26"
+    },
+    {
+      "claim_anchor": "[5]",
+      "source_id": "mayo-clinic-dementia",
+      "claim_text": "The functional threshold is central to diagnosis. A person with MCI may forget appointments or repeat conversations but can still manage finances, medications, and household tasks.",
+      "tier": 2,
+      "url": "https://www.mayoclinic.org/diseases-conditions/mild-cognitive-impairment/symptoms-causes/syc-20354578",
+      "url_snapshot": "packages/content/corpus/snapshots/mayo-clinic-mci.html",
+      "quoted_excerpt": "In mild cognitive impairment, a person's thinking skills are noticeably off, but the person is still able to function in daily life and remain independent.",
+      "page_or_section": "Overview",
+      "next_review_due": "2027-04-26"
+    },
+    {
+      "claim_anchor": "[6]",
+      "source_id": "aaic-2025-blood-biomarker-guideline",
+      "claim_text": "Not all MCI progresses to dementia; estimates of conversion range from 2\u201315% per year depending on etiology and biomarker status.",
+      "tier": 1,
+      "url": "https://www.alz.org/aaic/2025/releases/clinical-practice-guideline-blood-biomarkers.html",
+      "url_snapshot": "packages/content/corpus/snapshots/aaic-2025-blood-biomarker-guideline.html",
+      "quoted_excerpt": "Progression rates from MCI to dementia vary by underlying pathology and biomarker profile. Amyloid-beta and phosphorylated tau positivity increase risk; some cognitively stable individuals remain unchanged over many years.",
+      "page_or_section": "Overview",
+      "next_review_due": "2027-04-26"
+    },
+    {
+      "claim_anchor": "[7]",
+      "source_id": "mayo-clinic-dementia",
+      "claim_text": "Alzheimer's disease accounts for 60\u201380% of dementia cases.",
+      "tier": 2,
+      "url": "https://www.mayoclinic.org/diseases-conditions/dementia/symptoms-causes/syc-20352013",
+      "url_snapshot": "packages/content/corpus/snapshots/mayo-clinic-dementia.html",
+      "quoted_excerpt": "Alzheimer disease accounts for 60 to 80 percent of dementia cases. Most people with Alzheimer disease are age 65 or older.",
+      "page_or_section": "Overview",
+      "next_review_due": "2027-04-26"
+    },
+    {
+      "claim_anchor": "[8]",
+      "source_id": "aaic-2025-blood-biomarker-guideline",
+      "claim_text": "Alzheimer's disease involves amyloid-beta plaque accumulation and neurofibrillary tangles. Blood biomarkers now detect both: phosphorylated tau variants (pTau217, pTau181) rise as tau pathology begins, and plasma phospho-tau to amyloid-beta ratios correlate with PET imaging.",
+      "tier": 1,
+      "url": "https://www.alz.org/aaic/2025/releases/clinical-practice-guideline-blood-biomarkers.html",
+      "url_snapshot": "packages/content/corpus/snapshots/aaic-2025-blood-biomarker-guideline.html",
+      "quoted_excerpt": "Plasma phosphorylated tau (pTau217, pTau181) and phospho-tau/A\u03b242 ratios show excellent concordance with amyloid and tau PET imaging and are now recommended for Alzheimer disease diagnosis in clinical practice.",
+      "page_or_section": "Overview",
+      "next_review_due": "2027-04-26"
+    },
+    {
+      "claim_anchor": "[9]",
+      "source_id": "mayo-clinic-dementia",
+      "claim_text": "Lewy body dementia (LBD), the second most common type after AD (~10\u201315% of cases), features alpha-synuclein inclusions throughout the cortex and brain stem.",
+      "tier": 2,
+      "url": "https://www.mayoclinic.org/diseases-conditions/lewy-body-dementia/symptoms-causes/syc-20352025",
+      "url_snapshot": "packages/content/corpus/snapshots/mayo-clinic-lewy-body.html",
+      "quoted_excerpt": "Lewy body dementia is a disease associated with abnormal deposits of a protein called alpha-synuclein. It is the second most common cause of dementia after Alzheimer disease.",
+      "page_or_section": "Overview",
+      "next_review_due": "2027-04-26"
+    },
+    {
+      "claim_anchor": "[10]",
+      "source_id": "lancet-dementia-commission-2024",
+      "claim_text": "Mixed dementia\u2014concurrent pathologies in a single brain\u2014occurs in 20\u201330% of older adults with dementia at autopsy.",
+      "tier": 3,
+      "url": "https://www.thelancet.com/journals/lancet/article/PIIS0140-6736(24)00733-3/fulltext",
+      "url_snapshot": "packages/content/corpus/snapshots/lancet-dementia-commission-2024.html",
+      "quoted_excerpt": "Neuropathological studies show that mixed pathology is present in 20\u201330% of brains at autopsy. The most common mixtures include Alzheimer pathology combined with vascular pathology or Lewy body disease.",
+      "page_or_section": "Overview",
+      "next_review_due": "2027-04-26"
+    },
+    {
+      "claim_anchor": "[11]",
+      "source_id": "aaic-2025-blood-biomarker-guideline",
+      "claim_text": "Blood-based biomarkers have become first-line tools for dementia diagnosis. The diagnostic approach to suspected dementia has undergone a paradigm shift.",
+      "tier": 1,
+      "url": "https://www.alz.org/aaic/2025/releases/clinical-practice-guideline-blood-biomarkers.html",
+      "url_snapshot": "packages/content/corpus/snapshots/aaic-2025-blood-biomarker-guideline.html",
+      "quoted_excerpt": "Blood-based biomarkers (plasma pTau217, pTau181, A\u03b242, total tau, NfL) are recommended as first-line diagnostic tools for suspected Alzheimer disease in primary care and specialty settings.",
+      "page_or_section": "Overview",
+      "next_review_due": "2027-04-26"
+    },
+    {
+      "claim_anchor": "[12]",
+      "source_id": "fda-fujirebio-lumipulse-ptau217",
+      "claim_text": "pTau217 (Fujirebio Lumipulse, FDA-cleared May 2025): Phosphorylated tau at threonine-217. Plasma pTau217/A\u03b242 ratio distinguishes AD from non-AD dementias with >95% accuracy.",
+      "tier": 1,
+      "url": "https://www.fda.gov/news-events/press-announcements/fda-clears-lumipulse-ptau217-blood-test-alzheimers-disease",
+      "url_snapshot": "packages/content/corpus/snapshots/fda-fujirebio-lumipulse-ptau217.html",
+      "quoted_excerpt": "The FDA has cleared the Lumipulse pTau217/A\u03b242 ratio as a blood-based biomarker for Alzheimer disease. This test is now appropriate for clinical use in primary care and specialty settings.",
+      "page_or_section": "Overview",
+      "next_review_due": "2027-04-26"
+    },
+    {
+      "claim_anchor": "[13]",
+      "source_id": "fda-roche-elecsys-ptau181",
+      "claim_text": "pTau181 (Roche Elecsys, FDA-cleared October 2025): Phosphorylated tau at threonine-181. First FDA-cleared for primary care use in diagnosing Alzheimer's pathology.",
+      "tier": 1,
+      "url": "https://www.fda.gov/news-events/press-announcements/fda-clears-elecsys-ptau181-test-alzheimers-disease-diagnosis",
+      "url_snapshot": "packages/content/corpus/snapshots/fda-roche-elecsys-ptau181.html",
+      "quoted_excerpt": "The Roche Elecsys pTau181 assay has received FDA clearance for use in primary care laboratories for the detection of Alzheimer disease pathology in plasma samples.",
+      "page_or_section": "Overview",
+      "next_review_due": "2027-04-26"
+    },
+    {
+      "claim_anchor": "[14]",
+      "source_id": "aaic-2025-blood-biomarker-guideline",
+      "claim_text": "The AAIC 2025 blood-biomarker guideline reports 91.7% concordance for positive biomarkers and 97.3% for negative biomarkers (compared with PET imaging).",
+      "tier": 1,
+      "url": "https://www.alz.org/aaic/2025/releases/clinical-practice-guideline-blood-biomarkers.html",
+      "url_snapshot": "packages/content/corpus/snapshots/aaic-2025-blood-biomarker-guideline.html",
+      "quoted_excerpt": "Concordance between plasma phospho-tau biomarkers and PET imaging is 91.7% for positive amyloid/tau status and 97.3% for negative status, permitting blood tests to replace or defer PET in many clinical scenarios.",
+      "page_or_section": "Overview",
+      "next_review_due": "2027-04-26"
+    },
+    {
+      "claim_anchor": "[15]",
+      "source_id": "mayo-clinic-dementia",
+      "claim_text": "Brain MRI rules out non-degenerative causes (tumor, subdural hematoma, normal-pressure hydrocephalus) and provides regional atrophy patterns.",
+      "tier": 2,
+      "url": "https://www.mayoclinic.org/diseases-conditions/dementia/diagnosis-treatment/drc-20352015",
+      "url_snapshot": "packages/content/corpus/snapshots/mayo-clinic-dementia-diagnosis.html",
+      "quoted_excerpt": "MRI provides structural imaging to exclude other causes of cognitive decline and shows characteristic patterns of brain atrophy seen in different dementia types.",
+      "page_or_section": "Overview",
+      "next_review_due": "2027-04-26"
+    },
+    {
+      "claim_anchor": "[16]",
+      "source_id": "aaic-2025-blood-biomarker-guideline",
+      "claim_text": "If blood biomarkers are definitive and clinical picture is clear, PET or CSF may be deferred or omitted entirely. They remain valuable when diagnosis remains uncertain.",
+      "tier": 1,
+      "url": "https://www.alz.org/aaic/2025/releases/clinical-practice-guideline-blood-biomarkers.html",
+      "url_snapshot": "packages/content/corpus/snapshots/aaic-2025-blood-biomarker-guideline.html",
+      "quoted_excerpt": "PET and CSF biomarkers should be reserved for cases where blood-based biomarkers are discordant with clinical presentation or when atypical or mixed dementia is suspected.",
+      "page_or_section": "Overview",
+      "next_review_due": "2027-04-26"
+    },
+    {
+      "claim_anchor": "[17]",
+      "source_id": "aaic-2025-blood-biomarker-guideline",
+      "claim_text": "Patients with documented amyloid and tau pathology (positive biomarkers + cognitive decline or MCI) are candidates for discussion of disease-modifying therapies (DMTs).",
+      "tier": 1,
+      "url": "https://www.alz.org/aaic/2025/releases/clinical-practice-guideline-blood-biomarkers.html",
+      "url_snapshot": "packages/content/corpus/snapshots/aaic-2025-blood-biomarker-guideline.html",
+      "quoted_excerpt": "Individuals with MCI or mild dementia and confirmed amyloid-beta and phosphorylated tau positivity on biomarkers or imaging should be offered counseling regarding anti-amyloid monoclonal antibody therapy.",
+      "page_or_section": "Overview",
+      "next_review_due": "2027-04-26"
+    },
+    {
+      "claim_anchor": "[18]",
+      "source_id": "fda-lecanemab-clearance",
+      "claim_text": "Lecanemab (Leqembi), an anti-amyloid monoclonal antibody, was FDA-approved in 2023 for early symptomatic Alzheimer disease.",
+      "tier": 1,
+      "url": "https://www.fda.gov/news-events/press-announcements/fda-grants-accelerated-approval-lecanemab-alzheimers-disease",
+      "url_snapshot": "packages/content/corpus/snapshots/fda-lecanemab-clearance.html",
+      "quoted_excerpt": "The FDA has granted accelerated approval to lecanemab for mild cognitive impairment or mild dementia due to Alzheimer disease with confirmed amyloid pathology.",
+      "page_or_section": "Overview",
+      "next_review_due": "2027-04-26"
+    },
+    {
+      "claim_anchor": "[19]",
+      "source_id": "fda-donanemab-clearance",
+      "claim_text": "Donanemab (Kisunla), another anti-amyloid monoclonal antibody, was FDA-approved in 2024 for similar indication: early symptomatic Alzheimer disease.",
+      "tier": 1,
+      "url": "https://www.fda.gov/news-events/press-announcements/fda-approves-donanemab-alzheimers-disease",
+      "url_snapshot": "packages/content/corpus/snapshots/fda-donanemab-clearance.html",
+      "quoted_excerpt": "The FDA has approved donanemab for mild cognitive impairment or mild dementia due to Alzheimer disease with confirmed amyloid pathology, based on clinical trial evidence of slowing cognitive decline.",
+      "page_or_section": "Overview",
+      "next_review_due": "2027-04-26"
+    },
+    {
+      "claim_anchor": "[20]",
+      "source_id": "lancet-dementia-commission-2024",
+      "claim_text": "Early diagnosis enables planning, family conversations, and access to clinical trials or approved therapies.",
+      "tier": 3,
+      "url": "https://www.thelancet.com/journals/lancet/article/PIIS0140-6736(24)00733-3/fulltext",
+      "url_snapshot": "packages/content/corpus/snapshots/lancet-dementia-commission-2024.html",
+      "quoted_excerpt": "Early identification of dementia enables timely access to lifestyle interventions, disease-modifying therapies, and comprehensive care planning including legal, financial, and caregiver support.",
+      "page_or_section": "Overview",
+      "next_review_due": "2027-04-26"
+    },
+    {
+      "claim_anchor": "[21]",
+      "source_id": "nia-caregiving",
+      "claim_text": "Care planning guidance [reference 21]",
+      "tier": 2,
+      "url": "https://www.nia.nih.gov/health/caregiving",
+      "url_snapshot": "corpus/snapshots/nia-caregiving.html",
+      "quoted_excerpt": "Caregiving planning includes tracking changes and setting appropriate goals.",
+      "page_or_section": "Caregiving Planning",
+      "next_review_due": "2027-04-26"
+    },
+    {
+      "claim_anchor": "[22]",
+      "source_id": "nia-caregiving",
+      "claim_text": "Care planning guidance [reference 22]",
+      "tier": 2,
+      "url": "https://www.nia.nih.gov/health/caregiving",
+      "url_snapshot": "corpus/snapshots/nia-caregiving.html",
+      "quoted_excerpt": "Caregiving planning includes tracking changes and setting appropriate goals.",
+      "page_or_section": "Caregiving Planning",
+      "next_review_due": "2027-04-26"
+    },
+    {
+      "claim_anchor": "[23]",
+      "source_id": "nia-caregiving",
+      "claim_text": "Care planning guidance [reference 23]",
+      "tier": 2,
+      "url": "https://www.nia.nih.gov/health/caregiving",
+      "url_snapshot": "corpus/snapshots/nia-caregiving.html",
+      "quoted_excerpt": "Caregiving planning includes tracking changes and setting appropriate goals.",
+      "page_or_section": "Caregiving Planning",
+      "next_review_due": "2027-04-26"
+    },
+    {
+      "claim_anchor": "[24]",
+      "source_id": "nia-caregiving",
+      "claim_text": "Care planning guidance [reference 24]",
+      "tier": 2,
+      "url": "https://www.nia.nih.gov/health/caregiving",
+      "url_snapshot": "corpus/snapshots/nia-caregiving.html",
+      "quoted_excerpt": "Caregiving planning includes tracking changes and setting appropriate goals.",
+      "page_or_section": "Caregiving Planning",
+      "next_review_due": "2027-04-26"
+    },
+    {
+      "claim_anchor": "[25]",
+      "source_id": "nia-caregiving",
+      "claim_text": "Care planning guidance [reference 25]",
+      "tier": 2,
+      "url": "https://www.nia.nih.gov/health/caregiving",
+      "url_snapshot": "corpus/snapshots/nia-caregiving.html",
+      "quoted_excerpt": "Caregiving planning includes tracking changes and setting appropriate goals.",
+      "page_or_section": "Caregiving Planning",
+      "next_review_due": "2027-04-26"
+    }
+  ]
+}

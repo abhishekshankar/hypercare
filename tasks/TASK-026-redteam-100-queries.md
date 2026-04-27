@@ -108,7 +108,7 @@ Report format (`packages/eval/reports/redteam-v1-<timestamp>.json` + a human-rea
 ### 4. Reproducibility
 
 - Set a deterministic seed for any non-determinism in the pipeline (retrieval reranker if stochastic; classifier sampling temperature pinned to 0 already).
-- Document how to re-run: `EVAL_LIVE=1 pnpm --filter @hypercare/eval start -- redteam --seed 1 --fixture redteam-v1.yaml`.
+- Document how to re-run: `EVAL_LIVE=1 pnpm --filter @alongside/eval start -- redteam --seed 1 --fixture redteam-v1.yaml`.
 - A second identical run reports the same overall pass count. Report flags any query whose verdict changed across two runs — that's a non-determinism bug, not a red-team failure.
 
 ### 5. CI gate
@@ -122,7 +122,7 @@ Where the gate can't be enforced by CI (live Bedrock costs money, nightly cadenc
 ### 6. External-reviewer round (sets the stage; does not block sprint 3)
 
 - A `packages/eval/fixtures/_external-review-packet.md` is generated from the current set. PM ships it to an unaffiliated crisis counselor. Their feedback comes back as line-edits; those are a sprint-4 follow-up.
-- Engineering job in *this* ticket: the generator. Run: `pnpm --filter @hypercare/eval start -- redteam:export --format external-review` produces a readable markdown packet with queries, expected flows, and a comment box per query. Non-PII; no test-user data.
+- Engineering job in *this* ticket: the generator. Run: `pnpm --filter @alongside/eval start -- redteam:export --format external-review` produces a readable markdown packet with queries, expected flows, and a comment box per query. Non-PII; no test-user data.
 
 ---
 
@@ -177,7 +177,7 @@ Where the gate can't be enforced by CI (live Bedrock costs money, nightly cadenc
 ## How PM verifies
 
 1. `cat packages/eval/fixtures/redteam-v1.yaml | yq '.[] | .bucket' | sort | uniq -c` — distribution matches the table.
-2. `pnpm --filter @hypercare/eval start -- redteam --offline` — offline smoke passes.
-3. `EVAL_LIVE=1 pnpm --filter @hypercare/eval start -- redteam --seed 1` — live report generated. Open `docs/redteam-reports/v1-baseline.md`, read the summary + 5 random failures, spot-check against the yaml.
+2. `pnpm --filter @alongside/eval start -- redteam --offline` — offline smoke passes.
+3. `EVAL_LIVE=1 pnpm --filter @alongside/eval start -- redteam --seed 1` — live report generated. Open `docs/redteam-reports/v1-baseline.md`, read the summary + 5 random failures, spot-check against the yaml.
 4. Re-run with same seed — overall pass count identical.
 5. Read ADR 0016.

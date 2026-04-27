@@ -1,6 +1,6 @@
-# Hypercare — infrastructure runbook (dev data stack)
+# Alongside — infrastructure runbook (dev data stack)
 
-This runbook brings up **HypercareData-dev**: a VPC, Aurora PostgreSQL Serverless v2 with `pgvector`, an SSM bastion for local access, and a one-shot bootstrap that creates `hypercare_dev` / `hypercare_prod` plus the `vector` extension. Schema and app wiring are separate tickets (TASK-004+).
+This runbook brings up **HypercareData-dev** (legacy stack name; product is Alongside — see [infra-rename.md](infra-rename.md)): a VPC, Aurora PostgreSQL Serverless v2 with `pgvector`, an SSM bastion for local access, and a one-shot bootstrap that creates `hypercare_dev` / `hypercare_prod` plus the `vector` extension. Schema and app wiring are separate tickets (TASK-004+).
 
 ## Prerequisites
 
@@ -20,7 +20,7 @@ This runbook brings up **HypercareData-dev**: a VPC, Aurora PostgreSQL Serverles
 
 ## Why not RDS Data API?
 
-The HTTP **RDS Data API** avoids a network tunnel, but **it does not support `pgvector` operators** used for similarity search. Hypercare keeps a normal PostgreSQL protocol path (bastion + `psql` / app).
+The HTTP **RDS Data API** avoids a network tunnel, but **it does not support `pgvector` operators** used for similarity search. Alongside keeps a normal PostgreSQL protocol path (bastion + `psql` / app).
 
 ## Deploy
 
@@ -60,7 +60,7 @@ Expect `\l` to list `hypercare_dev` and `hypercare_prod`, and `\dx` on each DB t
 After deploy, run a **dry run** against the target database (from a machine with `DATABASE_URL`):
 
 ```bash
-pnpm --filter @hypercare/db retention:cron -- --dry-run
+pnpm --filter @alongside/db retention:cron -- --dry-run
 ```
 
 Review the per-table counts, then enable a **daily** schedule (recommended: EventBridge rule → Lambda invoking the same script without `--dry-run`). First non-dry run should be executed manually by PM after verification. CloudWatch: log lines use the `retention.rows_deleted{table=…}` pattern for metric filters.
@@ -77,6 +77,40 @@ After deploy, the CLI prints stack outputs. You should see:
 - `ClusterEndpoint`, `ClusterPort`, `ClusterReaderEndpoint`
 - `SecretArn`, `DbNameDev`, `DbNameProd`
 - `VpcId`, `BastionInstanceId`
+
+## Hosted web app (`HypercareWeb-dev`) — all traffic in AWS
+
+Use this path when you want the **browser → CloudFront → Lambda → Aurora** stack only. No local `next dev` and no SSM DB tunnel for **using** the app (the SSR function reaches Aurora inside the VPC).
+
+**Prerequisites:** `HypercareData-dev` is deployed; web image is built from OpenNext output.
+
+From the **repository root**:
+
+```bash
+export AWS_REGION=ca-central-1 AWS_DEFAULT_REGION=ca-central-1
+export CDK_DEFAULT_REGION=ca-central-1
+export CDK_DEFAULT_ACCOUNT=$(aws sts get-caller-identity --query Account --output text)
+
+pnpm --filter web exec open-next build
+cd infra && pnpm exec cdk deploy HypercareWeb-dev
+```
+
+Then wire auth URLs into the SSR Lambda and Cognito:
+
+```bash
+cd ..   # back to repo root
+./infra/scripts/post-deploy-web.sh
+```
+
+Follow the script’s printed **Next steps** (Cognito callback `…/api/auth/callback` and sign-out URL). Smoke (expect `HTTP/2 200` and a `server:` header):
+
+```bash
+CF=$(aws cloudformation describe-stacks --stack-name HypercareWeb-dev --region ca-central-1 \
+  --query "Stacks[0].Outputs[?OutputKey=='CloudFrontUrl'].OutputValue" --output text)
+curl -sI "$CF"
+```
+
+**Open the app in a browser:** `./scripts/open-hosted-app.sh` (see repo `README.md`).
 
 ## Local database access (SSM port forward)
 
@@ -169,7 +203,7 @@ The Aurora admin user `hypercare_admin` is for operators and migrations only. Th
 
 ## `DATABASE_URL_ADMIN` (content loader) — TASK-008
 
-The **content loader** (`@hypercare/content`, `pnpm --filter @hypercare/content load`) is an **operator** tool, not the web app. It seeds `modules` and `module_chunks` (including embeddings) and is allowed to use the **Aurora admin** user, same as ad-hoc `psql` and migration runs.
+The **content loader** (`@alongside/content`, `pnpm --filter @alongside/content load`) is an **operator** tool, not the web app. It seeds `modules` and `module_chunks` (including embeddings) and is allowed to use the **Aurora admin** user, same as ad-hoc `psql` and migration runs.
 
 - **Variable:** set `DATABASE_URL_ADMIN` in your environment to a `postgres://` or `postgresql://` URL (same shape as a normal `DATABASE_URL`).
 - **Example (with tunnel):** after `./scripts/db-tunnel.sh`, the host is `127.0.0.1` and the local port (often `15432` per this runbook) maps to the cluster. The **username** is `hypercare_admin`. The **password** is the JSON field `password` in the **CDK `SecretArn`** for the data stack, retrieved only through your own session (e.g. AWS Console, AWS CLI) — do **not** log it, print it in automation, or commit it. The **database** name is typically `hypercare_dev` or `hypercare_prod` from stack outputs.
@@ -182,7 +216,7 @@ The **content loader** (`@hypercare/content`, `pnpm --filter @hypercare/content 
 3. Set AWS credentials in `ca-central-1` (e.g. `aws sso login`) and enable model access in Bedrock for **Titan Text Embeddings V2** if your account requires it.
 4. From the **repository root**:
    ```bash
-   pnpm --filter @hypercare/content load
+   pnpm --filter @alongside/content load
    ```
 5. The loader reads `content/modules/*.md`, validates front matter, chunks, calls Bedrock, and upserts. A **second** run is idempotent (hash-based embedding skips) — see `docs/adr/0006-content-pipeline-v0.md`.
 

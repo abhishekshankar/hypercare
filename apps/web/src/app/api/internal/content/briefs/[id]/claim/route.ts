@@ -1,8 +1,8 @@
 import { randomBytes } from "node:crypto";
 import { eq } from "drizzle-orm";
 import { NextResponse } from "next/server";
-import { createDbClient, moduleBriefs, modules } from "@hypercare/db";
-import { hasAnyRole, type AppRole } from "@hypercare/content";
+import { createDbClient, moduleBriefs, modules } from "@alongside/db";
+import { hasAnyRole, type AppRole } from "@alongside/content";
 import { serverEnv } from "@/lib/env.server";
 import { requireInternalContentUser } from "@/lib/internal/content-access";
 import { DEFAULT_CLAIMED_MODULE_BODY } from "@/lib/internal/claim-template";

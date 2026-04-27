@@ -1,6 +1,6 @@
 import { readFile } from "node:fs/promises";
 
-import { buildDefaultDeps, runPipeline, type AnswerResult, type Deps, type RefusalReason } from "@hypercare/rag";
+import { buildDefaultDeps, runPipeline, type AnswerResult, type Deps, type RefusalReason } from "@alongside/rag";
 
 import { answerModelIdFromEnv } from "../config.js";
 import { goldenPath } from "../paths.js";

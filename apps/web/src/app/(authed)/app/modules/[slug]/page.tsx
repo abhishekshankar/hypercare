@@ -2,6 +2,7 @@ import Link from "next/link";
 import { notFound } from "next/navigation";
 
 import { ModuleArticle } from "@/components/modules/ModuleArticle";
+import { getSession } from "@/lib/auth/session";
 import { loadModuleBySlug } from "@/lib/library/load-module";
 
 function labelStage(s: string): string {
@@ -17,7 +18,8 @@ export default async function ModulePage({
   params: Promise<{ slug: string }>;
 }>) {
   const { slug } = await params;
-  const mod = await loadModuleBySlug(slug);
+  const session = await getSession();
+  const mod = await loadModuleBySlug(slug, session ? { userId: session.userId } : undefined);
   if (!mod) {
     notFound();
   }

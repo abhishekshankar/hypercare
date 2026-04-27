@@ -1,5 +1,6 @@
 import { NextRequest, NextResponse } from "next/server";
 
+import { publicAppOrigin } from "@/lib/auth/canonical-origin";
 import { logAuthError } from "@/lib/auth/log";
 import { clearSessionOnResponse } from "@/lib/auth/session";
 import { clearOnboardingAckOnResponse } from "@/lib/onboarding/ack";
@@ -8,7 +9,7 @@ import { serverEnv } from "@/lib/env.server";
 export const dynamic = "force-dynamic";
 
 /**
- * Clear Hypercare session then redirect to Cognito `/logout` (POST per TASK-006).
+ * Clear Alongside session then redirect to Cognito `/logout` (POST per TASK-006).
  */
 export async function POST(request: NextRequest) {
   const requestId = request.headers.get("x-request-id") ?? undefined;
@@ -32,7 +33,7 @@ export async function POST(request: NextRequest) {
     return NextResponse.redirect(
       new URL(
         "/auth/error?reason=logout",
-        request.nextUrl.origin,
+        publicAppOrigin(request),
       ),
     );
   }

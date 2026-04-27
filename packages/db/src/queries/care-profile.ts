@@ -9,7 +9,7 @@ export type DbWithSchema = PostgresJsDatabase<typeof schema>;
 export class MultipleProfilesNotSupportedError extends Error {
   readonly code = "MULTIPLE_CARE_PROFILES" as const;
   constructor() {
-    super("Hypercare does not support helping with two care profiles yet.");
+    super("Alongside does not support helping with two care profiles yet.");
     this.name = "MultipleProfilesNotSupportedError";
   }
 }

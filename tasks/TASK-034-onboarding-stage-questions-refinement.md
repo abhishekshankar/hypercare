@@ -124,7 +124,7 @@ Engineering reads these; does not author them.
 - Integration (`apps/web/test/onboarding/flow.test.ts`): new wording renders; all 8 questions answerable; summary reflects v1 phrasings.
 - Integration (`apps/web/test/profile/edit-v1.test.ts`): v1 answers round-trip through save / reload.
 - E2E (`apps/web/test/e2e/onboarding-v1.spec.ts`): complete onboarding with v1 questions; confirm `stage_questions_version = 1` in DB.
-- Data test (`pnpm --filter @hypercare/content migrate:stage-v1 --dry-run`): on the seeded beta fixture, report the migration summary; the "stage flipped" count is < 5%.
+- Data test (`pnpm --filter @alongside/content migrate:stage-v1 --dry-run`): on the seeded beta fixture, report the migration summary; the "stage flipped" count is < 5%.
 
 ---
 
@@ -176,6 +176,6 @@ Engineering reads these; does not author them.
 2. `psql -c "select stage_questions_version, med_management_v1, bathing_dressing_v1 from care_profile where user_id = '…';"` — `1` and the expected answers.
 3. `/app/profile` — the same 8 questions with the same wording, current answers pre-populated.
 4. Edit one answer (e.g., bathing from `self` → `reminders`). Save. The inferred stage updates; the change-log has an entry.
-5. Run `pnpm --filter @hypercare/content migrate:stage-v1 --dry-run` against the seeded fixture → report shows < 5% stage flips.
+5. Run `pnpm --filter @alongside/content migrate:stage-v1 --dry-run` against the seeded fixture → report shows < 5% stage flips.
 6. Open `docs/content/stage-questions-v1.md` — signed, rationale per question present.
 7. Read ADR 0023.

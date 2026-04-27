@@ -61,7 +61,8 @@ beforeAll(async () => {
     AUTH_SIGNOUT_URL: baseUrl,
   } satisfies NodeJS.ProcessEnv;
 
-  child = spawn("pnpm", ["exec", "next", "start", "-p", String(port)], {
+  const nextCli = path.join(webRoot, "..", "..", "node_modules", "next", "dist", "bin", "next");
+  child = spawn(process.execPath, [nextCli, "start", "-p", String(port)], {
     cwd: webRoot,
     env: serverEnv,
     stdio: "pipe",

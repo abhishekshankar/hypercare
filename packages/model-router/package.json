@@ -1,5 +1,5 @@
 {
-  "name": "@hypercare/model-router",
+  "name": "@alongside/model-router",
   "version": "0.0.0",
   "private": true,
   "type": "module",
@@ -12,10 +12,10 @@
     }
   },
   "scripts": {
-    "build": "tsc -p tsconfig.json",
+    "build": "node ../../node_modules/typescript/lib/tsc.js -p tsconfig.json",
     "lint": "eslint src test --max-warnings 0",
-    "typecheck": "tsc -p tsconfig.json --noEmit && tsc -p tsconfig.test.json --noEmit",
-    "test": "vitest run"
+    "typecheck": "node ../../node_modules/typescript/lib/tsc.js -p tsconfig.json --noEmit && node ../../node_modules/typescript/lib/tsc.js -p tsconfig.test.json --noEmit",
+    "test": "node ../../node_modules/vitest/vitest.mjs run"
   },
   "dependencies": {
     "yaml": "^2.8.0",

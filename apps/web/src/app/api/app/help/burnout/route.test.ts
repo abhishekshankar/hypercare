@@ -13,7 +13,7 @@ vi.mock("@/lib/env.server", () => ({
   serverEnv: { DATABASE_URL: "postgresql://127.0.0.1:5432/hc_test" },
 }));
 
-vi.mock("@hypercare/db", () => ({
+vi.mock("@alongside/db", () => ({
   createDbClient: () => ({
     insert: () => ({
       values: (row: unknown) => {

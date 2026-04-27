@@ -3,7 +3,7 @@ import {
   createDbClient,
   sessionRevocations,
   userAuthSessions,
-} from "@hypercare/db";
+} from "@alongside/db";
 import { NextRequest, NextResponse } from "next/server";
 import { z } from "zod";
 

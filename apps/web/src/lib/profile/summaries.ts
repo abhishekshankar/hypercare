@@ -1,4 +1,4 @@
-import { countStageV1Answered, type StageV1Answers } from "@hypercare/content/stage-rules";
+import { countStageV1Answered, type StageV1Answers } from "@alongside/content/stage-rules";
 
 import { aboutCrOneLiner } from "@/lib/profile/change-copy";
 import { STAGE_ANSWER_KEYS, type StageAnswersRecord } from "@/lib/onboarding/stage-keys";

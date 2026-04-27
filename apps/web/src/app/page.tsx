@@ -17,22 +17,26 @@ export default async function HomePage({ searchParams }: Props) {
           Your account has been deleted. If you need support, contact the team.
         </p>
       ) : null}
-      <header className="mb-8">
-        <h1 className="font-serif text-3xl font-normal italic leading-tight tracking-tight text-foreground md:text-4xl">
-          Caregiving for someone with dementia is relentless. You shouldn&apos;t have to figure it
-          out alone.
+      <header className="mb-10 md:mb-14">
+        <p className="along-eyebrow mb-6">For family caregivers</p>
+        <h1 className="max-w-[36rem] font-serif text-4xl font-normal leading-[1.08] tracking-tight text-foreground md:text-6xl md:leading-[1.06]">
+          Caregiving for someone with dementia is <em className="text-accent not-italic">relentless.</em> You
+          shouldn&apos;t have to figure it out alone.
         </h1>
-        <p className="mt-4 text-base leading-relaxed text-muted-foreground">
+        <p className="mt-6 max-w-[52ch] font-serif text-lg font-light leading-relaxed text-foreground-muted md:text-[22px] md:leading-[1.5]">
           Guidance tailored to your situation, from trusted sources, whenever you need it.
         </p>
       </header>
-      <p>
-        <Link
-          className="inline-flex rounded-md bg-accent px-4 py-2.5 text-sm font-medium text-white outline-none ring-offset-background transition-opacity hover:opacity-90 focus-visible:ring-2 focus-visible:ring-accent focus-visible:ring-offset-2"
-          href="/onboarding"
-        >
-          Get started
+      <div className="flex flex-col gap-4 sm:flex-row sm:flex-wrap sm:items-center sm:gap-5">
+        <Link className="along-primary-cta" href="/onboarding">
+          Get started <span aria-hidden="true">→</span>
         </Link>
+        <Link className="along-data-link self-start sm:self-center" href="/help">
+          How is my data used?
+        </Link>
+      </div>
+      <p className="mt-14 max-w-[48ch] border-t border-border pt-6 text-sm leading-relaxed text-muted-foreground">
+        Alongside is free to start. No credit card. You can leave at any time, and take your notes with you.
       </p>
     </>
   );

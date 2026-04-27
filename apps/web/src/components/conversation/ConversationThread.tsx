@@ -11,7 +11,7 @@ import {
 } from "react";
 import { useRouter } from "next/navigation";
 
-import type { Citation, RefusalReason, SafetyTriageReason } from "@hypercare/rag";
+import type { Citation, RefusalReason, SafetyTriageReason } from "@alongside/rag";
 
 import { clientEnv } from "@/lib/env.client";
 import { createSseParser, parseSseDataJson } from "@/lib/sse";

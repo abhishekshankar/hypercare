@@ -1,6 +1,6 @@
 import { sql } from "drizzle-orm";
 import { NextResponse } from "next/server";
-import { createDbClient } from "@hypercare/db";
+import { createDbClient } from "@alongside/db";
 
 import { getSession } from "@/lib/auth/session";
 import { careProfileToStageSnapshot } from "@/lib/onboarding/care-profile-stage-snapshot";

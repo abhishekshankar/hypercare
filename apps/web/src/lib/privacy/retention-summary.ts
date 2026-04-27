@@ -2,7 +2,7 @@ import {
   type RetentionTableName,
   type RetentionRule,
   RETENTION_SCHEDULE,
-} from "@hypercare/db";
+} from "@alongside/db";
 
 export type RetentionSummaryRow = { label: string; detail: string };
 
@@ -16,7 +16,7 @@ function detailForRule(table: RetentionTableName, rule: RetentionRule): string {
   return `Up to ${String(rule.days)} days, then purged by automated retention.`;
 }
 
-/** Human labels for retention tiles (keys track `RETENTION_SCHEDULE` in @hypercare/db). */
+/** Human labels for retention tiles (keys track `RETENTION_SCHEDULE` in @alongside/db). */
 const LABEL: Record<string, string> = {
   users: "Account",
   care_profile: "Care profile",

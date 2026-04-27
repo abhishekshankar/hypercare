@@ -1,5 +1,5 @@
 import { sql } from "drizzle-orm";
-import { createDbClient } from "@hypercare/db";
+import { createDbClient } from "@alongside/db";
 
 import type { RetrievedChunk, Stage } from "../types.js";
 

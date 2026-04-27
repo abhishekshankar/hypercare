@@ -2,7 +2,7 @@ import { describe, expect, it } from "vitest";
 import { z } from "zod";
 
 import type { LibraryModuleListItem } from "@/lib/library/types";
-import { rankLibrarySearchMatches, type LibrarySearchCandidate } from "@hypercare/db";
+import { rankLibrarySearchMatches, type LibrarySearchCandidate } from "@alongside/db";
 
 const PostBodySchema = z.object({
   query: z.string().max(500),

@@ -23,5 +23,5 @@ jobs:
         run: pnpm install --frozen-lockfile
       - name: Red-team live (disabled until secrets + runner)
         run: |
-          echo "Set job.if to true, DATABASE_URL, and AWS_*, then: pnpm --filter @hypercare/eval run redteam:live"
+          echo "Set job.if to true, DATABASE_URL, and AWS_*, then: pnpm --filter @alongside/eval run redteam:live"
           exit 0

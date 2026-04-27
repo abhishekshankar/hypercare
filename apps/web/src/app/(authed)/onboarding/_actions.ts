@@ -9,7 +9,7 @@ import {
   ensureOwnerMembershipRow,
   getCareProfileForUser,
   users,
-} from "@hypercare/db";
+} from "@alongside/db";
 
 import { requireSession } from "@/lib/auth/session";
 import { serverEnv } from "@/lib/env.server";

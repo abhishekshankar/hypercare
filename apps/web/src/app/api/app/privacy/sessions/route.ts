@@ -1,5 +1,5 @@
 import { desc, eq } from "drizzle-orm";
-import { createDbClient, userAuthSessions } from "@hypercare/db";
+import { createDbClient, userAuthSessions } from "@alongside/db";
 import { NextResponse } from "next/server";
 
 import { getSession } from "@/lib/auth/session";

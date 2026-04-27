@@ -1,0 +1,30 @@
+{
+  "module_slug": "medical-diagnosis-demystified",
+  "edges": [
+    {
+      "to": "medical-dmt",
+      "type": "follow_up",
+      "rationale": "Once diagnosis is understood, caregivers need to know disease-modifying therapies exist and what eligibility involves."
+    },
+    {
+      "to": "transitions-first-two-weeks",
+      "type": "prerequisite",
+      "rationale": "This module addresses the diagnosis moment; first-two-weeks module addresses immediate emotional and practical next steps."
+    },
+    {
+      "to": "working-with-the-neurologist",
+      "type": "follow_up",
+      "rationale": "After understanding the diagnosis, caregivers need guidance on ongoing specialist relationships."
+    },
+    {
+      "to": "disease-specific-lbd",
+      "type": "soft_flag_companion",
+      "rationale": "If Lewy body dementia is diagnosed or suspected, this module's antipsychotic sensitivity warning is critical."
+    },
+    {
+      "to": "caregiver-guilt-ambiguous-grief",
+      "type": "follow_up",
+      "rationale": "The diagnosis moment triggers early grief; this module provides emotional scaffolding."
+    }
+  ]
+}

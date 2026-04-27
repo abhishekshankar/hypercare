@@ -1,5 +1,5 @@
 import { describe, expect, it, vi } from "vitest";
-import type { ClassifyDeps } from "@hypercare/safety";
+import type { ClassifyDeps } from "@alongside/safety";
 
 import type { GenerateInput, GenerateOutput } from "../src/bedrock/claude.js";
 import { runPipeline, type Deps } from "../src/pipeline.js";

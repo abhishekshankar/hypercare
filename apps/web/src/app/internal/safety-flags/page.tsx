@@ -1,6 +1,6 @@
 import type { SQL } from "drizzle-orm";
 import { and, desc, eq, gte, lte } from "drizzle-orm";
-import { createDbClient, safetyFlags } from "@hypercare/db";
+import { createDbClient, safetyFlags } from "@alongside/db";
 import Link from "next/link";
 
 import { serverEnv } from "@/lib/env.server";

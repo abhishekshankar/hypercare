@@ -1,6 +1,6 @@
 /**
  * One-shot builder: v1 + 150 TASK-035 rows → fixtures/redteam-v2.yaml
- * Run: pnpm --filter @hypercare/eval exec tsx scripts/build-redteam-v2.ts
+ * Run: pnpm --filter @alongside/eval exec tsx scripts/build-redteam-v2.ts
  */
 import { readFile, writeFile } from "node:fs/promises";
 import { dirname, join } from "node:path";

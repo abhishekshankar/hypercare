@@ -1,7 +1,7 @@
 #!/usr/bin/env node
 /**
  * After `next build`, scan *client* static assets for strings that would indicate
- * `@hypercare/rag` (or the Bedrock client) was bundled for the browser. ESLint is
+ * `@alongside/rag` (or the Bedrock client) was bundled for the browser. ESLint is
  * the day-to-day gate; this is a quick sanity check on compiled output.
  *
  *   pnpm --filter web run build
@@ -42,7 +42,7 @@ async function main() {
   }
   const files = await walk(staticDir);
   const needles = [
-    ["@hypercare/rag", "workspace RAG in client static bundle"],
+    ["@alongside/rag", "workspace RAG in client static bundle"],
     ["@aws-sdk/client-bedrock-runtime", "Bedrock client in client static bundle"],
   ];
   for (const f of files) {

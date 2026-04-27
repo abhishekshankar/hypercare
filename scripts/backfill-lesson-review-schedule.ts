@@ -5,8 +5,8 @@
  *   DATABASE_URL=... pnpm exec tsx scripts/backfill-lesson-review-schedule.ts
  */
 import { and, desc, eq } from "drizzle-orm";
-import { createDbClient, lessonProgress, lessonReviewSchedule } from "@hypercare/db";
-import { addDays, intervalDaysForBucket, type SrsLastOutcome } from "@hypercare/picker";
+import { createDbClient, lessonProgress, lessonReviewSchedule } from "@alongside/db";
+import { addDays, intervalDaysForBucket, type SrsLastOutcome } from "@alongside/picker";
 
 function requireUrl(): string {
   const u = process.env.DATABASE_URL;

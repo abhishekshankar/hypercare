@@ -1,5 +1,5 @@
 import { and, desc, eq, gte, inArray, sql } from "drizzle-orm";
-import { conversations, createDbClient, messages, modules } from "@hypercare/db";
+import { conversations, createDbClient, messages, modules } from "@alongside/db";
 
 export type CitedModuleRow = {
   moduleSlug: string;

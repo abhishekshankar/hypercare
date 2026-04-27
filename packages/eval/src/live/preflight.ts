@@ -7,7 +7,7 @@
  * `tasks/TASK-012-eval-harness.md` (preflight section).
  */
 
-import { createDbClient, modules } from "@hypercare/db";
+import { createDbClient, modules } from "@alongside/db";
 
 export async function assertModulesPresent(databaseUrl: string): Promise<void> {
   const db = createDbClient(databaseUrl);
@@ -20,7 +20,7 @@ export async function assertModulesPresent(databaseUrl: string): Promise<void> {
         "Preflight failed: `modules` table is empty.",
         "Run the TASK-008 content loader against this DB before EVAL_LIVE=1:",
         "  DATABASE_URL_ADMIN=$DATABASE_URL CONTENT_MODULES_DIR=$(pwd)/content/modules \\",
-        "    pnpm --filter @hypercare/content load",
+        "    pnpm --filter @alongside/content load",
         "(See `tasks/TASK-012-eval-harness.md` § Preflight.)",
       ].join("\n"),
     );

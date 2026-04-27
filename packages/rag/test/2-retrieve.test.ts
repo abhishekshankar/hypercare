@@ -76,7 +76,7 @@ describe("layer 2 — retrieve (unit, mocked)", () => {
 // Live integration — gated. Hits Bedrock + Postgres.
 describe.skipIf(!process.env.RAG_LIVE)("layer 2 — retrieve (live, RAG_LIVE=1)", () => {
   it("returns >0 hits for a sundowning-style question", async () => {
-    const { embedTitanV2 } = await import("@hypercare/content");
+    const { embedTitanV2 } = await import("@alongside/content");
     const { searchChunks } = await import("../src/db/search.js");
     const databaseUrl = process.env.DATABASE_URL;
     if (!databaseUrl) throw new Error("DATABASE_URL must be set with RAG_LIVE=1");

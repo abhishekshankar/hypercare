@@ -1,7 +1,7 @@
 import "server-only";
 
-import { insertModelRoutingDecision } from "@hypercare/db";
-import type { AnswerResult, RoutingAuditPayload } from "@hypercare/rag";
+import { insertModelRoutingDecision } from "@alongside/db";
+import type { AnswerResult, RoutingAuditPayload } from "@alongside/rag";
 
 import { modelRoutingEnabled, serverEnv } from "@/lib/env.server";
 import { estimateBedrockCostUsd } from "@/lib/internal/metrics/bedrock-pricing";

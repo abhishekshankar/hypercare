@@ -1,5 +1,5 @@
-import { createDbClient } from "@hypercare/db";
-import { pickThisWeeksFocus } from "@hypercare/picker";
+import { createDbClient } from "@alongside/db";
+import { pickThisWeeksFocus } from "@alongside/picker";
 import { NextResponse } from "next/server";
 
 import { getSession } from "@/lib/auth/session";

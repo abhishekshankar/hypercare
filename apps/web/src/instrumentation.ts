@@ -15,7 +15,7 @@ export async function register() {
     await import("./lib/env.server");
   } catch (err) {
     console.error(
-      "[hypercare] Server boot: env.server validation failed. On Amplify, set Hosting → Environment variables for every required key in apps/web/src/lib/env.server.ts (see docs/auth-runbook.md § Amplify).",
+      "[alongside] Server boot: env.server validation failed. On Amplify, set Hosting → Environment variables for every required key in apps/web/src/lib/env.server.ts (see docs/auth-runbook.md § Amplify).",
       err,
     );
     throw err;

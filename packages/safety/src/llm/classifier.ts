@@ -72,7 +72,7 @@ export type ClassifyLlmDeps = {
   warn?: (msg: string, ctx?: Record<string, unknown>) => void;
 };
 
-const FINE_TUNED_SYSTEM = `You are Hypercare's safety triage classifier. Reply with one JSON object only (no markdown fence), same schema as training:
+const FINE_TUNED_SYSTEM = `You are Alongside's safety triage classifier. Reply with one JSON object only (no markdown fence), same schema as training:
 {"triaged":false} OR {"triaged":true,"category":"<one of self_harm_user,self_harm_cr,acute_medical,abuse_cr_to_caregiver,abuse_caregiver_to_cr,neglect>","severity":"high"|"medium","evidence":"<short quote, max 400 chars>"}
 Temperature is 0; be conservative on crisis signals.`;
 

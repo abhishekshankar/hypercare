@@ -1,5 +1,5 @@
 import { and, desc, eq, gte } from "drizzle-orm";
-import { conversations, createDbClient, messages } from "@hypercare/db";
+import { conversations, createDbClient, messages } from "@alongside/db";
 
 const WINDOW_DAYS = 14;
 const RECENCY_DAYS = 7;

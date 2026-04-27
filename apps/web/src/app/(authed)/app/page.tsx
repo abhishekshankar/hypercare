@@ -1,7 +1,7 @@
 import { redirect } from "next/navigation";
 
-import { createDbClient } from "@hypercare/db";
-import { pickThisWeeksFocus } from "@hypercare/picker";
+import { createDbClient } from "@alongside/db";
+import { pickThisWeeksFocus } from "@alongside/picker";
 
 import { CheckinCard } from "@/components/home/CheckinCard";
 import { HomeAsk } from "@/components/home/StarterChips";
@@ -93,11 +93,12 @@ export default async function AppHomePage({
           Lesson cancelled.
         </p>
       ) : null}
-      <header className="space-y-1">
-        <p className="text-base text-foreground">
+      <header className="space-y-2 border-b border-border pb-8">
+        <p className="along-eyebrow">Today</p>
+        <p className="font-serif text-2xl font-normal text-foreground md:text-3xl">
           {greet}, {displayName}.
         </p>
-        <p className="text-base text-foreground">Caring for {crName}.</p>
+        <p className="text-base text-foreground-muted">Caring for {crName}.</p>
       </header>
       <SavedLessonBanner />
       {suppression.active ? <SuppressionCard /> : null}

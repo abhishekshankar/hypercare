@@ -66,7 +66,7 @@ Each of these adds latency and operational surface area. The pilot corpus is sma
 
 Per PRD §5 ↔ §9, retrieval is stage-aware. We filter at SQL time using `metadata->'stage_relevance' @> to_jsonb($stage::text)` (or empty-array passes). This keeps the schema unchanged (TASK-004 froze it) and lets the eval harness inspect the same metadata blob the loader writes.
 
-The stage itself is loaded via a new `care/profile.ts` helper that queries `care_profile.stage_answers` and applies a copy of `inferStage`. We did **not** import `loadProfileBundle` from `apps/web/src/lib/onboarding/status.ts` because that module is `server-only` Next.js code and `@hypercare/rag` must remain consumable from CLIs and (eventually) eval harnesses. The duplicated `inferStage` carries a `TODO(extract)` comment pointing at a future shared `@hypercare/onboarding` package; both copies must move together until then.
+The stage itself is loaded via a new `care/profile.ts` helper that queries `care_profile.stage_answers` and applies a copy of `inferStage`. We did **not** import `loadProfileBundle` from `apps/web/src/lib/onboarding/status.ts` because that module is `server-only` Next.js code and `@alongside/rag` must remain consumable from CLIs and (eventually) eval harnesses. The duplicated `inferStage` carries a `TODO(extract)` comment pointing at a future shared `@alongside/onboarding` package; both copies must move together until then.
 
 ### 7. PII scrub is best-effort, not a privacy boundary
 

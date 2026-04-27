@@ -1,4 +1,4 @@
-import type { PickerRationale, PickerResult } from "@hypercare/picker";
+import type { PickerRationale, PickerResult } from "@alongside/picker";
 
 function humanizeTopicSlug(slug: string): string {
   return slug

@@ -14,7 +14,7 @@ import {
   runPipelineThroughCompose,
   runStreamingGeneration,
   type MemoryRefreshLog,
-} from "@hypercare/rag";
+} from "@alongside/rag";
 import { getPriorUserMessageContent } from "@/lib/conversation/prior-user-message";
 import {
   loadConversationOwned,
@@ -28,8 +28,8 @@ import { applySuppressionForTriageCategory } from "@/lib/safety/user-suppression
 import { loadProfileBundle } from "@/lib/onboarding/status";
 import { buildCareProfileContextMd } from "@/lib/rag/care-profile-context";
 import { serverEnv, streamingAnswersEnabled } from "@/lib/env.server";
-import { createDbClient, routingCohortFromUserId, users } from "@hypercare/db";
-import type { AnswerResult } from "@hypercare/rag";
+import { createDbClient, routingCohortFromUserId, users } from "@alongside/db";
+import type { AnswerResult } from "@alongside/rag";
 
 export const dynamic = "force-dynamic";
 

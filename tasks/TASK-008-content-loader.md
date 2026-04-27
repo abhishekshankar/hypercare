@@ -41,7 +41,7 @@ Read in this order:
    - An upserter that writes `modules` and `module_chunks` rows idempotently.
 3. A CLI entry point at `packages/content/src/cli.ts` runs end-to-end: parse → chunk → embed → upsert. Invocable from repo root as:
    ```bash
-   pnpm --filter @hypercare/content load
+   pnpm --filter @alongside/content load
    ```
 4. Running the CLI a **second time** does not duplicate rows and does not re-embed chunks whose source text is unchanged (see "Idempotency" below).
 5. The three pilot modules end up in Postgres with `published = true`, with chunk counts that are non-zero and sensible (roughly 3–8 chunks per module for v0 content).
@@ -112,7 +112,7 @@ Heuristics not hard rules: we will tune these in TASK-012 once we have evals. Do
 
 ## Idempotency
 
-Running `pnpm --filter @hypercare/content load` a second time must not:
+Running `pnpm --filter @alongside/content load` a second time must not:
 
 1. Create duplicate `modules` rows — use `INSERT ... ON CONFLICT (slug) DO UPDATE`.
 2. Create duplicate `module_chunks` rows — `(module_id, chunk_index)` already has a unique constraint; use `ON CONFLICT DO UPDATE`.
@@ -125,7 +125,7 @@ The goal: running the loader on CI / in a fresh checkout re-syncs state without 
 ## DB write path
 
 - The loader is an **operator tool**, not the web app. It runs offline from an engineer's laptop (or later from CI). It is acceptable for v0 to connect as the **admin role** rather than `hypercare_app`, because only operators run it and we want the ability to `published = true` without ambiguity about grants.
-- Reuse the existing `@hypercare/db` package and Drizzle client. Do **not** open a raw `postgres-js` connection inside `packages/content/`.
+- Reuse the existing `@alongside/db` package and Drizzle client. Do **not** open a raw `postgres-js` connection inside `packages/content/`.
 - Connection URL resolution:
   - Read from env var `DATABASE_URL_ADMIN` (new for this task — document in `docs/infra-runbook.md`).
   - If unset, fail with a clear error that names the SSM tunnel script (`./scripts/db-tunnel.sh`) and the Secrets Manager path where admin creds live. Do not fetch the secret value automatically — the operator pastes it into their env.
@@ -135,7 +135,7 @@ The goal: running the loader on CI / in a fresh checkout re-syncs state without 
 
 ## Acceptance criteria
 
-- `pnpm --filter @hypercare/content load` exits 0 against a reachable DB.
+- `pnpm --filter @alongside/content load` exits 0 against a reachable DB.
 - Querying the DB (via `psql` through the tunnel, or via a throwaway Drizzle script) shows:
   - Exactly 3 rows in `modules` with the three slugs above, `published = true`.
   - `module_chunks.module_id` FKs resolve; chunk counts per module are in the 3–8 range for v0 bodies.
@@ -209,7 +209,7 @@ TASKS.md                                 # flip this task to in-progress → don
 ## How PM verifies after Cursor reports back
 
 1. `ls content/modules/` shows the three files; `head -20` each confirms front-matter validates against the documented fields.
-2. Run the SSM tunnel, set `DATABASE_URL_ADMIN`, run `pnpm --filter @hypercare/content load`. It exits 0.
+2. Run the SSM tunnel, set `DATABASE_URL_ADMIN`, run `pnpm --filter @alongside/content load`. It exits 0.
 3. Through the tunnel in `psql`:
    ```sql
    select slug, category, tier, array_length(stage_relevance, 1) as stages, published from modules order by slug;

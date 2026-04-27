@@ -18,7 +18,7 @@ describe("layer 4 — compose", () => {
       makeChunk({ chunkId: "y", distance: 0.2, sectionHeading: "S2" }),
     ];
     const r = compose({ scrubbedQuestion: "why agitated", chunks });
-    expect(r.systemPrompt).toContain("Hypercare");
+    expect(r.systemPrompt).toContain("Alongside");
     expect(r.userPrompt).toContain("why agitated");
     expect(r.userPrompt).toContain("[1]");
     expect(r.userPrompt).toContain("[2]");

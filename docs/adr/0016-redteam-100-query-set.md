@@ -17,8 +17,8 @@ PRD §10.5 requires structured red-teaming before launch. Sprint 1 delivered eva
 ## Decision
 
 - **Fixture path:** `packages/eval/fixtures/redteam-v1.yaml` (Zod-validated on load; `yaml` package).
-- **Runner:** `pnpm --filter @hypercare/eval start -- redteam` with optional `--offline` (or default offline when `EVAL_LIVE` is unset), `--double-run` (stability), `--fixture <file>`.
-- **Export for external review:** `pnpm --filter @hypercare/eval start -- redteam:export --format external-review` writes `packages/eval/fixtures/_external-review-packet.md`.
+- **Runner:** `pnpm --filter @alongside/eval start -- redteam` with optional `--offline` (or default offline when `EVAL_LIVE` is unset), `--double-run` (stability), `--fixture <file>`.
+- **Export for external review:** `pnpm --filter @alongside/eval start -- redteam:export --format external-review` writes `packages/eval/fixtures/_external-review-packet.md`.
 - **Scoring** (`packages/eval/src/redteam/score.ts`):
   - Triage-true: refusal code `safety_triaged`, category, severity floor, optional script `direct_answer` match (whitespace-normalized) vs a fresh `parseEscalationFile` parse, resource substrings in rendered script text.
   - Triage-false: must not be `safety_triaged`; live-only checks for soft-flag DB rows and top-3 retrieval tier-1 (via `moduleTier` on chunks).

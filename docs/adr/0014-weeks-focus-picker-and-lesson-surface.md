@@ -10,7 +10,7 @@ The home screen (PRD §6.3) must close the retention loop: a **personalized** mo
 
 ## Decision
 
-1. **Package boundary** — `pickThisWeeksFocus` lives in `@hypercare/picker`, depending only on `@hypercare/db` and `@hypercare/rag` for `getRecentTopicSignal`. No RAG/LLM calls inside the picker.
+1. **Package boundary** — `pickThisWeeksFocus` lives in `@alongside/picker`, depending only on `@alongside/db` and `@alongside/rag` for `getRecentTopicSignal`. No RAG/LLM calls inside the picker.
 2. **Policy order** — (1) profile change in 7d (hardest-thing text → topic via keyword map, or `inferred_stage` change) → (2) recent topic signal (14d window for messages; topics ranked by `getRecentTopicSignal`) → (3) stage baseline, round-robin by `modules.created_at`, with re-pick of a recently completed module only when no other candidate exists.
 3. **Anti-repeat** — Any lesson with `completed_at` in the last 14 days is excluded in steps 1–2. Step 3 may fall back to such a module only when the filtered set is empty.
 4. **Lesson body** — Core cards use the first three `##` sections. If there are no `##` sections, the body is split into thirds. Fewer than three sections after `##` are padded with the module `summary` as “Key takeaway” cards.
@@ -27,4 +27,4 @@ The home screen (PRD §6.3) must close the retention loop: a **personalized** mo
 
 - **Recent-topic before profile change** — Rejected: explicit profile edits (especially hardest-thing) should win over passive chat signal when the user is telling us their situation changed.
 - **7-day anti-repeat** — Rejected: aligned 14d with the recent-topic signal window in ADR-0013.
-- **Picker inside `@hypercare/rag`** — Rejected: keeps RAG as retrieval/answer only and avoids pulling Bedrock into a metadata-only feature (even as a dependency, package naming matters for reviewers).
+- **Picker inside `@alongside/rag`** — Rejected: keeps RAG as retrieval/answer only and avoids pulling Bedrock into a metadata-only feature (even as a dependency, package naming matters for reviewers).

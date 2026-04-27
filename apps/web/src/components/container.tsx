@@ -1,3 +1,4 @@
 export function Container({ children }: Readonly<{ children: React.ReactNode }>) {
-  return <div className="mx-auto max-w-2xl px-4">{children}</div>;
+  /* Alongside homepage: max-width 1120px, 48px gutters on large screens */
+  return <div className="mx-auto w-full max-w-[70rem] px-5 md:px-12">{children}</div>;
 }

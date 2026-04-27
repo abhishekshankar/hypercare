@@ -11,18 +11,18 @@
  * `tasks/TASK-012-eval-harness.md` (preflight section).
  *
  * Recognizable marker: every seeded row uses
- *   `email = eval+<runner>+<iso-utc>@hypercare.invalid`
+ *   `email = eval+<runner>+<iso-utc>@alongside.invalid`
  *   `cognito_sub = eval-<runner>-<iso-utc>-<rand>`
  * so a human running `select email from users` later can tell at a glance
  * "that's eval test data, not a real caregiver."
  *
  * Teardown is unconditional (try/finally in the runner). A crashed eval must
- * not leave orphan `eval+...@hypercare.invalid` rows in the table.
+ * not leave orphan `eval+...@alongside.invalid` rows in the table.
  */
 
 import { eq } from "drizzle-orm";
 
-import { careProfile, createDbClient, users } from "@hypercare/db";
+import { careProfile, createDbClient, users } from "@alongside/db";
 
 export type SeededEvalUser = {
   userId: string;
@@ -51,7 +51,7 @@ export async function seedEvalUser(
   const withCareProfile = opts.withCareProfile ?? true;
   const ts = isoStamp();
   const rand = Math.random().toString(36).slice(2, 8);
-  const email = `eval+${runner}+${ts}@hypercare.invalid`;
+  const email = `eval+${runner}+${ts}@alongside.invalid`;
   const cognitoSub = `eval-${runner}-${ts}-${rand}`;
 
   const db = createDbClient(databaseUrl);
