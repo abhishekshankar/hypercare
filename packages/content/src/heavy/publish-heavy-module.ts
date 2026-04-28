@@ -11,8 +11,17 @@ import {
 } from "@alongside/db";
 import { chunkModuleBody } from "../chunk.js";
 import { moduleFrontMatterSchema, type HeavyDiskFrontmatter, type ModuleFrontMatter } from "../schema.js";
-import { loadExistingChunkMap, replaceModuleChunkRowsInTx, resolveEmbeddings } from "../upsert.js";
-import { type ParsedHeavyModule, parseHeavyModuleFromDisk } from "./parse-heavy-module-from-disk.js";
+import {
+  loadExistingChunkMap,
+  replaceModuleBranchChunkRowsInTx,
+  replaceModuleChunkRowsInTx,
+  resolveEmbeddings,
+} from "../upsert.js";
+import {
+  type HeavyEvidenceRow,
+  type ParsedHeavyModule,
+  parseHeavyModuleFromDisk,
+} from "./parse-heavy-module-from-disk.js";
 import { validateHeavyModule } from "./validate-heavy-module.js";
 
 function categoryForRelationStub(slug: string): (typeof modules.$inferInsert)["category"] {
@@ -21,6 +30,12 @@ function categoryForRelationStub(slug: string): (typeof modules.$inferInsert)["c
   if (slug.startsWith("legal-")) return "legal_financial";
   if (slug.startsWith("transitions-")) return "transitions";
   return "medical";
+}
+
+/** `module_evidence.source_type` CHECK allows only these values (migration `0008_content_authoring_workflow`). Hermes `source_id` is not the same column. */
+function evidenceSourceTypeForDb(row: HeavyEvidenceRow): "url" | "book" | "paper" | "intervention" | "pac" {
+  if (row.url?.trim()) return "url";
+  return "paper";
 }
 
 async function readUrlSnapshot(repoRoot: string, snapshotPath?: string): Promise<string | null> {
@@ -79,6 +94,10 @@ async function ensureRelationTargets(
 function topicUnion(front: HeavyDiskFrontmatter): string[] {
   const sec = front.secondary_topics ?? [];
   return [...new Set([...front.topics, ...sec])];
+}
+
+function branchAxesKey(b: { stageKey: string; relationshipKey: string; livingSituationKey: string }): string {
+  return `${b.stageKey}\0${b.relationshipKey}\0${b.livingSituationKey}`;
 }
 
 function toEmbedFront(front: HeavyDiskFrontmatter): ModuleFrontMatter {
@@ -142,6 +161,20 @@ export async function publishHeavyModulePayload(
   const chunks = chunkModuleBody(parsed.bodyMd);
   const { byIndex } = await loadExistingChunkMap(args.databaseUrl, parsed.front.slug);
   const embeddings = await resolveEmbeddings(byIndex, { front: embedFront, body: parsed.bodyMd, chunks }, () => {});
+
+  const branchEmbedByAxes = new Map<
+    string,
+    { chunks: ReturnType<typeof chunkModuleBody>; embeddings: number[][] }
+  >();
+  for (const b of parsed.branches) {
+    const bChunks = chunkModuleBody(b.bodyMd);
+    const bEmb = await resolveEmbeddings(
+      new Map() as Parameters<typeof resolveEmbeddings>[0],
+      { front: embedFront, body: b.bodyMd, chunks: bChunks },
+      () => {},
+    );
+    branchEmbedByAxes.set(branchAxesKey(b), { chunks: bChunks, embeddings: bEmb });
+  }
 
   return await db.transaction(async (tx) => {
     const now = new Date();
@@ -210,17 +243,48 @@ export async function publishHeavyModulePayload(
     await tx.delete(moduleRelations).where(eq(moduleRelations.fromModuleId, moduleId));
     await tx.delete(moduleEvidence).where(eq(moduleEvidence.moduleId, moduleId));
 
+    let insertedBranches: {
+      id: string;
+      stageKey: string;
+      relationshipKey: string;
+      livingSituationKey: string;
+    }[] = [];
     if (parsed.branches.length > 0) {
-      await tx.insert(moduleBranches).values(
-        parsed.branches.map((b) => ({
-          moduleId,
-          stageKey: b.stageKey,
-          relationshipKey: b.relationshipKey,
-          livingSituationKey: b.livingSituationKey,
-          bodyMd: b.bodyMd,
-        })),
-      );
+      insertedBranches = await tx
+        .insert(moduleBranches)
+        .values(
+          parsed.branches.map((b) => ({
+            moduleId,
+            stageKey: b.stageKey,
+            relationshipKey: b.relationshipKey,
+            livingSituationKey: b.livingSituationKey,
+            bodyMd: b.bodyMd,
+          })),
+        )
+        .returning({
+          id: moduleBranches.id,
+          stageKey: moduleBranches.stageKey,
+          relationshipKey: moduleBranches.relationshipKey,
+          livingSituationKey: moduleBranches.livingSituationKey,
+        });
     }
+
+    const branchPlans = insertedBranches.map((row) => {
+      const pack = branchEmbedByAxes.get(branchAxesKey(row));
+      if (!pack) {
+        throw new Error(`missing branch embedding pack for axes ${branchAxesKey(row)}`);
+      }
+      return {
+        branchId: row.id,
+        stageKey: row.stageKey,
+        relationshipKey: row.relationshipKey,
+        livingSituationKey: row.livingSituationKey,
+        chunks: pack.chunks,
+        embeddings: pack.embeddings,
+      };
+    });
+    const nBranch =
+      branchPlans.length > 0 ? await replaceModuleBranchChunkRowsInTx(tx, moduleId, embedFront, branchPlans) : 0;
 
     if (parsed.tools.length > 0) {
       await tx.insert(moduleTools).values(
@@ -257,7 +321,7 @@ export async function publishHeavyModulePayload(
       await tx.insert(moduleEvidence).values({
         moduleId,
         sourceTier: row.tier,
-        sourceType: row.source_id,
+        sourceType: evidenceSourceTypeForDb(row),
         citation: row.claim_text,
         url: row.url,
         quotedSupport: row.quoted_excerpt,
@@ -271,7 +335,7 @@ export async function publishHeavyModulePayload(
     const n = await replaceModuleChunkRowsInTx(tx, moduleId, { front: embedFront, body: parsed.bodyMd, chunks }, embeddings, {
       topicSlugs: topicUnion(front),
     });
-    return { moduleId, chunkCount: n, warnings: valWarnings };
+    return { moduleId, chunkCount: n + nBranch, warnings: valWarnings };
   });
 }
 

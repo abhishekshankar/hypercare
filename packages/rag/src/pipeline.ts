@@ -35,6 +35,7 @@ import { understandQuestion } from "./layers/1-understand.js";
 import { verify } from "./layers/6-verify.js";
 import { buildClassifierVerdictForRouting } from "./routing/verdict.js";
 import type { TopicClassifyInput, TopicClassifyResult } from "./topics/classifier.js";
+import type { CareRetrievalAxes } from "./care/profile.js";
 import type {
   AnswerInput,
   AnswerResult,
@@ -63,13 +64,15 @@ function isModelRoutingEnabled(): boolean {
 export type SearchFn = (q: {
   embedding: number[];
   stage: Stage | null;
+  relationship: string | null;
+  livingSituation: string | null;
   k: number;
 }) => Promise<RetrievedChunk[]>;
 
 export type Deps = {
   embed: (text: string) => Promise<number[]>;
   search: SearchFn;
-  loadStage: (userId: string) => Promise<Stage | null>;
+  loadCareAxes: (userId: string) => Promise<CareRetrievalAxes>;
   generate: (input: GenerateInput) => Promise<GenerateOutput>;
   /**
    * Optional Bedrock streaming (TASK-031). Defaults to `invokeClaudeStream` in `buildDefaultDeps`.
@@ -210,7 +213,8 @@ export async function runPipelineThroughCompose(
       };
     }
 
-    const stage = await deps.loadStage(input.userId);
+    const axes = await deps.loadCareAxes(input.userId);
+    const stage = axes.stage;
 
     const retrievalQuery = rewriteQueryWithMemory(
       understood.scrubbed,
@@ -219,7 +223,13 @@ export async function runPipelineThroughCompose(
     );
 
     const retrieved = await retrieve(
-      { scrubbedQuestion: retrievalQuery, stage, k: config.retrievalK },
+      {
+        scrubbedQuestion: retrievalQuery,
+        stage,
+        relationship: axes.relationship,
+        livingSituation: axes.livingSituation,
+        k: config.retrievalK,
+      },
       { embed: deps.embed, search: deps.search },
     );
 

@@ -12,6 +12,10 @@
 set -euo pipefail
 
 STACK="${1:-HypercareWeb-dev}"
+# First arg is the CDK/CFN stack name, not an env nickname. "dev" is a common mistake.
+if [[ "$STACK" == "dev" ]]; then
+  STACK="HypercareWeb-dev"
+fi
 REGION="${AWS_REGION:-${CDK_DEFAULT_REGION:-ca-central-1}}"
 
 echo "Reading stack outputs from $STACK ($REGION)..."

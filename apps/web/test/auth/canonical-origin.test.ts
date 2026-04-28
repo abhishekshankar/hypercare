@@ -152,10 +152,22 @@ describe("publicAppOrigin", () => {
     expect(publicAppOrigin(req)).toBe("https://app.example.com");
   });
 
+  it("normalizes CloudFront AUTH_BASE_URL to https even if build-time env is http", () => {
+    vi.stubEnv("AUTH_BASE_URL", "http://d3o5s11j7mm79v.cloudfront.net");
+    const req = fakeRequest("http://internal.local/anything");
+    expect(publicAppOrigin(req)).toBe("https://d3o5s11j7mm79v.cloudfront.net");
+  });
+
   it("falls back to request origin when AUTH_BASE_URL is unset", () => {
     vi.stubEnv("AUTH_BASE_URL", "");
     const req = fakeRequest("http://localhost:3001/app");
     expect(publicAppOrigin(req)).toBe("http://localhost:3001");
+  });
+
+  it("upgrades CloudFront fallback origin to https when runtime env is unavailable", () => {
+    vi.stubEnv("AUTH_BASE_URL", "");
+    const req = fakeRequest("http://d3o5s11j7mm79v.cloudfront.net/app");
+    expect(publicAppOrigin(req)).toBe("https://d3o5s11j7mm79v.cloudfront.net");
   });
 
   it("falls back to request origin when AUTH_BASE_URL is malformed", () => {

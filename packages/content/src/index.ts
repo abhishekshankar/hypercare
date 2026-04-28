@@ -55,3 +55,4 @@ export {
   type HeavyModuleValidationResult,
 } from "./heavy/validate-heavy-module.js";
 export { getToolSchemaForType, type ToolType } from "./tools/index.js";
+export type { Checklist, DecisionTree, Flowchart, Script, Template } from "./tools/index.js";

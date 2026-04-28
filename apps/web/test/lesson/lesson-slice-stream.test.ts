@@ -23,6 +23,10 @@ const baseMod = (bodyMd: string): ModulePagePayload => ({
   reviewDate: null,
   tryThisToday: "try",
   topicTags: [],
+  heavy: false,
+  branches: [],
+  pickedBranch: null,
+  tools: [],
 });
 
 describe("lesson slice stream (TASK-040)", () => {

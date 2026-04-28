@@ -10,6 +10,7 @@ import {
 import type { RefusalReason } from "@alongside/rag";
 
 import { serverEnv } from "@/lib/env.server";
+import { maybeDecodePercentEncoding } from "@/lib/url/maybe-decode-uri-component";
 
 import { encodeSaveListCursor, type SaveListCursor } from "./cursor";
 import { buildAssistantPreview } from "./preview";
@@ -157,6 +158,7 @@ function rowToSavedItem(
   },
   previewLen: number,
 ): SavedItem {
+  const question = maybeDecodePercentEncoding((r.question_text ?? "").trim());
   return {
     id: r.id,
     message_id: r.message_id,
@@ -164,9 +166,12 @@ function rowToSavedItem(
     saved_at: toIso(r.saved_at),
     ...(r.note != null && r.note.length > 0 ? { note: r.note } : {}),
     assistant_text_preview: buildAssistantPreview(r.assistant_content, previewLen),
-    question_text: (r.question_text ?? "").trim() || "…",
+    question_text: question || "…",
     module_slugs: moduleSlugsFromCitations(r.citations),
-    conversation_title: r.conversation_title,
+    conversation_title:
+      r.conversation_title == null || r.conversation_title.trim() === ""
+        ? null
+        : maybeDecodePercentEncoding(r.conversation_title.trim()),
   };
 }
 

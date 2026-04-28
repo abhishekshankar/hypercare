@@ -136,8 +136,18 @@ const isMain =
 if (isMain) {
   const argv = process.argv.slice(2);
   if (argv.includes("--heavy")) {
-    void runHeavyLoadFromArgv(argv);
+    runHeavyLoadFromArgv(argv)
+      .then(() => process.exit(0))
+      .catch((err: unknown) => {
+        console.error(err);
+        process.exit(1);
+      });
   } else {
-    void runLoad();
+    void runLoad()
+      .then(() => process.exit(0))
+      .catch((err: unknown) => {
+        console.error(err);
+        process.exit(1);
+      });
   }
 }

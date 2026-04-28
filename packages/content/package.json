@@ -13,6 +13,10 @@
     "./stage-rules": {
       "types": "./dist/stage-rules/index.d.ts",
       "import": "./dist/stage-rules/index.js"
+    },
+    "./tools": {
+      "types": "./dist/tools/index.d.ts",
+      "import": "./dist/tools/index.js"
     }
   },
   "scripts": {

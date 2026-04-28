@@ -7,6 +7,8 @@ import {
   conversations,
   createDbClient,
 } from "@alongside/db";
+import { maybeDecodePercentEncoding } from "@/lib/url/maybe-decode-uri-component";
+
 import { stripForgottenBulletsFromSummary } from "./memory-display";
 
 export type TransparencyConversationOption = {
@@ -75,7 +77,7 @@ export async function loadTransparencyMemoryPayload(
 
   const conversationsOpts: TransparencyConversationOption[] = convs.map((c) => ({
     id: c.id,
-    title: c.title,
+    title: c.title == null ? null : maybeDecodePercentEncoding(c.title),
     updatedAt: c.updatedAt.toISOString(),
     hasMemory: hasMemSet.has(c.id),
   }));

@@ -13,6 +13,7 @@ export { lessonReviewSchedule } from "./lesson-review-schedule.js";
 export { messages } from "./messages.js";
 export { moduleBriefs } from "./module-briefs.js";
 export { moduleBranches } from "./module-branches.js";
+export { moduleBranchChunks } from "./module-branch-chunks.js";
 export { moduleChunks } from "./module-chunks.js";
 export { moduleEvidence } from "./module-evidence.js";
 export { moduleRelations } from "./module-relations.js";

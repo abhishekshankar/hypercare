@@ -9,6 +9,7 @@ import { RecentConversations } from "@/components/home/RecentConversations";
 import { SavedLessonBanner } from "@/components/home/SavedLessonBanner";
 import { ThingsToRevisit } from "@/components/home/ThingsToRevisit";
 import { SuppressionCard } from "@/components/home/SuppressionCard";
+import { WarmCompanionCard } from "@/components/home/WarmCompanionCard";
 import { WeeksFocusCard } from "@/components/home/WeeksFocusCard";
 import { loadRecentConversations } from "@/lib/conversation/load";
 import { listRecentSavesForHome } from "@/lib/saved/service";
@@ -16,7 +17,8 @@ import { startersForStage } from "@/lib/conversation/starters";
 import { serverEnv } from "@/lib/env.server";
 import { greetingForLocalHour } from "@/lib/greeting";
 import { refineFocusSubtitle } from "@/lib/home/focus-subtitle";
-import { shouldShowWeeklyCheckin } from "@/lib/home/checkin-cadence";
+import { shouldShowWeeklyCheckin, countSoftFlagsLast7Days } from "@/lib/home/checkin-cadence";
+import { loadBurnoutWarmCompanionModule } from "@/lib/home/load-warm-companion";
 import { requireSession } from "@/lib/auth/session";
 import { hasOnboardingAck } from "@/lib/onboarding/ack";
 import {
@@ -74,6 +76,10 @@ export default async function AppHomePage({
   ]);
   const focusSubtitle = refineFocusSubtitle(focus, profile?.hardestThing ?? null);
 
+  const softBurnoutCount = await countSoftFlagsLast7Days(session.userId, { db, now });
+  const warmCompanion =
+    !suppression.active && softBurnoutCount >= 2 ? await loadBurnoutWarmCompanionModule() : null;
+
   return (
     <div className="space-y-10">
       {feedbackThanks ? (
@@ -103,6 +109,13 @@ export default async function AppHomePage({
       <SavedLessonBanner />
       {suppression.active ? <SuppressionCard /> : null}
       {suppression.active ? null : <WeeksFocusCard result={focus} subtitle={focusSubtitle} />}
+      {suppression.active ? null : warmCompanion ? (
+        <WarmCompanionCard
+          slug={warmCompanion.slug}
+          title={warmCompanion.title}
+          tryThisToday={warmCompanion.tryThisToday}
+        />
+      ) : null}
       {suppression.active ? null : checkin.show ? <CheckinCard /> : null}
       <HomeAsk starters={starters} />
       <RecentConversations items={recent} />

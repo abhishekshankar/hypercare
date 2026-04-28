@@ -5,6 +5,7 @@ import { conversations, createDbClient, messages } from "@alongside/db";
 import type { Citation, RefusalReason } from "@alongside/rag";
 
 import { serverEnv } from "@/lib/env.server";
+import { maybeDecodePercentEncoding } from "@/lib/url/maybe-decode-uri-component";
 
 export type UiMessage =
   | {
@@ -77,12 +78,16 @@ export async function loadThread(
     return {
       id: r.id,
       role: "user",
-      content: r.content,
+      content: maybeDecodePercentEncoding(r.content),
       createdAt: r.createdAt.toISOString(),
     };
   });
 
-  return { id: conv.id, title: conv.title, messages: ui };
+  return {
+    id: conv.id,
+    title: conv.title == null ? null : maybeDecodePercentEncoding(conv.title),
+    messages: ui,
+  };
 }
 
 /**
@@ -121,10 +126,13 @@ export async function loadRecentConversations(
   );
   const previewById = new Map(previews.map((p) => [p.id, p.preview]));
 
-  return convRows.map((c) => ({
-    id: c.id,
-    title: c.title,
-    preview: previewById.get(c.id) ?? null,
-    updatedAt: c.updatedAt.toISOString(),
-  }));
+  return convRows.map((c) => {
+    const rawPreview = previewById.get(c.id) ?? null;
+    return {
+      id: c.id,
+      title: c.title == null ? null : maybeDecodePercentEncoding(c.title),
+      preview: rawPreview == null ? null : maybeDecodePercentEncoding(rawPreview),
+      updatedAt: c.updatedAt.toISOString(),
+    };
+  });
 }
