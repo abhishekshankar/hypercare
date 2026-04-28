@@ -352,6 +352,10 @@ Migration adds nullable / defaulted columns used only when `heavy = true`: `heav
 
 One row per **care-profile axis tuple** for a heavy module: `stage_key`, `relationship_key`, `living_situation_key` (each `text`, including literal `any` for fallbacks), plus `body_md` (markdown shown when this branch wins `selectHeavyBranchMarkdown`). Unique on `(module_id, stage_key, relationship_key, living_situation_key)`.
 
+### `module_branch_chunks` (migration `0024_module_branch_chunks.sql`)
+
+Vector **RAG chunks for branch bodies**: each row is a slice of a `module_branches.body_md` embedding, keyed by `module_id` + `branch_id` + `chunk_index`. Columns mirror `module_chunks` in spirit: `content`, `token_count`, `embedding` (`vector(1024)`), `metadata` (jsonb — includes `branch_key` and axis keys for retrieval fit). Unique on `(module_id, branch_id, chunk_index)`. Written at heavy **publish** time alongside `module_branches` inserts; consumed by `packages/rag` merged search with canonical `module_chunks`.
+
 ### `module_tools`
 
 Structured tools keyed by `slug` + `tool_type` (`checklist`, `decision_tree`, `script`, `template`, `flowchart`, …); full JSON from disk is stored in **`module_tools.payload` (jsonb)** after Zod validation in `@alongside/content`.
@@ -378,7 +382,7 @@ Updates the relationship subsection from [`schema-v1.md`](schema-v1.md). v1's di
 - A `user_feedback` row may have a `safety_relabel` value if the originating turn had a `safety_flags` row. `safety_relabel` is null for thumbs-down rows whose original turn never tripped the safety classifier.
 - A `lesson_progress` row corresponds to **at most one** `lesson_review_schedule` row per `(user, module)`. The reverse is also true: a schedule row exists only after at least one lesson start; the unique index on `(user_id, module_id)` makes the relationship 1:0..1 in both directions.
 - A `care_profile_members` (pending) row has **0..N** `invite_tokens` rows over its lifetime (revoke + mint replaces the active token; older rows linger until the 30-day post-consumption window closes).
-- A heavy `modules` row (`heavy = true`) has **1..N** `module_branches` rows (including one `(any, any, any)` fallback), **0..N** `module_tools`, **0..N** `module_evidence`, and **0..N** `module_relations` edges. Library read picks the highest-specificity branch matching `care_profile` stage / relationship / `living_situation`.
+- A heavy `modules` row (`heavy = true`) has **1..N** `module_branches` rows (including one `(any, any, any)` fallback), **0..N** `module_branch_chunks` rows (one set per branch after publish-time embed), **0..N** `module_tools`, **0..N** `module_evidence`, and **0..N** `module_relations` edges. Library read picks the highest-specificity branch matching `care_profile` stage / relationship / `living_situation`.
 
 ---
 
