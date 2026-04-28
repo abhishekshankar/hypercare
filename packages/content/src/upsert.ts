@@ -1,6 +1,6 @@
 import { createHash } from "node:crypto";
 import { and, eq, gte, sql } from "drizzle-orm";
-import { createDbClient, moduleChunks, moduleTopics, modules } from "@alongside/db";
+import { createDbClient, moduleBranchChunks, moduleChunks, moduleTopics, modules } from "@alongside/db";
 import { buildEmbeddingText, embedTitanV2 } from "./embed.js";
 import type { ModuleFrontMatter } from "./schema.js";
 import type { TextChunk } from "./chunk.js";
@@ -164,6 +164,67 @@ export async function replaceModuleChunkRowsInTx(
       });
   }
   return chunks.length;
+}
+
+export type BranchChunkPlan = {
+  branchId: string;
+  stageKey: string;
+  relationshipKey: string;
+  livingSituationKey: string;
+  chunks: TextChunk[];
+  embeddings: number[][];
+};
+
+/**
+ * Replaces all `module_branch_chunks` rows for a module (caller deletes branches first,
+ * so this is only used immediately after inserting fresh `module_branches` rows).
+ */
+export async function replaceModuleBranchChunkRowsInTx(
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any -- drizzle transaction & db share insert/delete API
+  tx: any,
+  moduleId: string,
+  front: ModuleFrontMatter,
+  plans: readonly BranchChunkPlan[],
+): Promise<number> {
+  await tx.delete(moduleBranchChunks).where(eq(moduleBranchChunks.moduleId, moduleId));
+  let total = 0;
+  for (const plan of plans) {
+    const { branchId, stageKey, relationshipKey, livingSituationKey, chunks, embeddings } = plan;
+    if (chunks.length !== embeddings.length) {
+      throw new Error("branch chunks and embeddings length mismatch");
+    }
+    const branchKey = `${stageKey}-${relationshipKey}-${livingSituationKey}`;
+    for (let i = 0; i < chunks.length; i++) {
+      const ch = chunks[i]!;
+      const emb = embeddings[i]!;
+      const hash = contentHashForChunk(front.title, ch.content);
+      const metadata: ChunkMetadata & {
+        branch_key: string;
+        stage_key: string;
+        relationship_key: string;
+        living_situation_key: string;
+      } = {
+        section_heading: ch.sectionHeading,
+        stage_relevance: front.stage_relevance,
+        content_hash: hash,
+        branch_key: branchKey,
+        stage_key: stageKey,
+        relationship_key: relationshipKey,
+        living_situation_key: livingSituationKey,
+      };
+      await tx.insert(moduleBranchChunks).values({
+        moduleId,
+        branchId,
+        chunkIndex: ch.chunkIndex,
+        content: ch.content,
+        tokenCount: ch.tokenCount,
+        embedding: toVectorColumn(emb) as never,
+        metadata,
+      });
+      total += 1;
+    }
+  }
+  return total;
 }
 
 /**

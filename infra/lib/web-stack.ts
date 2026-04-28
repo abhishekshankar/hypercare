@@ -46,6 +46,7 @@ import * as origins from "aws-cdk-lib/aws-cloudfront-origins";
 import * as ec2 from "aws-cdk-lib/aws-ec2";
 import * as elbv2 from "aws-cdk-lib/aws-elasticloadbalancingv2";
 import * as elbv2Targets from "aws-cdk-lib/aws-elasticloadbalancingv2-targets";
+import * as iam from "aws-cdk-lib/aws-iam";
 import * as lambda from "aws-cdk-lib/aws-lambda";
 import * as logs from "aws-cdk-lib/aws-logs";
 import * as s3 from "aws-cdk-lib/aws-s3";
@@ -207,6 +208,15 @@ export class WebStack extends cdk.Stack {
       },
     });
     dbSecret.grantRead(serverFn);
+    serverFn.addToRolePolicy(
+      new iam.PolicyStatement({
+        actions: ["bedrock:InvokeModel"],
+        resources: [
+          `arn:aws:bedrock:${this.region}::foundation-model/amazon.titan-embed-text-v2:0`,
+          `arn:aws:bedrock:${this.region}:${this.account}:inference-profile/us.anthropic.claude-haiku-4-5-20251001-v1:0`,
+        ],
+      }),
+    );
 
     // ---- Image optimization Lambda (container image) ----
     const imageFn = new lambda.DockerImageFunction(this, "ImageFn", {

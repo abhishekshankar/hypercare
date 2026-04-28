@@ -65,7 +65,11 @@ describe("topic classification + messages row (integration)", () => {
           distance: 0.25,
         },
       ],
-      loadStage: async () => "middle",
+      loadCareAxes: async () => ({
+        stage: "middle" as const,
+        relationship: "parent",
+        livingSituation: "with_caregiver",
+      }),
       generate: async () => ({
         text: "You can try a calm approach [1].",
         modelId: "int-test",

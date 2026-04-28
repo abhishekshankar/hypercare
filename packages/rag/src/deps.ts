@@ -2,7 +2,7 @@
  * Default dependency wiring for `answer()`. Pulls real implementations:
  *   - embed: Titan v2 via `@alongside/content`
  *   - search: pgvector ANN via local `db/search.ts`
- *   - loadStage: care_profile lookup via `care/profile.ts`
+ *   - loadCareAxes: care_profile lookup (stage + relationship + living situation) via `care/profile.ts`
  *   - generate: Bedrock Claude via `bedrock/claude.ts`
  *
  * Tests do NOT call this file. They build a `Deps` object explicitly and
@@ -15,7 +15,7 @@ import { defaultInvoke, makeDbPersist, makeFtShadowLogger } from "@alongside/saf
 
 import { ANSWER_MODEL_ID } from "./config.js";
 import { invokeClaude, invokeClaudeStream } from "./bedrock/claude.js";
-import { loadStageForUser } from "./care/profile.js";
+import { loadCareRetrievalAxesForUser } from "./care/profile.js";
 import { searchChunks } from "./db/search.js";
 import type { Deps } from "./pipeline.js";
 import { classifyTopics } from "./topics/classifier.js";
@@ -41,9 +41,9 @@ export function buildDefaultDeps(opts: BuildDepsOptions): Deps {
   return {
     config: { answerModelId },
     embed: (text) => embedTitanV2(text),
-    search: ({ embedding, stage, k }) =>
-      searchChunks({ databaseUrl: opts.databaseUrl, embedding, stage, k }),
-    loadStage: (userId) => loadStageForUser(opts.databaseUrl, userId),
+    search: ({ embedding, stage, relationship, livingSituation, k }) =>
+      searchChunks({ databaseUrl: opts.databaseUrl, embedding, stage, relationship, livingSituation, k }),
+    loadCareAxes: (userId) => loadCareRetrievalAxesForUser(opts.databaseUrl, userId),
     generate: (input) => invokeClaude(input),
     generateStream: (input, opts) => invokeClaudeStream(input, opts),
     warn,

@@ -47,7 +47,11 @@ describe("runPipeline model routing (TASK-042)", () => {
     const deps: Deps = {
       embed: async () => new Array(1024).fill(0),
       search: async () => hits,
-      loadStage: async () => "early",
+      loadCareAxes: async () => ({
+        stage: "early" as const,
+        relationship: "parent",
+        livingSituation: "with_caregiver",
+      }),
       generate,
       safety: {
         persist,
@@ -85,7 +89,11 @@ describe("runPipeline model routing (TASK-042)", () => {
     const deps: Deps = {
       embed: async () => new Array(1024).fill(0),
       search: async () => hits,
-      loadStage: async () => "early",
+      loadCareAxes: async () => ({
+        stage: "early" as const,
+        relationship: "parent",
+        livingSituation: "with_caregiver",
+      }),
       generate,
       safety: {
         persist,

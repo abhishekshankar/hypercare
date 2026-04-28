@@ -4,6 +4,7 @@ import { requireSession } from "@/lib/auth/session";
 import { ConversationThread } from "@/components/conversation/ConversationThread";
 import { loadThread } from "@/lib/conversation/load";
 import { loadSavesInConversation } from "@/lib/saved/service";
+import { maybeDecodePercentEncoding } from "@/lib/url/maybe-decode-uri-component";
 
 export default async function ConversationPage({
   params,
@@ -27,7 +28,9 @@ export default async function ConversationPage({
   // `q` carries the prefill text from `/app` when the user clicked a
   // starter chip or used the home composer. It auto-submits exactly once
   // (see `Composer`) so a back/forward navigation doesn't double-send.
-  const autoSubmit = typeof q === "string" && thread.messages.length === 0 ? q : undefined;
+  // Some stacks still surface `q` percent-encoded — normalize before send.
+  const autoSubmit =
+    typeof q === "string" && thread.messages.length === 0 ? maybeDecodePercentEncoding(q) : undefined;
 
   return (
     <div className="space-y-6">

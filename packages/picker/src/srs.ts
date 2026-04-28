@@ -23,11 +23,18 @@ export function addDays(now: Date, days: number): Date {
   return new Date(now.getTime() + days * MS_DAY);
 }
 
-/** First lesson start for this module (TASK-037 §2). */
-export function scheduleOnLessonStart(now: Date): Omit<SrsScheduleRow, "lastOutcome"> & { lastOutcome: "started_not_completed" } {
+/** First lesson start for this module (TASK-037 §2). Uses `srs_difficulty_bucket` when set (SURFACES-05). */
+export function scheduleOnLessonStart(
+  now: Date,
+  moduleSrsDifficultyBucket: number | null = null,
+): Omit<SrsScheduleRow, "lastOutcome"> & { lastOutcome: "started_not_completed" } {
+  let bucket: SrsBucket = 0;
+  if (moduleSrsDifficultyBucket === 1) bucket = 1;
+  else if (moduleSrsDifficultyBucket === 2) bucket = 0;
+  else if (moduleSrsDifficultyBucket === 3) bucket = 2;
   return {
-    bucket: 0,
-    dueAt: addDays(now, intervalDaysForBucket(0)),
+    bucket,
+    dueAt: addDays(now, intervalDaysForBucket(bucket)),
     lastSeenAt: now,
     lastOutcome: "started_not_completed",
   };

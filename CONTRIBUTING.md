@@ -40,3 +40,13 @@ Example (tunnel or local URL):
 ## Route-handler tests without Postgres
 
 Some Vitest suites call Route Handlers that open Drizzle (`createDbClient`) while still using a dummy `DATABASE_URL`. Prefer **mocking `@alongside/db`’s `createDbClient`** (stub `select` / `limit` chains) instead of requiring a live `hc_test` database. For `@/lib/env.server`, prefer **`vi.mock` with `importOriginal`** and override only `serverEnv` fields so helpers like `streamingAnswersEnabled()` and `modelRoutingEnabled()` stay aligned with production code (`test/safety/conversation-escalation.test.ts`).
+
+## Sprint-exit audit (30-minute ritual)
+
+At the end of each sprint, one developer who did **not** write the code does a 30-minute quality audit:
+
+1. **Grep for new module call sites:** Verify new packages/modules are actually integrated. For each new export, grep the codebase for imports; confirm usage is intentional and tests exist where needed.
+2. **Run non-regression hooks:** Execute the actual test suites and checks that would catch regressions (not just the happy path). For example, if the sprint added a new Route Handler, test both success and error paths; if new schema migrations were added, verify `pnpm --filter @alongside/db migrate` succeeds and rollback works.
+3. **Verify tests are real:** Spot-check test files for vacuous tests (e.g. tests that only check the happy path, snapshot tests without assertions, mocks that don’t validate behavior). A passing test that never runs or always passes is worse than no test.
+
+**Goal:** catch integration gaps and hollow test coverage before the next sprint starts. This audit is not code review (that happens in PR) but a systems check — confirm the code is actually wired up and tested end-to-end.

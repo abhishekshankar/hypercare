@@ -1,4 +1,4 @@
-import { and, desc, eq, gte, inArray, isNotNull } from "drizzle-orm";
+import { and, desc, eq, gte, inArray, isNotNull, isNull, or } from "drizzle-orm";
 import { createDbClient } from "@alongside/db";
 import {
   careProfile,
@@ -88,7 +88,12 @@ export async function pickThisWeeksFocus(
       stageRelevance: modules.stageRelevance,
     })
     .from(modules)
-    .where(eq(modules.published, true))
+    .where(
+      and(
+        eq(modules.published, true),
+        or(eq(modules.weeksFocusEligible, true), isNull(modules.weeksFocusEligible)),
+      ),
+    )
     .orderBy(modules.createdAt);
 
   if (modRows.length === 0) {

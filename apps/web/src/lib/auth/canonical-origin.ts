@@ -4,6 +4,14 @@ import { logRedirectDebug } from "./redirect-debug";
 
 const LOOPBACK = new Set(["localhost", "127.0.0.1", "::1"]);
 
+function normalizePublicOrigin(origin: string): string {
+  const url = new URL(origin);
+  if (url.protocol === "http:" && url.hostname.endsWith(".cloudfront.net")) {
+    url.protocol = "https:";
+  }
+  return url.origin;
+}
+
 /**
  * Origin to use when constructing in-app redirect URLs (e.g. → /api/auth/login,
  * → /auth/error, → /onboarding).
@@ -31,12 +39,12 @@ export function publicAppOrigin(request: NextRequest): string {
   const fromEnv = process.env.AUTH_BASE_URL?.trim();
   if (fromEnv != null && fromEnv.length > 0) {
     try {
-      return new URL(fromEnv).origin;
+      return normalizePublicOrigin(fromEnv);
     } catch {
       // malformed AUTH_BASE_URL — fall through rather than poison every redirect
     }
   }
-  return request.nextUrl.origin;
+  return normalizePublicOrigin(request.nextUrl.origin);
 }
 
 function normalizeHost(hostname: string): string {

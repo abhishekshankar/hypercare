@@ -16,12 +16,20 @@ import type { RetrievedChunk, Stage } from "../types.js";
 export type RetrieveInput = {
   scrubbedQuestion: string;
   stage: Stage | null;
+  relationship: string | null;
+  livingSituation: string | null;
   k: number;
 };
 
 export type RetrieveDeps = {
   embed: (text: string) => Promise<number[]>;
-  search: (q: { embedding: number[]; stage: Stage | null; k: number }) => Promise<RetrievedChunk[]>;
+  search: (q: {
+    embedding: number[];
+    stage: Stage | null;
+    relationship: string | null;
+    livingSituation: string | null;
+    k: number;
+  }) => Promise<RetrievedChunk[]>;
 };
 
 export type RetrieveOutput = {
@@ -44,7 +52,13 @@ export async function retrieve(
       }`,
     );
   }
-  const hits = await deps.search({ embedding, stage: input.stage, k: input.k });
+  const hits = await deps.search({
+    embedding,
+    stage: input.stage,
+    relationship: input.relationship,
+    livingSituation: input.livingSituation,
+    k: input.k,
+  });
   // Defense-in-depth: caller may not have ordered. Sort ascending by distance.
   const sorted = [...hits].sort((a, b) => a.distance - b.distance);
   return { hits: sorted, embedDims: embedding.length };

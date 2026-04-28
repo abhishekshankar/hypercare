@@ -64,6 +64,8 @@ export type RetrievedChunk = {
   distance: number;
   /** Parent `modules.tier` (1 = Tier-1 reviewed modules, …). */
   moduleTier: number;
+  /** Set when the hit came from `module_branch_chunks` (SURFACES-06). */
+  branchKey?: string | null;
 };
 
 export type Citation = {

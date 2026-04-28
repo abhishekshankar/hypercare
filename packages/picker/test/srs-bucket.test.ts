@@ -17,11 +17,17 @@ describe("SRS_INTERVAL_DAYS", () => {
 });
 
 describe("scheduleOnLessonStart", () => {
-  it("uses bucket 0 and 1d horizon", () => {
-    const s = scheduleOnLessonStart(now);
+  it("uses bucket 0 and 1d horizon when srs difficulty unset", () => {
+    const s = scheduleOnLessonStart(now, null);
     expect(s.bucket).toBe(0);
     expect(s.lastOutcome).toBe("started_not_completed");
     expect(s.dueAt).toEqual(addDays(now, intervalDaysForBucket(0)));
+  });
+
+  it("uses higher starting bucket when srs_difficulty_bucket is 3", () => {
+    const s = scheduleOnLessonStart(now, 3);
+    expect(s.bucket).toBe(2);
+    expect(s.dueAt).toEqual(addDays(now, intervalDaysForBucket(2)));
   });
 });
 

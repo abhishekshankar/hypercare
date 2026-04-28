@@ -49,7 +49,11 @@ export type ComposeOutput = {
 
 function renderSource(idx1based: number, chunk: RetrievedChunk): string {
   const heading = chunk.sectionHeading ? ` — ${chunk.sectionHeading}` : "";
-  return `[${idx1based}] ${chunk.moduleTitle}${heading}\n${chunk.content.trim()}`;
+  const branch =
+    chunk.branchKey != null && chunk.branchKey !== ""
+      ? `\n[branch: ${chunk.branchKey}]`
+      : "";
+  return `[${idx1based}] ${chunk.moduleTitle}${heading}${branch}\n${chunk.content.trim()}`;
 }
 
 export function compose(input: ComposeInput): ComposeOutput {

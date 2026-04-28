@@ -2,11 +2,22 @@ import { describe, expect, it, vi } from "vitest";
 import type { ClassifyDeps } from "@alongside/safety";
 
 import type { GenerateInput, GenerateOutput } from "../src/bedrock/claude.js";
+import type { CareRetrievalAxes } from "../src/care/profile.js";
 import { runPipeline, type Deps } from "../src/pipeline.js";
 import type { RetrievedChunk, Stage } from "../src/types.js";
 import { fakeEmbedding, makeChunk } from "./fixtures.js";
 
-type SearchArgs = { embedding: number[]; stage: Stage | null; k: number };
+type SearchArgs = {
+  embedding: number[];
+  stage: Stage | null;
+  relationship: string | null;
+  livingSituation: string | null;
+  k: number;
+};
+
+function defaultAxes(): CareRetrievalAxes {
+  return { stage: "middle", relationship: "parent", livingSituation: "with_caregiver" };
+}
 
 const offlineSafety: ClassifyDeps = {
   persist: vi.fn(async () => ({ repeatInWindow: false })),
@@ -30,7 +41,7 @@ function buildDeps(over: Partial<Deps> = {}): Deps {
         makeChunk({ chunkId: "b", distance: 0.15 }),
         makeChunk({ chunkId: "c", distance: 0.25 }),
       ]),
-    loadStage: rest.loadStage ?? vi.fn(async (_u: string): Promise<Stage | null> => "middle"),
+    loadCareAxes: rest.loadCareAxes ?? vi.fn(async (_u: string): Promise<CareRetrievalAxes> => defaultAxes()),
     generate:
       rest.generate ??
       vi.fn(
@@ -184,14 +195,18 @@ describe("pipeline orchestrator (end-to-end, all mocks)", () => {
     if (r.kind === "refused") expect(r.reason.code).toBe("low_confidence");
   });
 
-  it("forwards the inferred stage from loadStage into search", async () => {
+  it("forwards the inferred stage from loadCareAxes into search", async () => {
     const search = vi.fn(async (_q: SearchArgs): Promise<RetrievedChunk[]> => [
       makeChunk({ chunkId: "a", distance: 0.1 }),
       makeChunk({ chunkId: "b", distance: 0.2 }),
       makeChunk({ chunkId: "c", distance: 0.3 }),
     ]);
     const deps = buildDeps({
-      loadStage: vi.fn(async (_u: string): Promise<Stage | null> => "late"),
+      loadCareAxes: vi.fn(async (): Promise<CareRetrievalAxes> => ({
+        stage: "late",
+        relationship: "parent",
+        livingSituation: "with_caregiver",
+      })),
       search,
     });
     await runPipeline({ question: "anything", userId: "u9" }, deps);
@@ -201,14 +216,18 @@ describe("pipeline orchestrator (end-to-end, all mocks)", () => {
     expect(call1[0].stage).toBe<Stage>("late");
   });
 
-  it("passes stage=null when loadStage returns null (insufficient profile)", async () => {
+  it("passes stage=null when loadCareAxes returns null stage (insufficient profile)", async () => {
     const search = vi.fn(async (_q: SearchArgs): Promise<RetrievedChunk[]> => [
       makeChunk({ chunkId: "a", distance: 0.1 }),
       makeChunk({ chunkId: "b", distance: 0.2 }),
       makeChunk({ chunkId: "c", distance: 0.3 }),
     ]);
     const deps = buildDeps({
-      loadStage: vi.fn(async (_u: string): Promise<Stage | null> => null),
+      loadCareAxes: vi.fn(async (): Promise<CareRetrievalAxes> => ({
+        stage: null,
+        relationship: null,
+        livingSituation: null,
+      })),
       search,
     });
     await runPipeline({ question: "anything", userId: "u9" }, deps);
@@ -229,12 +248,12 @@ describe("pipeline orchestrator (end-to-end, all mocks)", () => {
     if (r.kind === "refused") expect(r.reason.code).toBe("internal_error");
   });
 
-  it("calls warn with structured context when loadStage throws (internal_error)", async () => {
+  it("calls warn with structured context when loadCareAxes throws (internal_error)", async () => {
     const err = new Error("invalid uuid");
     const warn = vi.fn();
     const deps = buildDeps({
       warn,
-      loadStage: vi.fn(async () => {
+      loadCareAxes: vi.fn(async () => {
         throw err;
       }),
     });

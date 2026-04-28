@@ -66,21 +66,25 @@ function hitsFor(
   ];
 }
 
-type Built = Pick<Deps, "embed" | "search" | "loadStage" | "generate" | "safety" | "topicClassify">;
+type Built = Pick<Deps, "embed" | "search" | "loadCareAxes" | "generate" | "safety" | "topicClassify">;
 
 /**
  * Return deps that make `runPipeline` behave deterministically for a golden answer id (offline only).
  */
 export function buildAnswerOfflineDeps(c: AnswerGoldenCase, _userId: string): Built {
   const stage = c.stage;
-  const loadStage = async (_uid: string) => stage;
+  const loadCareAxes = async (_uid: string) => ({
+    stage,
+    relationship: null as string | null,
+    livingSituation: null as string | null,
+  });
   const embed = async (_t: string) => deterministicEmbedding(c.id);
   // Refusals: safety first
   if (c.id === "a_ref_safety") {
     return {
       embed,
       search: async () => [],
-      loadStage,
+      loadCareAxes,
       safety: offlineSafety,
       generate: genOk("behavior"),
       topicClassify: offlineTopicClassify,
@@ -99,7 +103,7 @@ export function buildAnswerOfflineDeps(c: AnswerGoldenCase, _userId: string): Bu
     return {
       embed,
       search: async () => h,
-      loadStage,
+      loadCareAxes,
       safety: offlineSafety,
       generate: genOk("behavior"),
       topicClassify: offlineTopicClassify,
@@ -116,7 +120,7 @@ export function buildAnswerOfflineDeps(c: AnswerGoldenCase, _userId: string): Bu
             { mod: "daily", d: 0.72 },
           ],
         }),
-      loadStage,
+      loadCareAxes,
       safety: offlineSafety,
       generate: genOk("daily"),
       topicClassify: offlineTopicClassify,
@@ -133,7 +137,7 @@ export function buildAnswerOfflineDeps(c: AnswerGoldenCase, _userId: string): Bu
             { mod: "daily", d: 0.4 },
           ],
         }),
-      loadStage,
+      loadCareAxes,
       safety: offlineSafety,
       generate: genWith(
         "behavior",
@@ -146,7 +150,7 @@ export function buildAnswerOfflineDeps(c: AnswerGoldenCase, _userId: string): Bu
     return {
       embed,
       search: async () => [],
-      loadStage,
+      loadCareAxes,
       safety: offlineSafety,
       generate: genOk("behavior"),
       topicClassify: offlineTopicClassify,
@@ -165,7 +169,7 @@ export function buildAnswerOfflineDeps(c: AnswerGoldenCase, _userId: string): Bu
     return {
       embed,
       search: async () => answerHits("behavior"),
-      loadStage,
+      loadCareAxes,
       safety: offlineSafety,
       generate: genOk("behavior"),
       topicClassify: offlineTopicClassify,
@@ -175,7 +179,7 @@ export function buildAnswerOfflineDeps(c: AnswerGoldenCase, _userId: string): Bu
     return {
       embed,
       search: async () => answerHits("daily"),
-      loadStage,
+      loadCareAxes,
       safety: offlineSafety,
       generate: genOk("daily"),
       topicClassify: offlineTopicClassify,
@@ -185,7 +189,7 @@ export function buildAnswerOfflineDeps(c: AnswerGoldenCase, _userId: string): Bu
     return {
       embed,
       search: async () => answerHits("self"),
-      loadStage,
+      loadCareAxes,
       safety: offlineSafety,
       generate: genOk("self"),
       topicClassify: offlineTopicClassify,
@@ -199,7 +203,7 @@ export function buildAnswerOfflineDeps(c: AnswerGoldenCase, _userId: string): Bu
       );
       return r ?? [];
     },
-    loadStage,
+    loadCareAxes,
     safety: offlineSafety,
     generate: genOk("behavior"),
     topicClassify: offlineTopicClassify,

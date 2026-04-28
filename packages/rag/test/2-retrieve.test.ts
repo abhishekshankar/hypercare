@@ -4,7 +4,13 @@ import { retrieve, type RetrieveDeps } from "../src/layers/2-retrieve.js";
 import type { RetrievedChunk, Stage } from "../src/types.js";
 import { fakeEmbedding, makeChunk } from "./fixtures.js";
 
-type SearchArgs = { embedding: number[]; stage: Stage | null; k: number };
+type SearchArgs = {
+  embedding: number[];
+  stage: Stage | null;
+  relationship: string | null;
+  livingSituation: string | null;
+  k: number;
+};
 
 function makeDeps(over: Partial<RetrieveDeps> = {}): RetrieveDeps {
   return {
@@ -22,7 +28,7 @@ describe("layer 2 — retrieve (unit, mocked)", () => {
     ]);
 
     const out = await retrieve(
-      { scrubbedQuestion: "why agitated", stage: "middle", k: 6 },
+      { scrubbedQuestion: "why agitated", stage: "middle", relationship: "parent", livingSituation: "with_caregiver", k: 6 },
       { embed, search },
     );
 
@@ -33,6 +39,8 @@ describe("layer 2 — retrieve (unit, mocked)", () => {
     const arg = call[0];
     expect(arg.embedding.length).toBe(1024);
     expect(arg.stage).toBe<Stage>("middle");
+    expect(arg.relationship).toBe("parent");
+    expect(arg.livingSituation).toBe("with_caregiver");
     expect(arg.k).toBe(6);
     expect(out.hits).toHaveLength(1);
     expect(out.embedDims).toBe(1024);
@@ -47,7 +55,7 @@ describe("layer 2 — retrieve (unit, mocked)", () => {
     const deps = makeDeps({
       search: vi.fn(async (_q: SearchArgs): Promise<RetrievedChunk[]> => unordered),
     });
-    const out = await retrieve({ scrubbedQuestion: "x", stage: null, k: 6 }, deps);
+    const out = await retrieve({ scrubbedQuestion: "x", stage: null, relationship: null, livingSituation: null, k: 6 }, deps);
     expect(out.hits.map((h) => h.chunkId)).toEqual(["a", "b", "c"]);
   });
 
@@ -56,7 +64,7 @@ describe("layer 2 — retrieve (unit, mocked)", () => {
       embed: vi.fn(async (_t: string): Promise<number[]> => new Array(512).fill(0)),
     });
     await expect(
-      retrieve({ scrubbedQuestion: "x", stage: null, k: 6 }, deps),
+      retrieve({ scrubbedQuestion: "x", stage: null, relationship: null, livingSituation: null, k: 6 }, deps),
     ).rejects.toThrow(/1024/);
   });
 
@@ -64,7 +72,7 @@ describe("layer 2 — retrieve (unit, mocked)", () => {
     const embed = vi.fn(async (_t: string): Promise<number[]> => fakeEmbedding());
     const search = vi.fn(async (_q: SearchArgs): Promise<RetrievedChunk[]> => []);
     const out = await retrieve(
-      { scrubbedQuestion: "", stage: null, k: 6 },
+      { scrubbedQuestion: "", stage: null, relationship: null, livingSituation: null, k: 6 },
       { embed, search },
     );
     expect(out.hits).toEqual([]);
@@ -84,12 +92,14 @@ describe.skipIf(!process.env.RAG_LIVE)("layer 2 — retrieve (live, RAG_LIVE=1)"
       {
         scrubbedQuestion: "my mom gets agitated every afternoon, what do i do?",
         stage: null,
+        relationship: null,
+        livingSituation: null,
         k: 6,
       },
       {
         embed: (t) => embedTitanV2(t),
-        search: ({ embedding, stage, k }) =>
-          searchChunks({ databaseUrl, embedding, stage, k }),
+        search: ({ embedding, stage, relationship, livingSituation, k }) =>
+          searchChunks({ databaseUrl, embedding, stage, relationship, livingSituation, k }),
       },
     );
     expect(out.hits.length).toBeGreaterThan(0);

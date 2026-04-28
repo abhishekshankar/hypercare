@@ -99,7 +99,11 @@ export async function runRetrievalEval(): Promise<{
             captured = hits;
             return hits;
           },
-          loadStage: async () => c.stage,
+          loadCareAxes: async () => ({
+            stage: c.stage,
+            relationship: null,
+            livingSituation: null,
+          }),
           generate: async (_gen) => {
             return {
               text: "Eval stub [1].",

@@ -17,12 +17,16 @@ import type { LessonSource } from "./source";
 export type { LessonSource } from "./source";
 export { parseLessonSource } from "./source";
 
-async function upsertScheduleOnStart(db: ReturnType<typeof createDbClient>, args: {
-  userId: string;
-  moduleId: string;
-  now: Date;
-}): Promise<void> {
-  const row = scheduleOnLessonStart(args.now);
+async function upsertScheduleOnStart(
+  db: ReturnType<typeof createDbClient>,
+  args: {
+    userId: string;
+    moduleId: string;
+    now: Date;
+    srsDifficultyBucket: number | null;
+  },
+): Promise<void> {
+  const row = scheduleOnLessonStart(args.now, args.srsDifficultyBucket);
   try {
     await db
       .insert(lessonReviewSchedule)
@@ -113,10 +117,15 @@ export async function startLessonProgress(args: {
 }): Promise<{ progressId: string } | "not_found"> {
   const db = createDbClient(serverEnv.DATABASE_URL);
   const now = new Date();
-  const [m] = await db.select({ id: modules.id }).from(modules).where(eq(modules.slug, args.moduleSlug)).limit(1);
+  const [m] = await db
+    .select({ id: modules.id, srsDifficultyBucket: modules.srsDifficultyBucket })
+    .from(modules)
+    .where(eq(modules.slug, args.moduleSlug))
+    .limit(1);
   if (!m) {
     return "not_found";
   }
+  const srsBucket = m.srsDifficultyBucket ?? null;
   const [row] = await db
     .insert(lessonProgress)
     .values({
@@ -128,7 +137,7 @@ export async function startLessonProgress(args: {
   if (!row) {
     return "not_found";
   }
-  await upsertScheduleOnStart(db, { userId: args.userId, moduleId: m.id, now });
+  await upsertScheduleOnStart(db, { userId: args.userId, moduleId: m.id, now, srsDifficultyBucket: srsBucket });
   return { progressId: row.id };
 }
 
