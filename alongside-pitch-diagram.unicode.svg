@@ -1,0 +1,271 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1600 1100" font-family="Helvetica, Arial, sans-serif">
+  <defs>
+    <marker id="arrow" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto">
+      <path d="M0,0 L10,5 L0,10 z" fill="#444"/>
+    </marker>
+    <marker id="arrowLight" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="6" markerHeight="6" orient="auto">
+      <path d="M0,0 L10,5 L0,10 z" fill="#888"/>
+    </marker>
+  </defs>
+
+  <!-- Page background -->
+  <rect width="1600" height="1100" fill="#fafaf7"/>
+
+  <!-- Title -->
+  <text x="60" y="58" font-size="26" font-weight="bold" fill="#111">Alongside — how the product works</text>
+  <text x="60" y="84" font-size="13" fill="#555">Four views: the moment, the surfaces, the pipeline, the trust stack.</text>
+  <line x1="60" y1="100" x2="1540" y2="100" stroke="#111" stroke-width="1"/>
+
+  <!-- ============== PANEL 1: The 5:47 PM moment ============== -->
+  <g transform="translate(60,130)">
+    <rect width="720" height="430" fill="#ffffff" stroke="#dcdcd6" stroke-width="1" rx="6"/>
+    <text x="20" y="32" font-size="15" font-weight="bold" fill="#111">1 · The 5:47 PM moment</text>
+    <text x="20" y="52" font-size="11" fill="#666">Caregiver in crisis → profile + RAG + safety → specific answer.</text>
+
+    <!-- Caregiver -->
+    <g transform="translate(20,80)">
+      <rect width="160" height="86" fill="#fff5e6" stroke="#e0a85c" rx="6"/>
+      <text x="14" y="22" font-size="12" font-weight="bold" fill="#7a4a00">Caregiver, 5:47 PM</text>
+      <text x="14" y="42" font-size="11" fill="#5a3500">“Mom keeps asking</text>
+      <text x="14" y="58" font-size="11" fill="#5a3500">the same question.</text>
+      <text x="14" y="74" font-size="11" fill="#5a3500">What do I do?”</text>
+    </g>
+
+    <!-- Care profile -->
+    <g transform="translate(220,80)">
+      <rect width="160" height="86" fill="#eef4ff" stroke="#5a7fbf" rx="6"/>
+      <text x="14" y="22" font-size="12" font-weight="bold" fill="#1f3d7a">Care profile</text>
+      <text x="14" y="42" font-size="11" fill="#1f3d7a">Margaret, 78</text>
+      <text x="14" y="58" font-size="11" fill="#1f3d7a">Middle stage</text>
+      <text x="14" y="74" font-size="11" fill="#1f3d7a">Lives with you</text>
+    </g>
+
+    <!-- Pipeline -->
+    <g transform="translate(420,80)">
+      <rect width="280" height="86" fill="#f1f1ec" stroke="#9a9a8c" rx="6"/>
+      <text x="14" y="22" font-size="12" font-weight="bold" fill="#3a3a30">Alongside pipeline</text>
+      <text x="14" y="42" font-size="11" fill="#444">Safety classifier → retrieval</text>
+      <text x="14" y="58" font-size="11" fill="#444">→ grounding check → answer</text>
+      <text x="14" y="74" font-size="11" fill="#444">→ verification → attribution</text>
+    </g>
+
+    <!-- Arrows top row -->
+    <line x1="180" y1="123" x2="220" y2="123" stroke="#444" stroke-width="1.5" marker-end="url(#arrow)"/>
+    <line x1="380" y1="123" x2="420" y2="123" stroke="#444" stroke-width="1.5" marker-end="url(#arrow)"/>
+
+    <!-- Answer card -->
+    <g transform="translate(20,200)">
+      <rect width="680" height="210" fill="#f4f9f3" stroke="#5a8a4a" rx="6"/>
+      <text x="14" y="24" font-size="12" font-weight="bold" fill="#284a18">Answer (returned in seconds)</text>
+
+      <text x="14" y="48" font-size="11" font-weight="bold" fill="#222">Direct answer first.</text>
+      <text x="14" y="64" font-size="11" fill="#222">Repetitive questions are common in middle-stage dementia. Try: answer briefly,</text>
+      <text x="14" y="80" font-size="11" fill="#222">redirect to a small task, lower lighting and noise.</text>
+
+      <text x="14" y="104" font-size="11" font-weight="bold" fill="#222">Why this is happening.</text>
+      <text x="14" y="120" font-size="11" fill="#222">Short-term memory is no longer encoding the answer. The feeling under the question</text>
+      <text x="14" y="136" font-size="11" fill="#222">is usually anxiety, not curiosity.</text>
+
+      <text x="14" y="160" font-size="11" font-weight="bold" fill="#222">Tailored to your situation.</text>
+      <text x="14" y="176" font-size="11" fill="#222">Since Margaret used to teach, you might give her a small “job” that uses her hands.</text>
+
+      <text x="14" y="198" font-size="10" font-style="italic" fill="#5a5a5a">Sources: Alzheimer’s Association · Teepa Snow PAC · reviewed by [Care Specialist]</text>
+    </g>
+
+    <!-- Down arrows -->
+    <line x1="100" y1="170" x2="100" y2="198" stroke="#444" stroke-width="1.5" marker-end="url(#arrow)"/>
+    <line x1="300" y1="170" x2="300" y2="198" stroke="#444" stroke-width="1.5" marker-end="url(#arrow)"/>
+    <line x1="560" y1="170" x2="560" y2="198" stroke="#444" stroke-width="1.5" marker-end="url(#arrow)"/>
+  </g>
+
+  <!-- ============== PANEL 2: Three jobs to three surfaces ============== -->
+  <g transform="translate(820,130)">
+    <rect width="720" height="430" fill="#ffffff" stroke="#dcdcd6" stroke-width="1" rx="6"/>
+    <text x="20" y="32" font-size="15" font-weight="bold" fill="#111">2 · Three jobs → three surfaces</text>
+    <text x="20" y="52" font-size="11" fill="#666">What caregivers actually need, mapped to the product.</text>
+
+    <!-- Header row -->
+    <g transform="translate(20,80)">
+      <rect width="220" height="40" fill="#f1f1ec" stroke="#aaa" rx="4"/>
+      <text x="110" y="25" font-size="12" font-weight="bold" fill="#222" text-anchor="middle">The job</text>
+    </g>
+    <g transform="translate(250,80)">
+      <rect width="220" height="40" fill="#f1f1ec" stroke="#aaa" rx="4"/>
+      <text x="110" y="25" font-size="12" font-weight="bold" fill="#222" text-anchor="middle">When it shows up</text>
+    </g>
+    <g transform="translate(480,80)">
+      <rect width="220" height="40" fill="#f1f1ec" stroke="#aaa" rx="4"/>
+      <text x="110" y="25" font-size="12" font-weight="bold" fill="#222" text-anchor="middle">The surface</text>
+    </g>
+
+    <!-- Row 1 -->
+    <g transform="translate(20,130)">
+      <rect width="220" height="90" fill="#fff5e6" stroke="#e0a85c" rx="4"/>
+      <text x="14" y="24" font-size="12" font-weight="bold" fill="#7a4a00">Do this now</text>
+      <text x="14" y="44" font-size="11" fill="#5a3500">Direct, specific,</text>
+      <text x="14" y="60" font-size="11" fill="#5a3500">non-clinical answer</text>
+      <text x="14" y="76" font-size="11" fill="#5a3500">to a 2 AM problem.</text>
+    </g>
+    <g transform="translate(250,130)">
+      <rect width="220" height="90" fill="#fff" stroke="#ccc" rx="4"/>
+      <text x="14" y="24" font-size="11" fill="#444">She won’t let me</text>
+      <text x="14" y="40" font-size="11" fill="#444">bathe her. She keeps</text>
+      <text x="14" y="56" font-size="11" fill="#444">asking the same</text>
+      <text x="14" y="72" font-size="11" fill="#444">question.</text>
+    </g>
+    <g transform="translate(480,130)">
+      <rect width="220" height="90" fill="#eef4ff" stroke="#5a7fbf" rx="4"/>
+      <text x="14" y="24" font-size="12" font-weight="bold" fill="#1f3d7a">Conversation</text>
+      <text x="14" y="44" font-size="11" fill="#1f3d7a">“Ask anything about</text>
+      <text x="14" y="60" font-size="11" fill="#1f3d7a">caring for [name]”</text>
+      <text x="14" y="76" font-size="11" fill="#1f3d7a">on the home screen.</text>
+    </g>
+
+    <!-- Row 2 -->
+    <g transform="translate(20,230)">
+      <rect width="220" height="90" fill="#fff5e6" stroke="#e0a85c" rx="4"/>
+      <text x="14" y="24" font-size="12" font-weight="bold" fill="#7a4a00">Understand</text>
+      <text x="14" y="44" font-size="11" fill="#5a3500">A frame for what is</text>
+      <text x="14" y="60" font-size="11" fill="#5a3500">happening, grounded</text>
+      <text x="14" y="76" font-size="11" fill="#5a3500">neurologically.</text>
+    </g>
+    <g transform="translate(250,230)">
+      <rect width="220" height="90" fill="#fff" stroke="#ccc" rx="4"/>
+      <text x="14" y="24" font-size="11" fill="#444">Why is she accusing</text>
+      <text x="14" y="40" font-size="11" fill="#444">me of stealing? Why</text>
+      <text x="14" y="56" font-size="11" fill="#444">does sundowning</text>
+      <text x="14" y="72" font-size="11" fill="#444">happen?</text>
+    </g>
+    <g transform="translate(480,230)">
+      <rect width="220" height="90" fill="#eef4ff" stroke="#5a7fbf" rx="4"/>
+      <text x="14" y="24" font-size="12" font-weight="bold" fill="#1f3d7a">Library</text>
+      <text x="14" y="44" font-size="11" fill="#1f3d7a">Browsable index of</text>
+      <text x="14" y="60" font-size="11" fill="#1f3d7a">expert-reviewed</text>
+      <text x="14" y="76" font-size="11" fill="#1f3d7a">modules by topic.</text>
+    </g>
+
+    <!-- Row 3 -->
+    <g transform="translate(20,330)">
+      <rect width="220" height="90" fill="#fff5e6" stroke="#e0a85c" rx="4"/>
+      <text x="14" y="24" font-size="12" font-weight="bold" fill="#7a4a00">See around the corner</text>
+      <text x="14" y="44" font-size="11" fill="#5a3500">What you should be</text>
+      <text x="14" y="60" font-size="11" fill="#5a3500">ready for in the next</text>
+      <text x="14" y="76" font-size="11" fill="#5a3500">few months.</text>
+    </g>
+    <g transform="translate(250,330)">
+      <rect width="220" height="90" fill="#fff" stroke="#ccc" rx="4"/>
+      <text x="14" y="24" font-size="11" fill="#444">When can’t she live</text>
+      <text x="14" y="40" font-size="11" fill="#444">alone? When is</text>
+      <text x="14" y="56" font-size="11" fill="#444">memory care the</text>
+      <text x="14" y="72" font-size="11" fill="#444">right call?</text>
+    </g>
+    <g transform="translate(480,330)">
+      <rect width="220" height="90" fill="#eef4ff" stroke="#5a7fbf" rx="4"/>
+      <text x="14" y="24" font-size="12" font-weight="bold" fill="#1f3d7a">This week’s focus</text>
+      <text x="14" y="44" font-size="11" fill="#1f3d7a">One stage-aware</text>
+      <text x="14" y="60" font-size="11" fill="#1f3d7a">5-min lesson, picked</text>
+      <text x="14" y="76" font-size="11" fill="#1f3d7a">by the system.</text>
+    </g>
+  </g>
+
+  <!-- ============== PANEL 3: Seven-layer pipeline ============== -->
+  <g transform="translate(60,580)">
+    <rect width="720" height="490" fill="#ffffff" stroke="#dcdcd6" stroke-width="1" rx="6"/>
+    <text x="20" y="32" font-size="15" font-weight="bold" fill="#111">3 · The 7-layer RAG pipeline</text>
+    <text x="20" y="52" font-size="11" fill="#666">Why naive retrieve-and-stuff fails in a high-stakes domain.</text>
+
+    <!-- Steps -->
+    <g font-size="11" fill="#222">
+      <!-- Step boxes -->
+      <g transform="translate(20,80)">
+        <rect width="680" height="44" fill="#f8f8f3" stroke="#bbb" rx="4"/>
+        <text x="16" y="20" font-size="11" font-weight="bold" fill="#1f3d7a">L1 · Source library &amp; content hierarchy</text>
+        <text x="16" y="36" font-size="10.5" fill="#444">Tier 1 reviewed modules &gt; Tier 2 curated externals &gt; Tier 3 intervention literature.</text>
+      </g>
+      <g transform="translate(20,134)">
+        <rect width="680" height="44" fill="#f8f8f3" stroke="#bbb" rx="4"/>
+        <text x="16" y="20" font-size="11" font-weight="bold" fill="#1f3d7a">L2 · Query understanding</text>
+        <text x="16" y="36" font-size="10.5" fill="#444">Topic + urgency + stage relevance + safety flags. Routes to retrieval and response template.</text>
+      </g>
+      <g transform="translate(20,188)">
+        <rect width="680" height="44" fill="#f8f8f3" stroke="#bbb" rx="4"/>
+        <text x="16" y="20" font-size="11" font-weight="bold" fill="#1f3d7a">L3 · Hybrid retrieval</text>
+        <text x="16" y="36" font-size="10.5" fill="#444">Embeddings + BM25 + metadata filters (stage, topic). Cross-encoder rerank.</text>
+      </g>
+      <g transform="translate(20,242)">
+        <rect width="680" height="44" fill="#fff3e6" stroke="#e0a85c" rx="4"/>
+        <text x="16" y="20" font-size="11" font-weight="bold" fill="#7a4a00">L4 · Grounding check  —  the reliability gate</text>
+        <text x="16" y="36" font-size="10.5" fill="#5a3500">No trusted source returned? Route to refusal. No generation without grounding.</text>
+      </g>
+      <g transform="translate(20,296)">
+        <rect width="680" height="44" fill="#f8f8f3" stroke="#bbb" rx="4"/>
+        <text x="16" y="20" font-size="11" font-weight="bold" fill="#1f3d7a">L5 · Prompt composition</text>
+        <text x="16" y="36" font-size="10.5" fill="#444">System prompt + care profile + retrieved context + response scaffold + classified query.</text>
+      </g>
+      <g transform="translate(20,350)">
+        <rect width="680" height="44" fill="#fff3e6" stroke="#e0a85c" rx="4"/>
+        <text x="16" y="20" font-size="11" font-weight="bold" fill="#7a4a00">L6 · Post-generation verification</text>
+        <text x="16" y="36" font-size="10.5" fill="#5a3500">Every claim supported? No banned patterns (dosing, diagnosis, “cure”)? Else regenerate.</text>
+      </g>
+      <g transform="translate(20,404)">
+        <rect width="680" height="44" fill="#f8f8f3" stroke="#bbb" rx="4"/>
+        <text x="16" y="20" font-size="11" font-weight="bold" fill="#1f3d7a">L7 · Attribution &amp; evidence display</text>
+        <text x="16" y="36" font-size="10.5" fill="#444">“Based on [module], reviewed by [expert].” Visible on every answer.</text>
+      </g>
+    </g>
+
+    <!-- Vertical flow arrow -->
+    <line x1="710" y1="102" x2="710" y2="426" stroke="#888" stroke-width="1" marker-end="url(#arrowLight)"/>
+  </g>
+
+  <!-- ============== PANEL 4: Trust stack ============== -->
+  <g transform="translate(820,580)">
+    <rect width="720" height="490" fill="#ffffff" stroke="#dcdcd6" stroke-width="1" rx="6"/>
+    <text x="20" y="32" font-size="15" font-weight="bold" fill="#111">4 · The trust stack</text>
+    <text x="20" y="52" font-size="11" fill="#666">Why the answer at 5:47 PM is safe to act on.</text>
+
+    <!-- Pyramid layers, bottom to top -->
+    <!-- Layer widths shrink upward -->
+    <g font-size="11.5" fill="#fff" text-anchor="middle">
+      <!-- L1 -->
+      <g transform="translate(20,420)">
+        <rect width="680" height="50" fill="#1f3d7a" rx="4"/>
+        <text x="340" y="22" font-weight="bold">Reviewed sources</text>
+        <text x="340" y="40" font-size="10.5" fill="#dde6f6">Alzheimer’s Association · NIA · Teepa Snow PAC · REACH II · NYU CI · Savvy Caregiver</text>
+      </g>
+      <!-- L2 -->
+      <g transform="translate(70,360)">
+        <rect width="580" height="50" fill="#2c5797" rx="4"/>
+        <text x="290" y="22" font-weight="bold">Expert review on every module</text>
+        <text x="290" y="40" font-size="10.5" fill="#dde6f6">Medical Director · Care Specialist · Caregiver-Support Clinician · lived-experience reviewer</text>
+      </g>
+      <!-- L3 -->
+      <g transform="translate(120,300)">
+        <rect width="480" height="50" fill="#3a70b8" rx="4"/>
+        <text x="240" y="22" font-weight="bold">RAG grounding + verification</text>
+        <text x="240" y="40" font-size="10.5" fill="#e6eef9">No grounding → refusal. Post-gen check → banned patterns blocked.</text>
+      </g>
+      <!-- L4 -->
+      <g transform="translate(170,240)">
+        <rect width="380" height="50" fill="#4f8acc" rx="4"/>
+        <text x="190" y="22" font-weight="bold">Safety classifier on every query</text>
+        <text x="190" y="40" font-size="10.5" fill="#eaf2fb">Six risk categories. Pre-scripted, versioned escalation flows.</text>
+      </g>
+      <!-- L5 -->
+      <g transform="translate(220,180)">
+        <rect width="280" height="50" fill="#6ea3d9" rx="4"/>
+        <text x="140" y="22" font-weight="bold">Attribution</text>
+        <text x="140" y="40" font-size="10.5" fill="#f0f5fb">Source &amp; reviewer named on every answer.</text>
+      </g>
+      <!-- L6 (apex) -->
+      <g transform="translate(270,120)">
+        <rect width="180" height="50" fill="#94c0e6" rx="4"/>
+        <text x="90" y="22" fill="#0e2a4a" font-weight="bold">Answer to caregiver</text>
+        <text x="90" y="40" font-size="10.5" fill="#0e2a4a">Short. Specific. Trusted.</text>
+      </g>
+    </g>
+
+    <!-- Footnote -->
+    <text x="20" y="465" font-size="10.5" fill="#666">Each layer fails closed. If the layer below cannot deliver, the answer is not generated.</text>
+  </g>
+</svg>

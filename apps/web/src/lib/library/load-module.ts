@@ -12,6 +12,7 @@ import {
 } from "@alongside/db";
 
 import { serverEnv } from "@/lib/env.server";
+import { stripHermesProvenanceHtmlComments } from "@/lib/markdown/strip-provenance-comments";
 
 import { type BranchAxes, parseBranchKeyParam } from "./branch-labels";
 import { CATEGORY_SECTION_TITLES, type LibraryCategory } from "./constants";
@@ -163,6 +164,8 @@ export async function loadModuleBySlug(
       pickedBranch = rowToAxes(fb);
     }
   }
+
+  bodyMd = stripHermesProvenanceHtmlComments(bodyMd);
 
   return {
     id: m.id,
