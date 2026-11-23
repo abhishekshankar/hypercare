@@ -1,0 +1,96 @@
+{
+  "nodes": [
+    {
+      "id": "start",
+      "prompt": "Understanding how your Alzheimer's diagnosis was made helps you grasp what it means. Your diagnosis came from: cognitive testing (memory tests), blood biomarkers (pTau217, pTau181), or brain imaging (MRI/PET). Did you have cognitive or memory testing?",
+      "options": [
+        {
+          "text": "Yes, cognitive testing showed changes",
+          "next_node": "cognitive_branch"
+        },
+        {
+          "text": "No, biomarkers or imaging instead",
+          "next_node": "biomarker_imaging_branch"
+        },
+        {
+          "text": "I'm not sure what tests I had",
+          "next_node": "uncertain_ask_doctor"
+        }
+      ],
+      "outcome": null
+    },
+    {
+      "id": "cognitive_branch",
+      "prompt": "Cognitive testing shows changes in memory and thinking. Modern diagnosis combines this with blood biomarkers (pTau217, pTau181) for strongest confirmation. Did you also have positive biomarker results or brain imaging?",
+      "options": [
+        {
+          "text": "Yes, positive biomarkers and/or imaging",
+          "next_node": "confirmed_diagnosis"
+        },
+        {
+          "text": "No biomarkers or imaging, just cognitive testing",
+          "next_node": "pathway_with_recommendation"
+        }
+      ],
+      "outcome": null
+    },
+    {
+      "id": "biomarker_imaging_branch",
+      "prompt": "Blood biomarkers (pTau217, pTau181) show Alzheimer's proteins in your blood. Brain imaging shows physical brain changes. Modern diagnosis ideally includes cognitive testing. Did you also have cognitive or memory testing?",
+      "options": [
+        {
+          "text": "Yes, also had cognitive testing",
+          "next_node": "confirmed_diagnosis"
+        },
+        {
+          "text": "No cognitive testing",
+          "next_node": "pathway_with_recommendation"
+        }
+      ],
+      "outcome": null
+    },
+    {
+      "id": "confirmed_diagnosis",
+      "prompt": "Excellent. Your diagnosis combines cognitive changes with biomarker and/or imaging evidence. This is the modern diagnostic standard for early-stage Alzheimer's disease. Your diagnosis is well-grounded.",
+      "options": [
+        {
+          "text": "Ready for next steps",
+          "next_node": "action_planning"
+        }
+      ],
+      "outcome": "Cognitive + biomarkers and/or imaging confirmed. Your Alzheimer's diagnosis is well-grounded. Early stage."
+    },
+    {
+      "id": "pathway_with_recommendation",
+      "prompt": "Your diagnosis is valid but represents one pillar of modern practice. Diagnosis based on cognitive testing alone is valid with an experienced neurologist. Biomarkers and/or imaging alone also suggest Alzheimer's. However, modern best practice combines cognitive testing with blood biomarkers (pTau217, pTau181) for strongest confirmation. Ask your doctor: (1) 'Would biomarker testing help confirm my diagnosis?' (2) 'What is my stage (mild cognitive impairment or mild dementia)?'",
+      "options": [
+        {
+          "text": "I'll ask my doctor about additional testing",
+          "next_node": "action_planning"
+        },
+        {
+          "text": "I'm satisfied with my diagnosis",
+          "next_node": "action_planning"
+        }
+      ],
+      "outcome": "Ask your doctor about additional testing for confirmation. Either way, move forward with care planning."
+    },
+    {
+      "id": "uncertain_ask_doctor",
+      "prompt": "It's common to be unsure which tests you had — diagnosis often involves multiple visits. Ask your doctor: (1) 'Did I have cognitive or memory tests?' (2) 'Did I have blood tests for amyloid or tau (pTau217, pTau181)?' (3) 'Did I have brain imaging (MRI or PET)?' (4) 'What do the results mean?' Your Alzheimer's diagnosis means evidence of amyloid accumulation, tau tangles, or both in your brain.",
+      "options": [
+        {
+          "text": "I'll ask my doctor to explain my tests",
+          "next_node": "action_planning"
+        }
+      ],
+      "outcome": "Ask your doctor to clarify which tests you had and what they showed. Modern diagnosis combines cognitive, biomarker, and imaging evidence."
+    },
+    {
+      "id": "action_planning",
+      "prompt": "Now that you understand your diagnosis: (1) Ask about disease-modifying therapies (DMTs like lecanemab/Leqembi or donanemab/Kisunla) and your eligibility. (2) Clarify your stage (mild cognitive impairment or mild dementia) and what to expect in 6–12 months. (3) Set up regular follow-up appointments (usually every 3–6 months). (4) Plan: tell family, update primary doctor, ask about legal/financial planning and driving reassessment. (5) Consider a support group or clinical trial. Bring written questions to your next appointment. You're ready.",
+      "options": [],
+      "outcome": "You understand your diagnostic pathway. Focus on disease-modifying therapies, your stage, follow-up, and planning with family and your care team."
+    }
+  ]
+}

@@ -1,0 +1,31 @@
+{
+  "name": "@alongside/picker",
+  "version": "0.0.0",
+  "private": true,
+  "type": "module",
+  "main": "./dist/index.js",
+  "types": "./dist/index.d.ts",
+  "exports": {
+    ".": {
+      "types": "./dist/index.d.ts",
+      "import": "./dist/index.js"
+    }
+  },
+  "scripts": {
+    "build": "node ../../node_modules/typescript/lib/tsc.js -p tsconfig.json",
+    "lint": "eslint src test --max-warnings 0",
+    "typecheck": "node ../../node_modules/typescript/lib/tsc.js -p tsconfig.json --noEmit",
+    "test": "node ../../node_modules/vitest/vitest.mjs run"
+  },
+  "dependencies": {
+    "@alongside/content": "workspace:*",
+    "@alongside/db": "workspace:*",
+    "@alongside/rag": "workspace:*",
+    "drizzle-orm": "^0.45.2"
+  },
+  "devDependencies": {
+    "@types/node": "^20.19.39",
+    "typescript": "^5.9.3",
+    "vitest": "^3.2.4"
+  }
+}

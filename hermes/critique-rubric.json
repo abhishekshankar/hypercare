@@ -1,0 +1,194 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://alongside.app/schemas/critique-rubric-v1.json",
+  "title": "Alongside Heavy Module Critique Rubric v1",
+  "description": "The critique JSON returned by the Critique Agent (and by the human-in-the-loop reviewer) for every heavy module bundle. Hermes' rewrite loop reads this and dispatches the named agent against the named issue.",
+  "type": "object",
+  "required": ["slug", "verdict", "overall_score", "axis_scores", "rewrite_instructions", "rubric_version"],
+  "additionalProperties": false,
+  "properties": {
+    "slug": {
+      "type": "string",
+      "description": "The module slug being critiqued, e.g. medical-dmt."
+    },
+    "rubric_version": {
+      "type": "string",
+      "const": "v1.0",
+      "description": "Locked in the pilot phase. Bumps require re-scoring all prior modules."
+    },
+    "verdict": {
+      "type": "string",
+      "enum": ["pass", "rewrite", "block"],
+      "description": "pass = ship to human review. rewrite = Hermes loops on rewrite_instructions. block = unrecoverable problem (e.g. fabricated first-person quote); needs human-in-the-loop intervention."
+    },
+    "overall_score": {
+      "type": "number",
+      "minimum": 0,
+      "maximum": 10,
+      "description": "Weighted composite. Gate to pass: overall >= 9 AND every axis >= 8."
+    },
+    "axis_scores": {
+      "type": "object",
+      "required": [
+        "clinical_depth",
+        "specificity",
+        "lived_experience",
+        "tools",
+        "branches",
+        "emotional_handling",
+        "evidence_table",
+        "related_modules",
+        "refusal_awareness",
+        "operational_metadata",
+        "corpus_discipline"
+      ],
+      "additionalProperties": false,
+      "properties": {
+        "clinical_depth": {
+          "$ref": "#/$defs/axisScore",
+          "description": "Mechanism + named studies + 2025-2026 modern framing where the field has moved (DMT, blood biomarkers, GUIDE, etc.). 10 = a memory-clinic clinician would recognize the depth. 7 = pamphlet-level."
+        },
+        "specificity": {
+          "$ref": "#/$defs/axisScore",
+          "description": "Concrete instances per 1000 words. 10 = >=6 concrete instances, every recommendation has a specific form. 7 = mostly abstractions ('lower the lights')."
+        },
+        "lived_experience": {
+          "$ref": "#/$defs/axisScore",
+          "description": "Provenance-tagged voices; composites third-person and clearly framed as illustrative; first-person quotes only when real-interview or published-attributed. 10 = real voices land. 0 = fabricated first-person."
+        },
+        "tools": {
+          "$ref": "#/$defs/axisScore",
+          "description": "At least one decision tree / checklist / script / template that's actionable on its own. JSON validates against the per-tool Zod schema. UI-ready. 10 = caregiver could screenshot and use it tonight. 5 = prose dressed as a checklist."
+        },
+        "branches": {
+          "$ref": "#/$defs/axisScore",
+          "description": "Branches present where they matter. Each variant reads like it was written for that combination, not find-replaced. 10 = a daughter caring for a parent in memory care reads a different module than a spouse caring at home, and both feel native. 6 = single body."
+        },
+        "emotional_handling": {
+          "$ref": "#/$defs/axisScore",
+          "description": "Difficult emotions named, not bypassed. No false reassurance, no toxic positivity, no reflective listening that amplifies distress. Soft-flag companion edges declared where the module sits adjacent to crisis territory."
+        },
+        "evidence_table": {
+          "$ref": "#/$defs/axisScore",
+          "description": "Every numbered [N] claim in body and branches has a module_evidence row with non-null quoted_excerpt, claim_anchor, and a working source pointer. URL acceptance: HTTP HEAD 200 OR a locked url_snapshot file is on disk. Tier-2 sources commonly block bots (NIA returns 405; Lancet returns 403); for those, snapshot presence is the load-bearing artifact and must not penalize the score. 10 = every claim anchored, every URL either resolves or is captured to snapshot. 7 = some claims unanchored, or snapshots claimed but missing on disk."
+        },
+        "related_modules": {
+          "$ref": "#/$defs/axisScore",
+          "description": "Edges typed correctly (prerequisite | follow_up | deeper | contradicts | soft_flag_companion). Contradicts edges declared where the module differs from generic guidance (e.g., LBD-specific antipsychotic guidance contradicting the generic agitation module)."
+        },
+        "refusal_awareness": {
+          "$ref": "#/$defs/axisScore",
+          "description": "primary_topics genuinely cover the topics this module addresses; module is honest about what it does NOT cover (a 'see also' or limit-of-scope section). No topic-tagging gaming."
+        },
+        "operational_metadata": {
+          "$ref": "#/$defs/axisScore",
+          "description": "All five metadata fields populated correctly: srs_suitable reflects re-surface intent (some modules are once-and-done), srs_difficulty_bucket calibrated, weeks_focus_eligible set with reason, soft_flag_companion_for declared, secondary_topics filled."
+        },
+        "corpus_discipline": {
+          "$ref": "#/$defs/axisScore",
+          "description": "Every retrieval traces to corpus or captured snapshot. No 'recent research' without a specific source. No claims grounded in model knowledge alone. URL HEAD failures (e.g. 403/405 for sources that block bots like NIA, Lancet, Roche) are acceptable when the locked snapshot is present on disk; those do not lower the score. What does lower the score: claims without [N] anchors, [N] anchors without rows, or url_snapshot_path values that point to files that don't exist."
+        }
+      }
+    },
+    "rewrite_instructions": {
+      "type": "array",
+      "description": "Empty when verdict is pass. One entry per actionable issue when verdict is rewrite or block.",
+      "items": {
+        "$ref": "#/$defs/rewriteInstruction"
+      }
+    },
+    "block_reason": {
+      "type": "string",
+      "description": "Required when verdict is block. Names the unrecoverable issue (e.g. 'fabricated first-person quotes detected; pipeline integrity compromised; needs human in the loop')."
+    },
+    "consecutive_passes": {
+      "type": "integer",
+      "minimum": 0,
+      "description": "Anti-flicker counter. Two consecutive passes from the same critique pass are required before the module advances to pending_human_review."
+    },
+    "scored_at": {
+      "type": "string",
+      "format": "date-time"
+    },
+    "scorer": {
+      "type": "string",
+      "enum": ["hermes_internal_critique", "claude_external_critique", "human_reviewer"],
+      "description": "Who produced this critique. Hermes runs internal first; Claude runs external in the Cowork loop; humans run final."
+    },
+    "notes": {
+      "type": "string",
+      "description": "Free-form scorer notes. Not consumed by the rewrite loop; surfaced in the review UI for context."
+    }
+  },
+  "$defs": {
+    "axisScore": {
+      "type": "object",
+      "required": ["score", "evidence"],
+      "additionalProperties": false,
+      "properties": {
+        "score": {
+          "type": "number",
+          "minimum": 0,
+          "maximum": 10
+        },
+        "evidence": {
+          "type": "string",
+          "description": "Short quote or pointer from the module that justifies the score. Required so scores aren't black-box."
+        }
+      }
+    },
+    "rewriteInstruction": {
+      "type": "object",
+      "required": ["axis", "issue", "fix", "agent"],
+      "additionalProperties": false,
+      "properties": {
+        "axis": {
+          "type": "string",
+          "enum": [
+            "clinical_depth",
+            "specificity",
+            "lived_experience",
+            "tools",
+            "branches",
+            "emotional_handling",
+            "evidence_table",
+            "related_modules",
+            "refusal_awareness",
+            "operational_metadata",
+            "corpus_discipline"
+          ]
+        },
+        "issue": {
+          "type": "string",
+          "description": "Concrete description of what is wrong, with a quote or location pointer."
+        },
+        "fix": {
+          "type": "string",
+          "description": "What the rewrite should produce. Specific enough that the named agent can act without further interpretation."
+        },
+        "agent": {
+          "type": "string",
+          "enum": [
+            "brief",
+            "clinical",
+            "specificity",
+            "lived_experience",
+            "tools",
+            "branching",
+            "citation",
+            "synthesis"
+          ],
+          "description": "Which Hermes subagent should run the rewrite."
+        },
+        "branch_key": {
+          "type": "string",
+          "description": "Optional. When the issue is in a specific branch, names that branch in stage:relationship:living_situation form."
+        },
+        "tool_slug": {
+          "type": "string",
+          "description": "Optional. When the issue is in a specific tool, names that tool by slug."
+        }
+      }
+    }
+  }
+}

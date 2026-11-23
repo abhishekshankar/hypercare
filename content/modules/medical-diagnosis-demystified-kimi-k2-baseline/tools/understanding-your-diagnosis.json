@@ -1,0 +1,51 @@
+{
+  "tool_type": "decision_tree",
+  "slug": "understanding-your-diagnosis",
+  "title": "Understanding Your Diagnosis",
+  "root": "node-1",
+  "nodes": {
+    "node-1": {
+      "question": "Have you been told the diagnosis is 'dementia' or 'mild cognitive impairment (MCI)'?",
+      "yes": "node-2",
+      "no": "node-3"
+    },
+    "node-2": {
+      "question": "Has a specific cause been named, like Alzheimer's disease, vascular dementia, Lewy body dementia, or frontotemporal dementia?",
+      "yes": "node-4",
+      "no": "node-5"
+    },
+    "node-3": {
+      "question": "Are cognitive changes being evaluated but no formal diagnosis given yet?",
+      "yes": "outcome-evaluation-ongoing",
+      "no": "outcome-no-concern"
+    },
+    "node-4": {
+      "question": "Do you understand what this specific cause means for prognosis and expected symptoms?",
+      "yes": "outcome-understood-specific",
+      "no": "outcome-needs-explanation-specific"
+    },
+    "node-5": {
+      "question": "Has the clinician explained that dementia/MCI is a syndrome (a group of symptoms) and they are working to identify the underlying cause?",
+      "yes": "outcome-syndrome-understood",
+      "no": "outcome-needs-explanation-syndrome"
+    },
+    "outcome-evaluation-ongoing": {
+      "outcome": "The diagnostic workup is still in progress. Ask what tests are planned next and when you can expect results. Keep tracking symptoms and questions for the next appointment."
+    },
+    "outcome-no-concern": {
+      "outcome": "If no cognitive concerns were identified, discuss what to watch for and when to return for re-evaluation if changes occur."
+    },
+    "outcome-understood-specific": {
+      "outcome": "You have a clear understanding of the specific diagnosis. Focus on next steps: care planning, support resources, and whether disease-modifying treatments might be an option (discuss with clinician)."
+    },
+    "outcome-needs-explanation-specific": {
+      "outcome": "Ask the clinician to explain: 1) What this specific diagnosis means, 2) How it was determined, 3) What symptoms to expect, 4) What the typical progression looks like."
+    },
+    "outcome-syndrome-understood": {
+      "outcome": "You understand dementia/MCI describes symptoms but not the cause. Ask: What tests are being done to identify the cause? What is the timeline for those tests?"
+    },
+    "outcome-needs-explanation-syndrome": {
+      "outcome": "Ask the clinician to clarify: 1) What dementia or MCI means as a clinical syndrome, 2) Why they haven't specified a cause yet, 3) What the diagnostic process involves moving forward."
+    }
+  }
+}

@@ -1,0 +1,50 @@
+{
+  "tool_type": "checklist",
+  "slug": "questions-for-the-follow-up-visit",
+  "title": "Questions for the Follow-up Visit",
+  "context": "Bring this list to your next appointment to ensure you cover all important topics with the clinician.",
+  "items": [
+    {
+      "id": "diagnosis-certainty",
+      "label": "How certain are you about the diagnosis? What else could be causing the symptoms?",
+      "rationale": "Understanding the level of certainty helps you gauge next steps and whether further testing is needed.",
+      "what_to_look_for": "Listen for specific percentages or descriptions of confidence, and what alternative conditions are being considered."
+    },
+    {
+      "id": "treatable-contributors",
+      "label": "Are there any treatable conditions (like vitamin deficiencies, thyroid issues, medication side effects) that could be contributing to cognitive changes?",
+      "rationale": "Some causes of cognitive impairment can be reversed or improved with treatment.",
+      "what_to_look_for": "Ask about specific blood tests or evaluations that have been done or should be done to rule out reversible causes."
+    },
+    {
+      "id": "stage-assessment",
+      "label": "What stage would you say the condition is in now, and how do you determine that?",
+      "rationale": "Knowing the stage helps with planning and understanding what to expect.",
+      "what_to_look_for": "Look for clarification on whether staging is based on cognitive tests, functional abilities, or biomarkers."
+    },
+    {
+      "id": "warning-signs",
+      "label": "What specific changes should we watch for that would require contacting you or seeking urgent care?",
+      "rationale": "Clear warning signs help you respond promptly to potential complications.",
+      "what_to_look_for": "Get a list of symptoms (e.g., sudden confusion, falls, behavior changes) and clear instructions on when to call vs. go to the ER."
+    },
+    {
+      "id": "medications-review",
+      "label": "Are any current medications helping or worsening symptoms? Are there new medications being considered?",
+      "rationale": "Medications can affect cognition, and some may be prescribed to manage symptoms.",
+      "what_to_look_for": "Discuss each medication's purpose, potential side effects, and whether any adjustments are being considered."
+    },
+    {
+      "id": "clinical-trials",
+      "label": "Are there any clinical trials or research studies that might be appropriate?",
+      "rationale": "Participating in research can provide access to new interventions and contribute to medical knowledge.",
+      "what_to_look_for": "Ask about eligibility criteria, location, and what participation involves."
+    },
+    {
+      "id": "follow-up-timeline",
+      "label": "What is the expected timeline for progression, and how often should we have follow-up appointments?",
+      "rationale": "Understanding the expected pace of change helps with planning and setting realistic expectations.",
+      "what_to_look_for": "Get a sense of typical intervals for follow-up (e.g., every 3-6 months) and what assessments will be repeated."
+    }
+  ]
+}

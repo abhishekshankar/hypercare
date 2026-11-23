@@ -1,0 +1,256 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<title>Alongside — Homepage</title>
+<link rel="stylesheet" href="homepage-tokens.css" />
+<style>
+  body { margin: 0; background: #E4DDD0; font-family: 'Inter', sans-serif; }
+
+  /* Rationale panel */
+  .rationale-card {
+    background: #F7F4EE; border: 1px solid #D8CFBE;
+    border-radius: 8px; padding: 32px; font-size: 14px; line-height: 1.6;
+    color: #3A3733; width: 100%;
+  }
+  .rationale-card h3 {
+    font-family: 'Source Serif 4', Georgia, serif; font-weight: 500;
+    font-size: 22px; margin: 0 0 4px; color: #1B1A17;
+  }
+  .rationale-card .eyebrow {
+    font-size: 11px; letter-spacing: 0.2em; text-transform: uppercase;
+    color: #415A3E; font-weight: 600; margin-bottom: 20px;
+  }
+  .rationale-card h4 {
+    font-family: 'Inter'; font-weight: 600; font-size: 13px;
+    letter-spacing: 0.12em; text-transform: uppercase; color: #1B1A17;
+    margin: 24px 0 8px; padding-bottom: 6px; border-bottom: 1px solid #D8CFBE;
+  }
+  .rationale-card h4:first-of-type { margin-top: 16px; }
+  .rationale-card p { margin: 0 0 10px; max-width: 56ch; }
+  .rationale-card strong { color: #1B1A17; }
+  .rationale-card ul { margin: 0 0 8px; padding-left: 20px; }
+  .rationale-card li { margin-bottom: 8px; }
+  .rationale-card li::marker { color: #B8531A; }
+
+  /* Artboard frame styling */
+  .artboard-frame { overflow: auto; background: #F7F4EE; }
+  .artboard-frame.mobile { width: 390px; }
+</style>
+</head>
+<body>
+
+<div id="root"></div>
+
+<script src="https://unpkg.com/react@18.3.1/umd/react.development.js" integrity="sha384-hD6/rw4ppMLGNu3tX5cjIb+uRZ7UkRJ6BPkLpg4hAu/6onKUg4lLsHAs9EBPT82L" crossorigin="anonymous"></script>
+<script src="https://unpkg.com/react-dom@18.3.1/umd/react-dom.development.js" integrity="sha384-u6aeetuaXnQ38mYT8rp6sbXaQe3NL9t+IBXmnYxwkUI2Hw4bsp2Wvmx4yRQF1uAm" crossorigin="anonymous"></script>
+<script src="https://unpkg.com/@babel/standalone@7.29.0/babel.min.js" integrity="sha384-m08KidiNqLdpJqLq95G/LEi8Qvjl/xUYll3QILypMoQ65QorJ9Lvtp2RXYGBFj1y" crossorigin="anonymous"></script>
+
+<script type="text/babel" src="design-canvas.jsx"></script>
+<script type="text/babel" src="homepage-sections.jsx"></script>
+
+<script>
+  const TWEAKS = /*EDITMODE-BEGIN*/{
+    "headlineMaxWidth": 520,
+    "headlineSize": 44,
+    "subheadSize": 22,
+    "primaryCtaLabel": "Get started",
+    "ctaFullBleed": false
+  }/*EDITMODE-END*/;
+</script>
+
+<style>
+  /* Tweaks panel */
+  .tweaks-panel {
+    position: fixed; bottom: 20px; right: 20px; z-index: 9999;
+    width: 300px; background: #F7F4EE; border: 1px solid #D8CFBE;
+    border-radius: 12px; padding: 16px 18px 18px;
+    box-shadow: 0 1px 0 rgba(27,26,23,.04), 0 18px 40px -20px rgba(27,26,23,.25);
+    font-family: 'Inter', sans-serif; font-size: 13px; color: #1B1A17;
+    display: none;
+  }
+  .tweaks-panel.open { display: block; }
+  .tweaks-panel h4 {
+    font-family: 'Source Serif 4', Georgia, serif; font-weight: 500;
+    font-size: 17px; margin: 0 0 4px; color: #1B1A17;
+  }
+  .tweaks-panel .sub {
+    font-size: 11px; letter-spacing: 0.14em; text-transform: uppercase;
+    color: #5E5952; margin-bottom: 14px;
+  }
+  .tweaks-row { display: flex; flex-direction: column; gap: 6px; margin-bottom: 14px; }
+  .tweaks-row label { font-size: 12px; color: #3A3733; display: flex; justify-content: space-between; }
+  .tweaks-row label b { color: #415A3E; font-weight: 600; font-variant-numeric: tabular-nums; }
+  .tweaks-row input[type="range"] { width: 100%; accent-color: #415A3E; }
+  .tweaks-row input[type="text"] {
+    font: inherit; font-size: 13px; padding: 8px 10px; border: 1px solid #B8AD96;
+    border-radius: 4px; background: #F7F4EE; color: #1B1A17;
+  }
+  .tweaks-row.toggle { flex-direction: row; align-items: center; justify-content: space-between; }
+</style>
+<script type="text/babel">
+const Rationale = () => (
+  <div className="rationale-card">
+    <div className="eyebrow">Reader's notes</div>
+    <h3>Why this homepage looks the way it does</h3>
+
+    <h4>Headline & the decision to name the pain first</h4>
+    <p>The first word the caregiver reads is "Caregiving" — not "Alongside." We name their experience before naming ourselves. "Relentless" is italicized in moss to land emotionally without theatrics. The sentence resolves with <strong>"You shouldn't have to figure it out alone"</strong> — a promise, not a pitch.</p>
+
+    <h4>One CTA, plus a trust link beside it</h4>
+    <p>"Get started" is the only primary action on the page. Next to it sits <strong>"How is my data used?"</strong> — styled as a quiet underlined link. This is load-bearing: for a caregiver weighing whether to confide anything about a loved one, the conversion lever is trust, not urgency. We've deliberately made the trust escape hatch as prominent as any secondary CTA would be.</p>
+
+    <h4>Crisis strip as product chrome, not a banner</h4>
+    <p>The amber strip is <code>position: sticky; top: 0</code>, persistent through scroll. It is framed as a standing commitment: a real phone number, reachable right now. On mobile the strip reflows to two lines so the phone number gets a tap-sized target.</p>
+
+    <h4>"Three things, done plainly."</h4>
+    <p>The jobs-to-be-done section uses a three-column editorial grid divided by hairline rules. Numbered in serif italic — this is the one place on the page that feels like a printed table of contents rather than an app. Each job is written as <em>what the product does for you</em>, not what the product is.</p>
+
+    <h4>Named reviewers with institutions visible</h4>
+    <p>Clinician credentials appear as right-aligned small caps — the visual language of a masthead or journal bylines. No headshots. No quotes from them. The authority comes from the name + credential + institution, not from performative warmth.</p>
+
+    <h4>Two quotes, specific enough to be true</h4>
+    <p>The quotes name a moment ("2 a.m., my father kept trying to leave the house") rather than making a generic claim. Specificity is the cheapest signal of authenticity. Attribution uses first name + last initial + city — honest about anonymity without hiding the person.</p>
+
+    <h4>Typography at rest</h4>
+    <p>The hero headline is 68px Source Serif 4 at -0.02em tracking. Body sub-head is Source Serif 4 Light 22px at 1.5 line-height — deliberately serif to keep editorial register. Nav, CTA, and metadata are Inter. Serif for voice, sans for function.</p>
+
+    <h4>Closing CTA, not a wall</h4>
+    <p>The page ends with a single quiet section titled <em>"If tonight is hard, start here."</em> — a direct, circumstantial invitation rather than a sales close. The same CTA + data link repeats; that's the entire conversion surface of the page.</p>
+
+    <h4 style={{color: '#B8531A', borderColor: '#B8531A'}}>What I deliberately did not include</h4>
+    <ul>
+      <li><strong>No hero image.</strong> No smiling couple, no hands, no stock photography. Any photograph of a caregiver at this moment would feel false — the reader's own situation is more real than any image we could show. Whitespace is the image.</li>
+      <li><strong>No gradients or soft glows.</strong> The page uses flat paper (<code>#F7F4EE</code>) and a slightly darker band at the closing section — no radial glow behind the headline, no subtle color wash.</li>
+      <li><strong>No social-proof numbers.</strong> No "Join 50,000 caregivers," no user counts, no "as seen in." The reader is in a private moment; being told they're part of a crowd would be the wrong tone.</li>
+      <li><strong>No testimonial carousel.</strong> Two quotes, presented side-by-side, static. Nothing auto-advances. Nothing asks for attention.</li>
+      <li><strong>No popup, no exit intent, no chatbot bubble, no cookie banner styled as a CTA.</strong> The only thing that moves is scroll.</li>
+      <li><strong>No "AI" language.</strong> The word "AI" does not appear on the page. The product's value is described in human terms — answers, a record, a real person — because that's what caregivers are looking for.</li>
+      <li><strong>No emoji, no iconography in the hero.</strong> The only pictographic element anywhere is a single arrow glyph on the CTA.</li>
+      <li><strong>No "Start free trial" or scarcity framing.</strong> "Get started" is the least transactional verb we could use.</li>
+    </ul>
+  </div>
+);
+
+const TweaksPanel = ({ open, values, onChange }) => (
+  <div className={"tweaks-panel " + (open ? "open" : "")}>
+    <h4>Tweaks</h4>
+    <div className="sub">Alongside · homepage</div>
+
+    <div className="tweaks-row">
+      <label>Headline box width <b>{values.headlineMaxWidth}px</b></label>
+      <input type="range" min="360" max="780" step="10"
+        value={values.headlineMaxWidth}
+        onChange={e => onChange('headlineMaxWidth', +e.target.value)} />
+    </div>
+
+    <div className="tweaks-row">
+      <label>Headline size <b>{values.headlineSize}px</b></label>
+      <input type="range" min="40" max="88" step="2"
+        value={values.headlineSize}
+        onChange={e => onChange('headlineSize', +e.target.value)} />
+    </div>
+
+    <div className="tweaks-row">
+      <label>Sub-head size <b>{values.subheadSize}px</b></label>
+      <input type="range" min="16" max="28" step="1"
+        value={values.subheadSize}
+        onChange={e => onChange('subheadSize', +e.target.value)} />
+    </div>
+
+    <div className="tweaks-row">
+      <label>Primary CTA label</label>
+      <input type="text" value={values.primaryCtaLabel}
+        onChange={e => onChange('primaryCtaLabel', e.target.value)} />
+    </div>
+
+    <div className="tweaks-row toggle">
+      <label style={{flex: 1}}>Full-bleed CTA on desktop</label>
+      <input type="checkbox" checked={values.ctaFullBleed}
+        onChange={e => onChange('ctaFullBleed', e.target.checked)} />
+    </div>
+  </div>
+);
+
+const App = () => {
+  const [tweaks, setTweaks] = React.useState(TWEAKS);
+  const [editOpen, setEditOpen] = React.useState(false);
+
+  React.useEffect(() => {
+    const handler = (e) => {
+      if (!e.data || typeof e.data !== 'object') return;
+      if (e.data.type === '__activate_edit_mode') setEditOpen(true);
+      if (e.data.type === '__deactivate_edit_mode') setEditOpen(false);
+    };
+    window.addEventListener('message', handler);
+    window.parent.postMessage({type: '__edit_mode_available'}, '*');
+    return () => window.removeEventListener('message', handler);
+  }, []);
+
+  // Apply tweaks live via CSS custom props + inline overrides
+  React.useEffect(() => {
+    document.documentElement.style.setProperty('--hp-headline-maxw', tweaks.headlineMaxWidth + 'px');
+    document.querySelectorAll('.hp-headline').forEach(el => { el.style.fontSize = tweaks.headlineSize + 'px'; });
+    document.querySelectorAll('.hp-subhead').forEach(el => { el.style.fontSize = tweaks.subheadSize + 'px'; });
+    document.querySelectorAll('.hp:not(.hp-mobile) .hp-cta').forEach(el => {
+      el.style.width = tweaks.ctaFullBleed ? '100%' : '';
+      el.style.justifyContent = tweaks.ctaFullBleed ? 'center' : '';
+    });
+    document.querySelectorAll('.hp-cta').forEach(el => {
+      const arrow = el.querySelector('.arr');
+      el.firstChild && (el.firstChild.nodeType === 3
+        ? el.firstChild.textContent = tweaks.primaryCtaLabel + ' '
+        : null);
+      // safer: rewrite content
+      el.innerHTML = '';
+      el.appendChild(document.createTextNode(tweaks.primaryCtaLabel + ' '));
+      const sp = document.createElement('span');
+      sp.className = 'arr'; sp.setAttribute('aria-hidden','true'); sp.textContent = '→';
+      el.appendChild(sp);
+    });
+  }, [tweaks]);
+
+  const onChange = (key, value) => {
+    setTweaks(prev => {
+      const next = { ...prev, [key]: value };
+      window.parent.postMessage({type: '__edit_mode_set_keys', edits: { [key]: value }}, '*');
+      return next;
+    });
+  };
+
+  return (
+    <>
+      <DesignCanvas title="Alongside — Homepage" subtitle="Desktop & mobile, with design rationale">
+        <DCSection id="desktop" title="Desktop · 1440 × auto">
+          <DCArtboard id="desktop-home" label="Homepage — desktop" width={1440} height={3000}>
+            <div className="artboard-frame">
+              <HPHomepage mobile={false} />
+            </div>
+          </DCArtboard>
+        </DCSection>
+
+        <DCSection id="mobile" title="Mobile · 390 × auto">
+          <DCArtboard id="mobile-home" label="Homepage — mobile" width={390} height={2600}>
+            <div className="artboard-frame mobile">
+              <HPHomepage mobile={true} />
+            </div>
+          </DCArtboard>
+        </DCSection>
+
+        <DCSection id="rationale" title="Rationale & what I didn't do">
+          <DCArtboard id="rationale-card" label="Designer's notes" width={720} height={1400}>
+            <Rationale />
+          </DCArtboard>
+        </DCSection>
+      </DesignCanvas>
+      <TweaksPanel open={editOpen} values={tweaks} onChange={onChange} />
+    </>
+  );
+};
+
+ReactDOM.createRoot(document.getElementById('root')).render(<App />);
+</script>
+
+</body>
+</html>

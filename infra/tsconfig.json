@@ -2,8 +2,8 @@
   "extends": "../tsconfig.base.json",
   "compilerOptions": {
     "target": "ES2022",
-    "module": "NodeNext",
-    "moduleResolution": "NodeNext",
+    "module": "CommonJS",
+    "moduleResolution": "Node",
     "lib": ["es2022"],
     "declaration": true,
     "inlineSourceMap": true,
@@ -12,8 +12,8 @@
     "strictPropertyInitialization": false,
     "typeRoots": ["./node_modules/@types"],
     "outDir": "dist",
-    "rootDir": "bin"
+    "rootDir": "."
   },
-  "include": ["bin/**/*.ts"],
+  "include": ["bin/**/*.ts", "lib/**/*.ts", "lib/bootstrap-lambda/pem.d.ts"],
   "exclude": ["node_modules", "cdk.out", "dist"]
 }

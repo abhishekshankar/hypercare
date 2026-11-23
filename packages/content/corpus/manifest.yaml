@@ -1,0 +1,506 @@
+# Alongside source corpus manifest
+# Read by: packages/content/src/corpus.ts (ingestion + retrieval)
+# Written by: humans (this file is the contract)
+# Hermes' Clinical, Specificity, Lived Experience, and Citation agents retrieve from corpus_chunks.
+# Tier 1 = Alongside's own reviewed modules (not in this file; retrieved from modules table).
+# Tier 2 = curated externals; LOCKED sources have a snapshot in corpus/snapshots/.
+# Tier 3 = intervention literature.
+#
+# Locked sources are deterministic; web-allowed sources may be retrieved per-run with snapshot capture.
+# Web-allowed sources MUST be captured via url_snapshot at retrieval time (Citation Agent enforces).
+
+version: "2026.04"
+last_updated: "2026-04-25"
+
+sources:
+  # =========================================================
+  # Tier 2 — Pre-2024 PRD baseline (already in scope)
+  # =========================================================
+
+  - id: alz-association-caregiver-center
+    title: "Caregiver Center"
+    organization: "Alzheimer's Association"
+    tier: 2
+    url: "https://www.alz.org/help-support/caregiving"
+    locked: true
+    snapshot_path: "corpus/snapshots/alz-association-caregiver-center.html"
+    last_verified: "2026-04-25"
+    relevant_clusters: [behaviors, daily_care, communication, transitions, caring_for_yourself]
+    relevant_modules: ALL
+    notes: "The single most important Tier-2 source. Crisis helpline 800-272-3900 referenced everywhere."
+
+  - id: alz-association-2026-facts-figures
+    title: "2026 Alzheimer's Disease Facts and Figures"
+    organization: "Alzheimer's Association"
+    tier: 2
+    url: "https://www.alz.org/alzheimers-dementia/facts-figures"
+    locked: true
+    snapshot_path: "corpus/snapshots/alz-association-2026-facts-figures.html"
+    last_verified: "2026-04-25"
+    relevant_clusters: [legal_financial, transitions, caring_for_yourself]
+    relevant_modules: [legal-medicaid-and-long-term-care-planning, self-care-caregiver-burnout, legal-paying-for-care]
+    notes: "7.4M Americans 65+ with Alzheimer's; $446B unpaid care; $405,262 lifetime cost per person. Refresh annually."
+
+  - id: nia-caregiving
+    title: "Caregiving"
+    organization: "National Institute on Aging (NIA / NIH)"
+    tier: 2
+    url: "https://www.nia.nih.gov/health/caregiving"
+    locked: true
+    snapshot_path: "corpus/snapshots/nia-caregiving.html"
+    last_verified: "2026-04-25"
+    relevant_clusters: [behaviors, daily_care, medical, caring_for_yourself]
+    relevant_modules: ALL
+
+  - id: mayo-clinic-dementia
+    title: "Dementia"
+    organization: "Mayo Clinic"
+    tier: 2
+    url: "https://www.mayoclinic.org/diseases-conditions/dementia/symptoms-causes/syc-20352013"
+    locked: true
+    snapshot_path: "corpus/snapshots/mayo-clinic-dementia.html"
+    last_verified: "2026-04-25"
+    relevant_clusters: [medical, behaviors]
+
+  - id: teepa-snow-pac
+    title: "Positive Approach to Care techniques"
+    organization: "Teepa Snow / PAC"
+    tier: 2
+    url: "https://teepasnow.com/about/about-positive-approach-to-care/"
+    locked: true
+    snapshot_path: "corpus/snapshots/teepa-snow-pac.html"
+    last_verified: "2026-04-25"
+    relevant_clusters: [behaviors, daily_care, communication]
+    notes: "Gold standard for technique. Caregiver bootcamp materials extracted in snapshot."
+
+  - id: feil-validation-method
+    title: "Validation Method"
+    organization: "Naomi Feil / Validation Training Institute"
+    tier: 2
+    url: "https://vfvalidation.org/"
+    locked: true
+    snapshot_path: "corpus/snapshots/feil-validation-method.html"
+    last_verified: "2026-04-25"
+    relevant_clusters: [communication, behaviors]
+    relevant_modules: [communication-validation-therapy-basics, communication-how-to-talk]
+
+  - id: family-caregiver-alliance-dementia
+    title: "Dementia Caregiver Resources"
+    organization: "Family Caregiver Alliance"
+    tier: 2
+    url: "https://www.caregiver.org/caregiver-resources/care-topics/dementia/"
+    locked: true
+    snapshot_path: "corpus/snapshots/family-caregiver-alliance-dementia.html"
+    last_verified: "2026-04-25"
+    relevant_clusters: ALL
+
+  - id: 36-hour-day
+    title: "The 36-Hour Day (7th edition)"
+    authors: "Mace, Rabins"
+    organization: "Johns Hopkins University Press"
+    tier: 2
+    url: null
+    locked: true
+    snapshot_path: "corpus/snapshots/36-hour-day-key-passages.md"
+    last_verified: "2026-04-25"
+    relevant_clusters: ALL
+    notes: "Key passages extracted with permission. Treat as durable reference."
+
+  # =========================================================
+  # Tier 2 — 2025-2026 additions (literature-scan output)
+  # =========================================================
+
+  - id: aaic-2025-blood-biomarker-guideline
+    title: "Clinical Practice Guideline on Blood-Based Biomarkers for the Diagnosis of Alzheimer's Disease"
+    organization: "Alzheimer's Association"
+    publication_date: "2025-07-29"
+    tier: 2
+    url: "https://aaic.alz.org/releases-2025/clinical-practice-guideline-blood-based-biomarkers.asp"
+    locked: true
+    snapshot_path: "corpus/snapshots/aaic-2025-blood-biomarker-guideline.html"
+    last_verified: "2026-04-25"
+    relevant_clusters: [medical, transitions]
+    relevant_modules: [medical-diagnosis-demystified, transitions-first-two-weeks]
+    notes: "First clinical-practice guideline on blood biomarkers. Diagnosis module MUST cite this. Concordance with PET 91.7% (positive), 97.3% (negative)."
+
+  - id: fda-fujirebio-lumipulse-ptau217
+    title: "FDA clears first blood test for use in diagnosing Alzheimer's disease"
+    organization: "FDA"
+    publication_date: "2025-05-16"
+    tier: 2
+    url: "https://www.fda.gov/news-events/press-announcements/fda-clears-first-blood-test-used-diagnosing-alzheimers-disease"
+    locked: true
+    snapshot_path: "corpus/snapshots/fda-fujirebio-lumipulse-ptau217.html"
+    last_verified: "2026-04-25"
+    relevant_clusters: [medical]
+    relevant_modules: [medical-diagnosis-demystified]
+    notes: "Fujirebio Lumipulse pTau217/Aβ ratio. FDA-cleared May 2025."
+
+  - id: fda-roche-elecsys-ptau181
+    title: "Elecsys pTau181 — first FDA-cleared blood test for primary care use in Alzheimer's diagnosis"
+    organization: "Roche / FDA"
+    publication_date: "2025-10"
+    tier: 2
+    url: "https://diagnostics.roche.com/us/en/news-listing/2025/fda-cleared-ptau181-alzheimers-blood-test.html"
+    locked: true
+    snapshot_path: "corpus/snapshots/fda-roche-elecsys-ptau181.html"
+    last_verified: "2026-04-25"
+    relevant_clusters: [medical]
+    relevant_modules: [medical-diagnosis-demystified]
+
+  - id: fda-leqembi-prescribing-information
+    title: "Leqembi (lecanemab-irmb) prescribing information, 2026"
+    organization: "Eisai / Biogen / FDA"
+    tier: 2
+    url: "https://www.accessdata.fda.gov/drugsatfda_docs/label/2024/761269s003lbl.pdf"
+    locked: true
+    snapshot_path: "corpus/snapshots/fda-leqembi-prescribing-information.pdf"
+    last_verified: "2026-04-25"
+    relevant_clusters: [medical]
+    relevant_modules: [medical-dmt, medical-medication-management]
+    notes: "ARIA monitoring: MRI before doses 5, 7, 14. Dosage details and adverse-event profile."
+
+  - id: fda-kisunla-prescribing-information
+    title: "Kisunla (donanemab-azbt) prescribing information, 2026"
+    organization: "Eli Lilly / FDA"
+    tier: 2
+    url: "https://www.accessdata.fda.gov/drugsatfda_docs/label/2024/761248s000lbl.pdf"
+    locked: true
+    snapshot_path: "corpus/snapshots/fda-kisunla-prescribing-information.pdf"
+    last_verified: "2026-04-25"
+    relevant_clusters: [medical]
+    relevant_modules: [medical-dmt, medical-medication-management]
+    notes: "Donanemab can be paused after amyloid clearance (typically 12-18 months). Different ARIA profile than lecanemab."
+
+  - id: clarity-ad-trial-2023
+    title: "Lecanemab in Early Alzheimer's Disease (CLARITY-AD trial)"
+    authors: "van Dyck CH et al."
+    organization: "New England Journal of Medicine"
+    publication_date: "2023-01-05"
+    tier: 3
+    url: "https://www.nejm.org/doi/full/10.1056/NEJMoa2212948"
+    locked: true
+    snapshot_path: "corpus/snapshots/clarity-ad-trial-2023.pdf"
+    last_verified: "2026-04-25"
+    relevant_clusters: [medical]
+    relevant_modules: [medical-dmt]
+    notes: "Pivotal lecanemab trial. 27% slowing on CDR-SB at 18 months. ARIA-E 12.6% lecanemab vs 1.7% placebo."
+
+  - id: trailblazer-alz-2-trial-2023
+    title: "Donanemab in Early Symptomatic Alzheimer Disease (TRAILBLAZER-ALZ 2)"
+    authors: "Sims JR et al."
+    organization: "JAMA"
+    publication_date: "2023-07-17"
+    tier: 3
+    url: "https://jamanetwork.com/journals/jama/fullarticle/2807533"
+    locked: true
+    snapshot_path: "corpus/snapshots/trailblazer-alz-2-trial-2023.pdf"
+    last_verified: "2026-04-25"
+    relevant_clusters: [medical]
+    relevant_modules: [medical-dmt]
+
+  - id: cms-guide-model-overview
+    title: "Guiding an Improved Dementia Experience (GUIDE) Model"
+    organization: "CMS Innovation Center"
+    tier: 2
+    url: "https://www.cms.gov/priorities/innovation/innovation-models/guide"
+    locked: true
+    snapshot_path: "corpus/snapshots/cms-guide-model-overview.html"
+    last_verified: "2026-04-25"
+    relevant_clusters: [legal_financial, transitions]
+    relevant_modules: [legal-guide-model, legal-paying-for-care, transitions-respite-care]
+    notes: "390 organizations live as of July 2025. Up to ~$2,500/year per eligible patient for respite/education/navigation."
+
+  - id: cms-guide-participating-practices
+    title: "GUIDE Model participating practices (live list)"
+    organization: "CMS Innovation Center"
+    tier: 2
+    url: "https://www.cms.gov/priorities/innovation/innovation-models/guide/participants"
+    locked: false # changes over time; web-search with snapshot
+    last_verified: "2026-04-25"
+    relevant_modules: [legal-guide-model]
+    notes: "WEB-ALLOWED. List grows as cohorts are admitted. Citation Agent must capture snapshot at retrieval."
+
+  - id: alz-association-guide-caregiver
+    title: "Medicare GUIDE Program for Dementia Care"
+    organization: "Alzheimer's Association"
+    tier: 2
+    url: "https://www.alz.org/help-support/caregiving/financial-legal-planning/medicare-guide-program-for-dementia-care"
+    locked: true
+    snapshot_path: "corpus/snapshots/alz-association-guide-caregiver.html"
+    last_verified: "2026-04-25"
+    relevant_modules: [legal-guide-model]
+
+  - id: aarp-caregiving-in-the-us-2025
+    title: "Caregiving in the U.S. 2025"
+    organization: "AARP / National Alliance for Caregiving"
+    publication_date: "2025-05"
+    tier: 2
+    url: "https://www.aarp.org/caregiving/basics/caregiving-in-us-survey-2025/"
+    locked: true
+    snapshot_path: "corpus/snapshots/aarp-caregiving-in-the-us-2025.pdf"
+    last_verified: "2026-04-25"
+    relevant_clusters: [caring_for_yourself, legal_financial]
+    notes: "63M U.S. caregivers, +45% from prior survey. 29% sandwich-generation. Solo caregiver cohort growing."
+
+  - id: aarp-valuing-the-invaluable-2026
+    title: "Valuing the Invaluable 2026"
+    organization: "AARP Public Policy Institute"
+    publication_date: "2026-03"
+    tier: 2
+    url: "https://www.aarp.org/caregiving/financial-legal/valuing-the-invaluable-report-2026/"
+    locked: true
+    snapshot_path: "corpus/snapshots/aarp-valuing-the-invaluable-2026.pdf"
+    last_verified: "2026-04-25"
+    relevant_clusters: [legal_financial, caring_for_yourself]
+
+  - id: aftd-caregiver-resources
+    title: "AFTD Caregiver Resources and Bootcamp"
+    organization: "Association for Frontotemporal Degeneration"
+    tier: 2
+    url: "https://www.theaftd.org/"
+    locked: true
+    snapshot_path: "corpus/snapshots/aftd-caregiver-resources.html"
+    last_verified: "2026-04-25"
+    relevant_clusters: [disease_specific, communication, behaviors]
+    relevant_modules: [disease-specific-ftd, communication-language-changes]
+    notes: "AFTD's caregiver bootcamp transcripts (consented portions) extracted in snapshot."
+
+  - id: lbda-caregiver-resources
+    title: "LBDA Caregiver Resources and 2026 Webinar Series"
+    organization: "Lewy Body Dementia Association"
+    tier: 2
+    url: "https://lbda.org/"
+    locked: true
+    snapshot_path: "corpus/snapshots/lbda-caregiver-resources.html"
+    last_verified: "2026-04-25"
+    relevant_clusters: [disease_specific, behaviors, medical]
+    relevant_modules: [disease-specific-lbd, behaviors-hallucinations-and-delusions]
+    notes: "LBD-specific antipsychotic sensitivity guidance. Cross-reference contradicts edge in agitation module."
+
+  - id: alz-foundation-of-america
+    title: "Alzheimer's Foundation of America Caregiver Resources"
+    organization: "Alzheimer's Foundation of America"
+    tier: 2
+    url: "https://alzfdn.org/"
+    locked: true
+    snapshot_path: "corpus/snapshots/alz-foundation-of-america.html"
+    last_verified: "2026-04-25"
+
+  - id: brightfocus-2026-treatment-landscape
+    title: "Expanding the Alzheimer's Treatment Landscape: A 2026 Forecast"
+    organization: "BrightFocus Foundation"
+    tier: 2
+    url: "https://www.brightfocus.org/resource/expanding-the-alzheimers-treatment-landscape-a-2026-forecast/"
+    locked: true
+    snapshot_path: "corpus/snapshots/brightfocus-2026-treatment-landscape.html"
+    last_verified: "2026-04-25"
+    relevant_clusters: [medical]
+    relevant_modules: [medical-dmt, medical-understanding-the-diagnosis]
+
+  - id: brightfocus-hope-study
+    title: "HOPE Study: Non-invasive light and sound stimulation in Alzheimer's"
+    organization: "BrightFocus Foundation"
+    tier: 3
+    url: "https://www.brightfocus.org/resource/non-invasive-light-and-sound-stimulation-therapy-in-alzheimers-update-on-hope-study/"
+    locked: true
+    snapshot_path: "corpus/snapshots/brightfocus-hope-study.html"
+    last_verified: "2026-04-25"
+    relevant_modules: [behavior-sundowning]
+    notes: "670 participants. Primary results expected August 2026. Cite as 'study underway' until results land."
+
+  # =========================================================
+  # Tier 3 — Intervention literature
+  # =========================================================
+
+  - id: reach-ii
+    title: "Resources for Enhancing Alzheimer's Caregiver Health (REACH II)"
+    authors: "Belle SH et al."
+    organization: "Annals of Internal Medicine"
+    publication_date: "2006-11-21"
+    tier: 3
+    url: "https://www.acpjournals.org/doi/10.7326/0003-4819-145-10-200611210-00005"
+    locked: true
+    snapshot_path: "corpus/snapshots/reach-ii.pdf"
+    last_verified: "2026-04-25"
+    relevant_clusters: [caring_for_yourself, behaviors]
+
+  - id: nyu-caregiver-intervention
+    title: "NYU Caregiver Intervention"
+    authors: "Mittelman MS et al."
+    tier: 3
+    url: "https://aging.nyu.edu/"
+    locked: true
+    snapshot_path: "corpus/snapshots/nyu-caregiver-intervention.html"
+    last_verified: "2026-04-25"
+    relevant_clusters: [caring_for_yourself, transitions]
+    notes: "Counseling and support intervention for spouse caregivers; delays nursing home placement."
+
+  - id: savvy-caregiver-program
+    title: "Savvy Caregiver Program"
+    organization: "University of Minnesota / Hebert et al."
+    tier: 3
+    url: "https://www.savvycaregiver.org/"
+    locked: true
+    snapshot_path: "corpus/snapshots/savvy-caregiver-program.html"
+    last_verified: "2026-04-25"
+    relevant_clusters: [caring_for_yourself, behaviors, daily_care]
+
+  - id: tap-tailored-activity-program
+    title: "Tailored Activity Program (TAP)"
+    authors: "Gitlin LN et al."
+    tier: 3
+    url: "https://www.drexel.edu/cnhp/research/centers/AgingHealth-Wellbeing/"
+    locked: true
+    snapshot_path: "corpus/snapshots/tap-tailored-activity-program.html"
+    last_verified: "2026-04-25"
+    relevant_clusters: [behaviors, communication]
+
+  - id: dice-approach
+    title: "DICE Approach (Describe, Investigate, Create, Evaluate)"
+    organization: "Kales HC et al. / University of Michigan / DICE Approach"
+    tier: 3
+    url: "https://diceapproach.com/"
+    locked: true
+    snapshot_path: "corpus/snapshots/dice-approach.html"
+    last_verified: "2026-04-25"
+    relevant_clusters: [behaviors]
+    notes: "Gold-standard non-pharmacological framework for BPSD."
+
+  - id: ai-aided-dice-2025
+    title: "AI-aided DICE algorithm trial protocol (2025)"
+    organization: "Frontiers in Psychiatry"
+    publication_date: "2025"
+    tier: 3
+    url: "https://www.frontiersin.org/journals/psychiatry/articles/10.3389/fpsyt.2025.1548638/full"
+    locked: true
+    snapshot_path: "corpus/snapshots/ai-aided-dice-2025.pdf"
+    last_verified: "2026-04-25"
+    relevant_clusters: [behaviors]
+    notes: "Trial completing November 2026; cite as 'protocol' until results."
+
+  - id: paacc-mindfulness-rct-2025
+    title: "Personalized Adaptive Activity-based Caregiver Coaching (PAACC) — mindfulness-enhanced caregiver intervention"
+    authors: "Sapra M et al."
+    organization: "Alzheimer's & Dementia: Translational Research & Clinical Interventions"
+    publication_date: "2025"
+    tier: 3
+    url: "https://alz-journals.onlinelibrary.wiley.com/doi/10.1002/trc2.70064"
+    locked: true
+    snapshot_path: "corpus/snapshots/paacc-mindfulness-rct-2025.pdf"
+    last_verified: "2026-04-25"
+    relevant_clusters: [caring_for_yourself]
+    relevant_modules: [self-care-caregiver-burnout]
+
+  - id: hybrid-mbdcp-rct-2025
+    title: "Hybrid Mindfulness-Based Dementia Care Program (MBDCP) — RCT"
+    organization: "The Gerontologist"
+    publication_date: "2025"
+    tier: 3
+    url: "https://academic.oup.com/gerontologist/article/65/12/gnaf281/8340582"
+    locked: true
+    snapshot_path: "corpus/snapshots/hybrid-mbdcp-rct-2025.pdf"
+    last_verified: "2026-04-25"
+    relevant_clusters: [caring_for_yourself]
+    relevant_modules: [self-care-caregiver-burnout, self-care-guilt-ambiguous-grief]
+
+  - id: mind-and-care-app-rct-2025
+    title: "Mind & Care App — closed-loop mindfulness with app feedback (RCT protocol)"
+    publication_date: "2025-03"
+    tier: 3
+    url: "https://pmc.ncbi.nlm.nih.gov/articles/PMC12220372/"
+    locked: true
+    snapshot_path: "corpus/snapshots/mind-and-care-app-rct-2025.pdf"
+    last_verified: "2026-04-25"
+    relevant_clusters: [caring_for_yourself]
+
+  - id: jmir-mhealth-bpsd-2026
+    title: "Mobile app for individualized BPSD interventions"
+    organization: "JMIR mHealth and uHealth"
+    publication_date: "2026"
+    tier: 3
+    url: "https://mhealth.jmir.org/2026/1/e79469"
+    locked: true
+    snapshot_path: "corpus/snapshots/jmir-mhealth-bpsd-2026.pdf"
+    last_verified: "2026-04-25"
+    relevant_clusters: [behaviors]
+
+  - id: cochrane-non-pharm-bpsd-2024
+    title: "Non-pharmacological interventions for BPSD (Cochrane systematic reviews, latest)"
+    organization: "Cochrane Database of Systematic Reviews"
+    tier: 3
+    url: "https://www.cochranelibrary.com/cdsr/topics/dementia"
+    locked: false
+    last_verified: "2026-04-25"
+    relevant_clusters: [behaviors, daily_care]
+    notes: "WEB-ALLOWED, refresh quarterly. Cochrane reviews update; capture snapshot per retrieval."
+
+  - id: lancet-dementia-commission-2024
+    title: "Dementia prevention, intervention, and care: 2024 report of the Lancet standing Commission"
+    organization: "The Lancet"
+    publication_date: "2024-08"
+    tier: 3
+    url: "https://www.thelancet.com/journals/lancet/article/PIIS0140-6736(24)01296-0/abstract"
+    locked: true
+    snapshot_path: "corpus/snapshots/lancet-dementia-commission-2024.pdf"
+    last_verified: "2026-04-25"
+    relevant_clusters: [medical, transitions, caring_for_yourself]
+    notes: "14 modifiable risk factors; collaborative care framing in DMT era."
+
+  # =========================================================
+  # Web-allowed (no locked snapshot; capture per-retrieval)
+  # =========================================================
+
+  - id: ncbi-pubmed-search
+    title: "PubMed (peer-reviewed search)"
+    organization: "NIH / NCBI"
+    tier: 3
+    url: "https://pubmed.ncbi.nlm.nih.gov/"
+    locked: false
+    last_verified: "2026-04-25"
+    notes: "WEB-ALLOWED for individual paper lookups. Citation Agent captures per-paper snapshot."
+
+  - id: clinicaltrials-gov
+    title: "ClinicalTrials.gov (active trial lookup)"
+    organization: "NIH"
+    tier: 3
+    url: "https://clinicaltrials.gov/"
+    locked: false
+    last_verified: "2026-04-25"
+    notes: "WEB-ALLOWED. Used by Brief Agent and Clinical Agent for trial-status lookups."
+
+  # =========================================================
+  # Forbidden / not in corpus
+  # =========================================================
+
+forbidden_sources:
+  - reason: "Not peer-reviewed and not editorially board-vetted"
+    examples:
+      - "Reddit threads (use only for refusal-log topic discovery, never as a citation)"
+      - "Quora"
+      - "Generic health-info aggregators without medical-board review"
+      - "Wikipedia (use for navigation only; cite the underlying source)"
+  - reason: "Press releases as primary source for clinical claims"
+    note: "Acceptable for regulatory events (FDA approval); cite both the press release and the underlying FDA letter."
+  - reason: "Patient-experience sites with commercial conflicts"
+    examples:
+      - "Pharma-sponsored patient-information sites"
+      - "Memory-care-facility marketing materials presented as education"
+
+# =========================================================
+# Refresh cadence
+# =========================================================
+
+refresh_cadence:
+  locked_sources:
+    - "Annual re-verification by Content Lead. Update last_verified after each pass."
+    - "Immediate re-verification on FDA action, CMS policy change, or major guideline update (Alz Association, AAN, AAFP)."
+  web_allowed_sources:
+    - "Per-retrieval snapshot capture by Citation Agent."
+    - "Quarterly audit of url_snapshot quality."
+  alz-association-2026-facts-figures:
+    - "Annual; replace with 2027 edition when published (typically March)."
+  aarp-caregiving-in-the-us-2025:
+    - "Replace with next AARP Caregiving in the U.S. wave (2030 expected)."
+  cms-guide-participating-practices:
+    - "Quarterly snapshot, since cohorts are admitted on a rolling basis."

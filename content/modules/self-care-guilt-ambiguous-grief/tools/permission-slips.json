@@ -1,0 +1,58 @@
+{
+  "tool_type": "permission-slips",
+  "title": "Permission slips: Things caregivers rarely allow themselves",
+  "description": "A checklist of explicit permissions that feel forbidden but are actually normal, necessary, and human.",
+  "permissions": [
+    {
+      "permission": "It's okay to feel relief when respite arrives",
+      "why_it_matters": "Relief is the body recovering, not evidence you do not love them. Your nervous system needs breaks to keep showing up.",
+      "what_to_watch_for": "If relief never comes, or if you feel guilty every time it does, that's a sign the load is too constant. Consider whether you need more structured breaks, not fewer."
+    },
+    {
+      "permission": "It's okay to wish this was over",
+      "why_it_matters": "Wishing for an end to suffering — theirs and yours — is not the same as wishing them dead. It is grief for a situation that has no clean exit. Late-stage caregivers think this almost daily.",
+      "what_to_watch_for": "If the thought becomes intrusive or if you start imagining specific scenarios, that is a signal to talk to someone — a therapist, a crisis line, or your doctor. The thought is normal; becoming consumed by it is not."
+    },
+    {
+      "permission": "It's okay to grieve a person who is still here",
+      "why_it_matters": "This is ambiguous grief — mourning someone who is present but changed. It is real grief, and it deserves acknowledgment, even though there is no funeral and no closure.",
+      "what_to_watch_for": "If the grief takes you out of your own life — if you stop seeing friends, stop doing things you used to care about, or feel numb most days — that is when professional support becomes necessary."
+    },
+    {
+      "permission": "It's okay to be angry at them",
+      "why_it_matters": "Anger at the disease and anger at the person can blur together. You can love someone and still be furious at the situation, at their behavior, at the repetition. Anger is not evidence of bad caregiving.",
+      "what_to_watch_for": "If anger spills into yelling, physical roughness, or fantasies of harm, stop and call for help immediately. Anger is normal; acting on it in ways that hurt them or you is the line."
+    },
+    {
+      "permission": "It's okay to take a full day off",
+      "why_it_matters": "Caregiving is not a test of endurance. A full day away — not just an errand, a real break — is not abandonment. It is how you stay functional long-term.",
+      "what_to_watch_for": "If you cannot imagine taking a day off without guilt collapsing the whole thing, or if you have not had a full day off in months, that is a red flag for burnout. Start with half a day if a full day feels impossible."
+    },
+    {
+      "permission": "It's okay to say no to family requests",
+      "why_it_matters": "Being the primary caregiver does not mean you owe everyone updates, explanations, or agreement. You are allowed to set boundaries with family who are not carrying the daily load.",
+      "what_to_watch_for": "If saying no triggers family conflict that adds to your stress, or if you are the only one making decisions and bearing the fallout, consider whether family mediation or a care-team meeting would help distribute the responsibility."
+    },
+    {
+      "permission": "It's okay to cry in front of them",
+      "why_it_matters": "Hiding your grief to protect them takes energy you do not have. Crying is not a failure of composure; it is a human response to an impossible situation. For some people with dementia, seeing you cry may not register or may be forgotten quickly. For others, it may offer a moment of shared feeling.",
+      "what_to_watch_for": "If you cry so often that you feel like you are scaring them, or if the crying becomes constant and does not bring any relief, those are signs that the grief has become too heavy to carry alone."
+    },
+    {
+      "permission": "It's okay to not visit every day if they're in memory care",
+      "why_it_matters": "Daily visits are not a requirement. Memory care exists so you do not have to be there every day. Some caregivers find that less frequent, higher-quality visits are better for both of you.",
+      "what_to_watch_for": "If you are visiting daily out of guilt rather than choice, or if the visits leave you more drained than connected, it may be time to rethink the schedule. Talk to the memory care staff about what visit frequency actually serves your person best."
+    },
+    {
+      "permission": "It's okay to consider placement without having failed",
+      "why_it_matters": "Memory care or skilled nursing is a tool, not a moral verdict. Placement does not mean you gave up. It often means you recognized that the care they need exceeds what one person can provide at home.",
+      "what_to_watch_for": "If the guilt of considering placement is keeping you in a situation that is unsafe for them or unsustainable for you, that is when the guilt is lying to you. The question is not 'Am I abandoning them?' but 'What does good care look like now?'"
+    },
+    {
+      "permission": "It's okay to ask for professional help",
+      "why_it_matters": "People who do dementia care professionally get supervision, peer support, and structured time off as a matter of course. You deserve scaffolding too. Asking for help — from a therapist, a support group, a care manager — is not weakness.",
+      "what_to_watch_for": "If you find yourself thinking 'I should be able to handle this on my own,' check whether that standard is one you would hold anyone else to. If not, it is time to ask for help."
+    }
+  ],
+  "usage_note": "This list is screenshot-ready. Caregivers can save it, share it, or return to it when guilt spikes. It is not prescriptive — not every permission will resonate for every person. The ones that sting a little when you read them are often the ones you need most."
+}

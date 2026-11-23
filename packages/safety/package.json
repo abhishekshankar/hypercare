@@ -1,5 +1,5 @@
 {
-  "name": "@hypercare/safety",
+  "name": "@alongside/safety",
   "version": "0.0.0",
   "private": true,
   "type": "module",
@@ -12,12 +12,26 @@
     }
   },
   "scripts": {
-    "build": "tsc -p tsconfig.json",
-    "lint": "eslint src --max-warnings 0",
-    "typecheck": "tsc -p tsconfig.json --noEmit",
-    "test": "node -e \"process.exit(0)\""
+    "build": "rimraf dist tsconfig.tsbuildinfo && tsc -p tsconfig.json && node ./scripts/copy-prompts.mjs && node ./scripts/copy-scripts.mjs",
+    "check:scripts": "tsx scripts/check-safety-scripts.ts",
+    "lint": "eslint src test --max-warnings 0",
+    "typecheck": "node ../../node_modules/typescript/lib/tsc.js -p tsconfig.json --noEmit && node ../../node_modules/typescript/lib/tsc.js -p tsconfig.test.json --noEmit",
+    "test": "node ../../node_modules/vitest/vitest.mjs run",
+    "smoke-llm": "tsx scripts/smoke-llm.ts"
+  },
+  "dependencies": {
+    "@aws-sdk/client-bedrock-runtime": "^3.1034.0",
+    "@alongside/db": "workspace:*",
+    "drizzle-orm": "^0.45.2",
+    "js-yaml": "^4.1.0",
+    "zod": "^4.3.6"
   },
   "devDependencies": {
-    "typescript": "^5.9.3"
+    "@types/js-yaml": "^4.0.9",
+    "@types/node": "^25.6.0",
+    "rimraf": "^6.0.1",
+    "tsx": "^4.21.0",
+    "typescript": "^5.9.3",
+    "vitest": "^3.2.4"
   }
 }

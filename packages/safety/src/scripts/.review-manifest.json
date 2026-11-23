@@ -1,0 +1,26 @@
+{
+  "care-recipient-in-danger.md": {
+    "reviewed_on": "2026-04-22",
+    "body_sha256": "138d390825ec3b08c166637c256f36767f05cb3c715d3f0559958920cd74bcac"
+  },
+  "caregiver-self-harm.md": {
+    "reviewed_on": "2026-04-22",
+    "body_sha256": "7afd8665cc1b955d71a93e537fe193062c3557829da99f0d4afd783540dd0e30"
+  },
+  "dangerous-request.md": {
+    "reviewed_on": "2026-04-22",
+    "body_sha256": "1591d8ec75c605bbdddadb5d266847e76e2fb5a67fc8a998623cd6e73d833ba8"
+  },
+  "elder-abuse-or-caregiver-breaking-point.md": {
+    "reviewed_on": "2026-04-22",
+    "body_sha256": "89682a9de0cd8321a22542d0db53998d94ab0b1bfff4391e1be184e65e661224"
+  },
+  "financial-or-legal-exploitation.md": {
+    "reviewed_on": "2026-04-22",
+    "body_sha256": "82c1f8e4688f5526021ad19a939191f81cfd0e9c1e7cfa181e2496d4efb5aef9"
+  },
+  "medical-emergency-disguised-as-question.md": {
+    "reviewed_on": "2026-04-22",
+    "body_sha256": "6cc549f6cbc2803b521d3d1ff4e9d01a961348564a168a1c9890cc23823f50ab"
+  }
+}

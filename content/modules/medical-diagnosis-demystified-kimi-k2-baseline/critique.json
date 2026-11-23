@@ -1,0 +1,57 @@
+{
+  "slug": "medical-diagnosis-demystified",
+  "rubric_version": "v1.0",
+  "verdict": "pass",
+  "overall_score": 9.2,
+  "axis_scores": {
+    "clinical_depth": {
+      "score": 9.5,
+      "evidence": "Module cites 2025-2026 blood biomarker guidance including FDA-cleared pTau217 (Fujirebio Lumipulse, May 2025) and pTau181 (Roche Elecsys, October 2025) with 91.7%/97.3% PET concordance rates. Distinguishes Alzheimer's, vascular, Lewy body, FTD, and mixed dementia with specific clinical features. References lecanemab and donanemab with ARIA risk acknowledgment."
+    },
+    "specificity": {
+      "score": 9.0,
+      "evidence": "Provides concrete instances per 1000 words: specific test names with assay manufacturers, appointment question scripts with reference tags [22]-[29], viability signals for solo care with 7 bullet points in spouse-alone branch, 7 sibling coordination signals in parent-with_caregiver branch. Avoids vague abstractions."
+    },
+    "lived_experience": {
+      "score": 9.0,
+      "evidence": "Module.md contains 3 composite passages (at cap) with proper provenance tags: 'Provenance: Composite based on caregiver interviews about diagnostic terminology confusion', 'Provenance: Composite based on caregiver experiences with diagnostic workup procedures', 'Provenance: Composite based on caregiver reports of communication challenges with clinicians'. All third-person, no fabricated first-person quotes. Branches contain relevant experiential framing without overloading composites."
+    },
+    "tools": {
+      "score": 9.0,
+      "evidence": "Two validated tools: questions-for-the-follow-up-visit.json contains 7 checklist items with rationale and what_to_look_for fields; understanding-your-diagnosis.json is a decision tree with 6 nodes leading to 6 outcomes. Both JSON validate against expected schema structures."
+    },
+    "branches": {
+      "score": 9,
+      "evidence": "5 branches present: any-any-any.md (85 lines) is complete standalone module with diagnosis explanation and self-care section. Specific branches (parent-with_caregiver, parent-alone, spouse-with_caregiver, spouse-alone) each add contextually appropriate content: sibling coordination, remote monitoring/proxy consent, shared decision-making/financial awareness, safety signals for solo care. Each branch reads native to its combination, not find-replaced."
+    },
+    "emotional_handling": {
+      "score": 9,
+      "evidence": "Difficult emotions named directly: 'uncertainty can feel harder than a definitive diagnosis', 'grieving the parent who raised you while caring for the one who now needs help', 'ambiguous loss, where the person is physically present but psychologically changing'. No toxic positivity or false reassurance. Branches acknowledge limits ('You do not need to master everything today')."
+    },
+    "evidence_table": {
+      "score": 9,
+      "evidence": "Evidence.json contains 9 rows with non-null quoted_excerpts for all claims [1]-[9]. Row structure includes source_id, tier (2-3), url, url_snapshot paths, page_or_section. Covers Mayo Clinic, NIA, AAIC 2025 guidelines, FDA clearances (Fujirebio and Roche), Lancet Dementia Commission 2024, and trial sources (CLARITY-AD, TRAILBLAZER-ALZ 2)."
+    },
+    "related_modules": {
+      "score": 9,
+      "evidence": "Relations.json contains 5 edges: medical-dmt (follow_up), working-with-the-neurologist (follow_up), transitions-first-two-weeks (prerequisite), disease-specific-lbd (soft_flag_companion for antipsychotic sensitivity), caregiver-guilt-ambiguous-grief (follow_up). All typed correctly with rationales."
+    },
+    "refusal_awareness": {
+      "score": 9,
+      "evidence": "Topics accurately reflect coverage: new-diagnosis, diagnosis-types, working-with-clinicians, early-stage, blood-biomarkers. Module honestly scopes limits—defers disease-modifying therapy details to medical-dmt module. Attribution line notes 'Medical Director sign-off required before publish'."
+    },
+    "operational_metadata": {
+      "score": 9,
+      "evidence": "All metadata fields populated: srs_suitable=true (re-surface eligible), srs_difficulty_bucket=1 (foundational), weeks_focus_eligible declared, soft_flag_companion_for declared in relations, secondary_topics present. Stage_relevance correctly scoped to [early]."
+    },
+    "corpus_discipline": {
+      "score": 9.5,
+      "evidence": "Every claim [1]-[29] traces to evidence.json rows or defers to cited modules. No 'recent research' without specific source. All major claims include [N] anchors. url_snapshot paths present for sources likely to block bots (NIA, Lancet, FDA). Blood biomarker claims cite specific FDA clearance dates and assay names."
+    }
+  },
+  "rewrite_instructions": [],
+  "consecutive_passes": 2,
+  "scored_at": "2026-04-25T22:45:00Z",
+  "scorer": "hermes_internal_critique",
+  "notes": "Spot-check obligations passed: (a) any-any-any.md is complete 85-line standalone module with full diagnostic explanation and self-care section—not thinner than specific branches. (b) Prose register tracked against seeded modules: behavior-sundowning, daily-bathing-resistance, and self-care-caregiver-burnout use restrained, phone-screen practical register with short sentences and direct address. Medical-diagnosis-demystified maintains this practical voice with slightly more clinical precision appropriate to topic—no essay or literary creep detected. (c) Lived experience composites: module.md contains exactly 3 composites (at cap), all properly provenance-tagged as third-person composites. No branch exceeds 2 composites. Density within limits."
+}

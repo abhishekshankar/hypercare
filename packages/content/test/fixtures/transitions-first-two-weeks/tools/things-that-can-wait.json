@@ -1,0 +1,62 @@
+{
+  "tool_type": "checklist",
+  "slug": "things-that-can-wait",
+  "title": "Things that can wait",
+  "context": "These decisions are real. They get easier with time, information, and a steadier nervous system. Two weeks from now, you will know more than you do tonight.",
+  "items": [
+    {
+      "id": "long-term-financial-planning",
+      "label": "Long-term financial planning",
+      "rationale": "You need accurate information about the diagnosis, the likely trajectory, and your current finances before making big moves. None of that is clear in week one.",
+      "what_to_look_for": "Why this can wait: financial decisions made in crisis tend to be the ones people undo later. A financial plan built in month two or three, with a clear head and an elder-law attorney, will be better than anything you decide tonight. To find an elder-law attorney: search the National Academy of Elder Law Attorneys directory at naela.org, or call your local bar association and ask for a referral."
+    },
+    {
+      "id": "choosing-memory-care",
+      "label": "Choosing a memory-care community",
+      "rationale": "Most people diagnosed today are in the early stage. A move to memory care is months or years away for most families.",
+      "what_to_look_for": "Why this can wait: you do not need to tour facilities this month. When the time comes, you will want to compare options carefully — and you will be in a much better position to do that after you understand the disease and your person's specific needs."
+    },
+    {
+      "id": "telling-extended-family-in-order",
+      "label": "Telling extended family in a particular order",
+      "rationale": "The pressure to notify everyone — and to do it in the right sequence so nobody feels slighted — is real but not urgent.",
+      "what_to_look_for": "Why this can wait: you do not owe anyone a phone call this week. Tell one person you trust. The rest of the family can hear it when you are ready to say it, not when you feel obligated."
+    },
+    {
+      "id": "changing-the-will",
+      "label": "Changing the will",
+      "rationale": "Estate planning matters, but it is a month-two task, not a day-three task. Rushing legal documents when you are overwhelmed increases the chance of mistakes.",
+      "what_to_look_for": "Why this can wait: the will that exists today is still valid. An elder-law attorney can help you update it properly — and that conversation is better when you can think clearly. To find one: naela.org (National Academy of Elder Law Attorneys) or your local bar association's referral line."
+    },
+    {
+      "id": "selling-the-house",
+      "label": "Selling the house",
+      "rationale": "A diagnosis does not mean the living situation needs to change immediately. Most people stay in their home for a long time after diagnosis.",
+      "what_to_look_for": "Why this can wait: selling a home is one of the biggest financial and emotional decisions a family makes. It should not be made in the first two weeks. The house will still be there next month."
+    },
+    {
+      "id": "big-arguments-about-roles",
+      "label": "Big arguments about who should do what",
+      "rationale": "Sibling and family conflicts about caregiving roles are among the most painful parts of this experience — and they do not resolve well under shock.",
+      "what_to_look_for": "Why this can wait: the division of responsibility will matter a lot. But that conversation goes better when everyone has had time to absorb the diagnosis. Right now, you just need one person helping, not a family org chart."
+    },
+    {
+      "id": "researching-every-treatment",
+      "label": "Researching every treatment option",
+      "rationale": "There are more treatment options now than even a few years ago, including newer medications your clinician may mention. But you do not need to understand all of them this week.",
+      "what_to_look_for": "Why this can wait: your clinician will bring up treatment options at the follow-up visit. Learning about them now, while your nervous system is in overdrive, will feel overwhelming and may not stick. Let the follow-up appointment be where that conversation happens."
+    },
+    {
+      "id": "quitting-your-job",
+      "label": "Quitting your job",
+      "rationale": "The impulse to clear your schedule and become a full-time caregiver is understandable. It is also a decision that is very hard to reverse.",
+      "what_to_look_for": "Why this can wait: you will need income, benefits, and your own identity outside caregiving. Before making any permanent changes, talk to HR about FMLA — the Family and Medical Leave Act — which provides up to 12 weeks of unpaid, job-protected leave if your employer has 50 or more employees. You may also be able to arrange flexible hours or intermittent leave. That conversation can happen in week three or four."
+    },
+    {
+      "id": "deciding-about-driving",
+      "label": "Deciding about driving (unless it is unsafe today)",
+      "rationale": "Driving is one of the first things caregivers worry about. For most people in the early stage, driving is not an immediate crisis — but it will need to be addressed.",
+      "what_to_look_for": "Why this can wait: if your person drove safely to the appointment and back, this is a conversation for the next few weeks, not tonight. If you saw something that scared you on the road today, that is different — talk to the clinician now."
+    }
+  ]
+}

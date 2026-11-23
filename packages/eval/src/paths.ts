@@ -1,0 +1,40 @@
+import { dirname, join } from "node:path";
+import { fileURLToPath } from "node:url";
+
+const here = dirname(fileURLToPath(import.meta.url));
+
+/** `packages/eval` root (contains `golden/`, `reports/`). `here` is `.../eval/src`. */
+export const EVAL_ROOT = join(here, "..");
+
+export function goldenPath(name: "retrieval.json" | "safety.json" | "answers.json"): string {
+  return join(EVAL_ROOT, "golden", name);
+}
+
+export function reportDirForRunner(runner: "retrieval" | "safety" | "answers"): string {
+  return join(EVAL_ROOT, "reports", runner);
+}
+
+export function reportLatestPath(runner: "retrieval" | "safety" | "answers"): string {
+  return join(reportDirForRunner(runner), "latest.json");
+}
+
+export function redteamReportDir(): string {
+  return join(EVAL_ROOT, "reports", "redteam");
+}
+
+export function redteamReportLatestJson(): string {
+  return join(redteamReportDir(), "latest.json");
+}
+
+export function redteamArtifactsDir(): string {
+  return join(EVAL_ROOT, "artifacts");
+}
+
+/** Committed + overwritten after each v2 run — CI compares the new run to this file from the same commit. */
+export function redteamV2LatestArtifactPath(): string {
+  return join(redteamArtifactsDir(), "redteam-v2-latest.json");
+}
+
+export function redteamV2HistoryPath(): string {
+  return join(redteamArtifactsDir(), "redteam-v2-history.jsonl");
+}

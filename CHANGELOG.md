@@ -1,0 +1,35 @@
+# Changelog
+
+All notable changes to this repo are documented here. The format is loose; align new entries with [Keep a Changelog](https://keepachangelog.com/) when practical.
+
+## Unreleased
+
+- TASK-044: Hermes heavy-module pipeline — schema (modules, branches, tools, relations, evidence), validator (errors + warnings), publish bundle endpoint, library branch read, ADR 0031, runbook.
+- AWS Amplify Hosting deprecated. CloudFront → ALB → OpenNext Lambda (`infra/lib/web-stack.ts`) is the canonical and only supported production path. `amplify.yml`, `CLAUDE.md` § Amplify, and the README carry deprecation headers; failure-mode diagnostics retained for any branch-preview revival. See ADR 0032.
+
+### Rebrand
+
+- Product name **Alongside** across the web app, LLM prompts, and primary docs. Workspace packages renamed from `@hypercare/*` to `@alongside/*`. UI tokens and typography follow `docs/Alongside/homepage-tokens.css` (Inter + Source Serif 4, paper/moss/amber palette). AWS stack IDs and Postgres identifiers may remain `Hypercare*` / `hypercare_*` in brownfield — see `docs/infra-rename.md`.
+
+### Documentation
+
+- Expanded [ARCHITECTURE.md](ARCHITECTURE.md) with app API routes for privacy, transparency, feedback, saved answers, library SSE, suppression, cron jobs, and internal operator surfaces.
+- Documented conversation answer streaming env pair in [README.md](README.md) (TASK-031 / ADR 0020).
+- [CLAUDE.md](CLAUDE.md): note on `routing_cohort` read in the conversation message route and Vitest mocking pattern.
+- [CONTRIBUTING.md](CONTRIBUTING.md): guidance for Route Handler tests that must not hit Postgres.
+
+### Tooling / tests
+
+- `@alongside/eval` redteam JSON report typing fixed for TypeScript `exactOptionalPropertyTypes` (`layer_b_classifier` omitted when unset).
+- `apps/web` Vitest: `upsertUserFromClaims` mock includes `update` chain; conversation escalation tests mock `@alongside/db` and partially mock `@/lib/env.server`.
+
+### Ops / runbooks
+
+- [docs/auth-runbook.md](docs/auth-runbook.md): Amplify blanket **500** / `Internal Server Error` — `instrumentation` eagerly loads `env.server` in production; mirror `apps/web/.env.local` into Amplify Hosting env vars. [CLAUDE.md](CLAUDE.md) cross-link; clearer `console.error` prefix in `apps/web/src/instrumentation.ts` before rethrow.
+- [CLAUDE.md](CLAUDE.md) "Amplify Hosting (build succeeds, site is 404)": runbook for the `server: AmazonS3` 404 symptom — Amplify app registered as platform `WEB` serves `.next` statically from S3; fix is platform `WEB_COMPUTE` + framework `Next.js - SSR`, with `AMPLIFY_MONOREPO_APP_ROOT=apps/web` matching root `amplify.yml`. Console path + `aws amplify update-app` CLI equivalent both documented.
+- Amplify monorepo hosting: root `amplify.yml` now uses `buildPath: /` and artifact `apps/web/.next`; root `.npmrc` adds `node-linker=hoisted` for pnpm on Amplify; `apps/web` Next config adds `output: 'standalone'` and `outputFileTracingRoot` for workspace file tracing when platform is already `WEB_COMPUTE` but the live URL still behaved like static S3.
+- Amplify deploy size: `amplify.yml` **postBuild** removes `apps/web/.next/cache` and the nested `standalone/.../.next/cache` (build caches duplicated into the standalone tree). Cache cleanup alone was insufficient — observed 440MB artifact after cleanup, against Hosting's ~220MB cap, because uploading the full `.next/` ships both `.next/server` and `.next/standalone` (which already contains the server). `artifacts.files` now narrowed to `standalone/**/*` + `static/**/*` so only the SSR runner's required trees ship; `postBuild` also prints per-subtree `du -sh` between `=== postBuild start/done ===` markers so the next size failure (if any) is unambiguous in the build log. See [CLAUDE.md](CLAUDE.md) "Deploy: build output exceeds max allowed size".
+
+### Product themes (reference)
+
+Shipping work on `main` spans streaming surfaces (answers, lessons, library), privacy export/delete/sessions, transparency memory APIs, feedback + internal triage + SLA cron, Layer-5 model routing + cohort, fine-tuned safety shadow tooling, and internal metrics tiles. Canonical detail lives in `tasks/`, `docs/adr/`, and `docs/schema-v1.md` / `docs/schema-v2.md`.

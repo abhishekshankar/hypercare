@@ -1,0 +1,38 @@
+{
+  "tool_type": "checklist",
+  "slug": "first-two-weeks-action-items",
+  "title": "The first two weeks: what is actually worth doing now",
+  "context": "Pick one or two. Not all of them. The rest can wait.",
+  "items": [
+    {
+      "id": "write-down-what-clinician-said",
+      "label": "Write down what the clinician said",
+      "rationale": "Your memory of the appointment will blur fast. The details matter later — for second opinions, for other family members, for your own clarity.",
+      "what_to_look_for": "Four things to capture: (1) the type of dementia named (Alzheimer's, vascular, Lewy body, frontotemporal, or 'not yet specified'), (2) any medications started or discussed, (3) tests still pending (blood work, imaging, biomarker results), (4) the follow-up appointment date. Write it on paper, in your phone, or send yourself a text. The format does not matter. Getting it down does."
+    },
+    {
+      "id": "tell-one-person",
+      "label": "Tell one person",
+      "rationale": "You do not need to tell everyone. You need one person who knows, so you are not carrying this alone.",
+      "what_to_look_for": "Pick someone who can listen without trying to fix it. This might be a sibling, a close friend, a partner — whoever you would call if you got a flat tire at midnight. You are not asking for help yet. You are letting someone know what happened. If you do not know how to start, try: 'I got some hard news today and I need to tell someone.' Or: 'Mom got a diagnosis. I am still processing it but I did not want to sit with it alone.' You do not need to have it all figured out."
+    },
+    {
+      "id": "locate-key-documents",
+      "label": "Locate key documents",
+      "rationale": "You do not need to act on these yet. You need to know where they are so you are not scrambling later.",
+      "what_to_look_for": "Three things to find: (1) driver's license or government ID for your person, (2) health insurance card and any supplemental coverage information, (3) durable power of attorney for finances, and/or a healthcare proxy (also called an advance healthcare directive), if they exist. These are two separate documents — one covers financial decisions, the other covers medical decisions. If neither exists yet, that is okay — it goes on the month-two list with an elder-law attorney. For now, just know whether they are in place."
+    },
+    {
+      "id": "ask-about-guide-program",
+      "label": "Ask the clinic if they participate in the GUIDE program",
+      "rationale": "The GUIDE Model is a Medicare program that provides care navigation, respite support, and caregiver education for people with dementia. Not every clinic participates, but if yours does, it can make a real difference — and eligibility is easiest to establish early.",
+      "what_to_look_for": "Call the clinic that made the diagnosis and ask: 'Do you participate in the CMS GUIDE program?' If yes, ask what the next step is to enroll. If they do not know what you are talking about, that is fine — not all clinics are in the program. You can also look up participating organizations at innovation.cms.gov/innovation-models/guide (search for 'GUIDE Model' on the CMS Innovation Center site)."
+    },
+    {
+      "id": "schedule-follow-up",
+      "label": "Schedule a follow-up appointment if one is not already on the calendar",
+      "rationale": "The diagnostic appointment is the beginning of a relationship with the clinical team, not a one-time event. A follow-up in two to four weeks is standard.",
+      "what_to_look_for": "Check whether the clinic scheduled a follow-up before you left. If not, call and ask for one. A good follow-up visit covers: how your person is doing on any new medication, results of any pending tests, and next steps including treatment options. Write the date down where you will see it. If a medication was started, watch for these common side effects before the follow-up: nausea, dizziness, changes in appetite, or new confusion beyond their baseline. Write down what you notice — it helps the clinician adjust the plan."
+    }
+  ]
+}

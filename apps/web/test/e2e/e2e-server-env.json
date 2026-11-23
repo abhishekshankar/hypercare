@@ -1,0 +1,12 @@
+{
+  "COGNITO_USER_POOL_ID": "ca-central-1_e2EPLACEHOLDER00",
+  "COGNITO_APP_CLIENT_ID": "e2eplaceholdere2eplaceholdere1",
+  "COGNITO_APP_CLIENT_SECRET": "e2e-test-cognito-client-secret-32b-min-xxx",
+  "COGNITO_DOMAIN": "https://ca-central-1qvgfxxwds.auth.ca-central-1.amazoncognito.com",
+  "COGNITO_REGION": "ca-central-1",
+  "AUTH_BASE_URL": "http://127.0.0.1:3456",
+  "AUTH_SIGNOUT_URL": "http://127.0.0.1:3456",
+  "SESSION_COOKIE_SECRET": "e2e0123456789abcdef0123456789abcde",
+  "DATABASE_URL": "postgres://e2e:e2e@127.0.0.1:1/e2e",
+  "E2E_SETUP_SECRET": "e2e-onboarding-setup-secret-test-only-32b"
+}

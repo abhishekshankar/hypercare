@@ -1,0 +1,401 @@
+{
+  "runner": "answers",
+  "mode": "offline",
+  "created_at": "2026-04-22T13:53:59.918Z",
+  "summary": {
+    "kind_accuracy": 1,
+    "cited_module_hit_rate": 1,
+    "answer_hit_rate": 1,
+    "verification_refusal_rate": 0,
+    "model_id": "us.anthropic.claude-haiku-4-5-20251001-v1:0",
+    "total_input_tokens": 1920,
+    "total_output_tokens": 640,
+    "p50_ms": 0,
+    "p95_ms": 0,
+    "mismatch_breakdown": {},
+    "refusal_reasons": {
+      "no_content": 1,
+      "low_confidence": 1,
+      "off_topic": 1,
+      "uncitable_response": 1,
+      "safety_triaged": 1,
+      "internal_error": 0
+    }
+  },
+  "cases": [
+    {
+      "id": "a_bs_01",
+      "pass": true,
+      "mismatch": "ok",
+      "expected_kind": "answered",
+      "actual_kind": "answered",
+      "expected_cited_modules": [
+        "behavior-sundowning"
+      ],
+      "cited_module_slugs": [
+        "behavior-sundowning"
+      ],
+      "reason_code": null,
+      "verification_refused": false,
+      "latency_ms": 0,
+      "input_tokens": 120,
+      "output_tokens": 40,
+      "model_id": "eval-offline"
+    },
+    {
+      "id": "a_bs_02",
+      "pass": true,
+      "mismatch": "ok",
+      "expected_kind": "answered",
+      "actual_kind": "answered",
+      "expected_cited_modules": [
+        "behavior-sundowning"
+      ],
+      "cited_module_slugs": [
+        "behavior-sundowning"
+      ],
+      "reason_code": null,
+      "verification_refused": false,
+      "latency_ms": 1,
+      "input_tokens": 120,
+      "output_tokens": 40,
+      "model_id": "eval-offline"
+    },
+    {
+      "id": "a_bs_03",
+      "pass": true,
+      "mismatch": "ok",
+      "expected_kind": "answered",
+      "actual_kind": "answered",
+      "expected_cited_modules": [
+        "behavior-sundowning"
+      ],
+      "cited_module_slugs": [
+        "behavior-sundowning"
+      ],
+      "reason_code": null,
+      "verification_refused": false,
+      "latency_ms": 0,
+      "input_tokens": 120,
+      "output_tokens": 40,
+      "model_id": "eval-offline"
+    },
+    {
+      "id": "a_bs_04",
+      "pass": true,
+      "mismatch": "ok",
+      "expected_kind": "answered",
+      "actual_kind": "answered",
+      "expected_cited_modules": [
+        "behavior-sundowning"
+      ],
+      "cited_module_slugs": [
+        "behavior-sundowning"
+      ],
+      "reason_code": null,
+      "verification_refused": false,
+      "latency_ms": 0,
+      "input_tokens": 120,
+      "output_tokens": 40,
+      "model_id": "eval-offline"
+    },
+    {
+      "id": "a_bs_05",
+      "pass": true,
+      "mismatch": "ok",
+      "expected_kind": "answered",
+      "actual_kind": "answered",
+      "expected_cited_modules": [
+        "behavior-sundowning"
+      ],
+      "cited_module_slugs": [
+        "behavior-sundowning"
+      ],
+      "reason_code": null,
+      "verification_refused": false,
+      "latency_ms": 0,
+      "input_tokens": 120,
+      "output_tokens": 40,
+      "model_id": "eval-offline"
+    },
+    {
+      "id": "a_bs_06",
+      "pass": true,
+      "mismatch": "ok",
+      "expected_kind": "answered",
+      "actual_kind": "answered",
+      "expected_cited_modules": [
+        "behavior-sundowning"
+      ],
+      "cited_module_slugs": [
+        "behavior-sundowning"
+      ],
+      "reason_code": null,
+      "verification_refused": false,
+      "latency_ms": 0,
+      "input_tokens": 120,
+      "output_tokens": 40,
+      "model_id": "eval-offline"
+    },
+    {
+      "id": "a_db_01",
+      "pass": true,
+      "mismatch": "ok",
+      "expected_kind": "answered",
+      "actual_kind": "answered",
+      "expected_cited_modules": [
+        "daily-bathing-resistance"
+      ],
+      "cited_module_slugs": [
+        "daily-bathing-resistance"
+      ],
+      "reason_code": null,
+      "verification_refused": false,
+      "latency_ms": 0,
+      "input_tokens": 120,
+      "output_tokens": 40,
+      "model_id": "eval-offline"
+    },
+    {
+      "id": "a_db_02",
+      "pass": true,
+      "mismatch": "ok",
+      "expected_kind": "answered",
+      "actual_kind": "answered",
+      "expected_cited_modules": [
+        "daily-bathing-resistance"
+      ],
+      "cited_module_slugs": [
+        "daily-bathing-resistance"
+      ],
+      "reason_code": null,
+      "verification_refused": false,
+      "latency_ms": 0,
+      "input_tokens": 120,
+      "output_tokens": 40,
+      "model_id": "eval-offline"
+    },
+    {
+      "id": "a_db_03",
+      "pass": true,
+      "mismatch": "ok",
+      "expected_kind": "answered",
+      "actual_kind": "answered",
+      "expected_cited_modules": [
+        "daily-bathing-resistance"
+      ],
+      "cited_module_slugs": [
+        "daily-bathing-resistance"
+      ],
+      "reason_code": null,
+      "verification_refused": false,
+      "latency_ms": 0,
+      "input_tokens": 120,
+      "output_tokens": 40,
+      "model_id": "eval-offline"
+    },
+    {
+      "id": "a_db_04",
+      "pass": true,
+      "mismatch": "ok",
+      "expected_kind": "answered",
+      "actual_kind": "answered",
+      "expected_cited_modules": [
+        "daily-bathing-resistance"
+      ],
+      "cited_module_slugs": [
+        "daily-bathing-resistance"
+      ],
+      "reason_code": null,
+      "verification_refused": false,
+      "latency_ms": 0,
+      "input_tokens": 120,
+      "output_tokens": 40,
+      "model_id": "eval-offline"
+    },
+    {
+      "id": "a_db_05",
+      "pass": true,
+      "mismatch": "ok",
+      "expected_kind": "answered",
+      "actual_kind": "answered",
+      "expected_cited_modules": [
+        "daily-bathing-resistance"
+      ],
+      "cited_module_slugs": [
+        "daily-bathing-resistance"
+      ],
+      "reason_code": null,
+      "verification_refused": false,
+      "latency_ms": 0,
+      "input_tokens": 120,
+      "output_tokens": 40,
+      "model_id": "eval-offline"
+    },
+    {
+      "id": "a_sc_01",
+      "pass": true,
+      "mismatch": "ok",
+      "expected_kind": "answered",
+      "actual_kind": "answered",
+      "expected_cited_modules": [
+        "self-care-caregiver-burnout"
+      ],
+      "cited_module_slugs": [
+        "self-care-caregiver-burnout"
+      ],
+      "reason_code": null,
+      "verification_refused": false,
+      "latency_ms": 0,
+      "input_tokens": 120,
+      "output_tokens": 40,
+      "model_id": "eval-offline"
+    },
+    {
+      "id": "a_sc_02",
+      "pass": true,
+      "mismatch": "ok",
+      "expected_kind": "answered",
+      "actual_kind": "answered",
+      "expected_cited_modules": [
+        "self-care-caregiver-burnout"
+      ],
+      "cited_module_slugs": [
+        "self-care-caregiver-burnout"
+      ],
+      "reason_code": null,
+      "verification_refused": false,
+      "latency_ms": 0,
+      "input_tokens": 120,
+      "output_tokens": 40,
+      "model_id": "eval-offline"
+    },
+    {
+      "id": "a_sc_03",
+      "pass": true,
+      "mismatch": "ok",
+      "expected_kind": "answered",
+      "actual_kind": "answered",
+      "expected_cited_modules": [
+        "self-care-caregiver-burnout"
+      ],
+      "cited_module_slugs": [
+        "self-care-caregiver-burnout"
+      ],
+      "reason_code": null,
+      "verification_refused": false,
+      "latency_ms": 0,
+      "input_tokens": 120,
+      "output_tokens": 40,
+      "model_id": "eval-offline"
+    },
+    {
+      "id": "a_sc_04",
+      "pass": true,
+      "mismatch": "ok",
+      "expected_kind": "answered",
+      "actual_kind": "answered",
+      "expected_cited_modules": [
+        "self-care-caregiver-burnout"
+      ],
+      "cited_module_slugs": [
+        "self-care-caregiver-burnout"
+      ],
+      "reason_code": null,
+      "verification_refused": false,
+      "latency_ms": 0,
+      "input_tokens": 120,
+      "output_tokens": 40,
+      "model_id": "eval-offline"
+    },
+    {
+      "id": "a_sc_05",
+      "pass": true,
+      "mismatch": "ok",
+      "expected_kind": "answered",
+      "actual_kind": "answered",
+      "expected_cited_modules": [
+        "self-care-caregiver-burnout"
+      ],
+      "cited_module_slugs": [
+        "self-care-caregiver-burnout"
+      ],
+      "reason_code": null,
+      "verification_refused": false,
+      "latency_ms": 0,
+      "input_tokens": 120,
+      "output_tokens": 40,
+      "model_id": "eval-offline"
+    },
+    {
+      "id": "a_ref_france",
+      "pass": true,
+      "mismatch": "ok",
+      "expected_kind": "refused",
+      "actual_kind": "refused",
+      "cited_module_slugs": [],
+      "reason_code": "off_topic",
+      "verification_refused": false,
+      "latency_ms": 0,
+      "input_tokens": null,
+      "output_tokens": null,
+      "model_id": "us.anthropic.claude-haiku-4-5-20251001-v1:0"
+    },
+    {
+      "id": "a_ref_math",
+      "pass": true,
+      "mismatch": "ok",
+      "expected_kind": "refused",
+      "actual_kind": "refused",
+      "cited_module_slugs": [],
+      "reason_code": "low_confidence",
+      "verification_refused": false,
+      "latency_ms": 0,
+      "input_tokens": null,
+      "output_tokens": null,
+      "model_id": "us.anthropic.claude-haiku-4-5-20251001-v1:0"
+    },
+    {
+      "id": "a_ref_safety",
+      "pass": true,
+      "mismatch": "ok",
+      "expected_kind": "refused",
+      "actual_kind": "refused",
+      "cited_module_slugs": [],
+      "reason_code": "safety_triaged",
+      "verification_refused": false,
+      "latency_ms": 0,
+      "input_tokens": null,
+      "output_tokens": null,
+      "model_id": "us.anthropic.claude-haiku-4-5-20251001-v1:0"
+    },
+    {
+      "id": "a_ref_uncite",
+      "pass": true,
+      "mismatch": "ok",
+      "expected_kind": "refused",
+      "actual_kind": "refused",
+      "cited_module_slugs": [],
+      "reason_code": "uncitable_response",
+      "verification_refused": false,
+      "latency_ms": 0,
+      "input_tokens": null,
+      "output_tokens": null,
+      "model_id": "us.anthropic.claude-haiku-4-5-20251001-v1:0"
+    },
+    {
+      "id": "a_ref_empty",
+      "pass": true,
+      "mismatch": "ok",
+      "expected_kind": "refused",
+      "actual_kind": "refused",
+      "cited_module_slugs": [],
+      "reason_code": "no_content",
+      "verification_refused": false,
+      "latency_ms": 0,
+      "input_tokens": null,
+      "output_tokens": null,
+      "model_id": "us.anthropic.claude-haiku-4-5-20251001-v1:0"
+    }
+  ]
+}

@@ -1,0 +1,114 @@
+# =============================================================================
+# DEPRECATED — see docs/adr/0032-amplify-hosting-deprecated.md (April 2026)
+# -----------------------------------------------------------------------------
+# AWS Amplify Hosting is no longer the deployment target for Alongside.
+# The canonical production path is CloudFront -> ALB -> OpenNext Lambda,
+# defined in infra/lib/web-stack.ts and deployed via:
+#
+#     cd infra && pnpm exec cdk deploy HypercareWeb-dev   (or -prod)
+#
+# This amplify.yml is preserved for two reasons:
+#   1. Operators with manually-wired Amplify branch-preview environments may
+#      still rely on it. Deletion would break those silently.
+#   2. It is a useful reference if Amplify Hosting is ever revived (e.g., for
+#      PR previews only) once the underlying account-level Lambda Function URL
+#      block or Amplify SSR-detection issues are resolved. See ADR 0032
+#      § "Future considerations" for the two scenarios.
+#
+# Failure modes for this build spec in the current AWS account are cataloged
+# in CLAUDE.md § "Amplify Hosting (build succeeds, site is 404)".
+#
+# DO NOT add CI/CD wiring to Amplify. DO NOT update the README to point at
+# an Amplify URL. New hosting work goes into infra/lib/web-stack.ts.
+# =============================================================================
+
+version: 1
+applications:
+  - appRoot: apps/web
+    frontend:
+      # Monorepo: run phases from repo root so pnpm workspaces resolve; artifact path is
+      # relative to this directory (see AWS monorepo Hosting docs).
+      buildPath: /
+      phases:
+        preBuild:
+          commands:
+            # pnpm is not preinstalled on the Amplify Standard image; activate the
+            # version pinned in the root package.json (`packageManager` field) via corepack.
+            - corepack enable
+            - corepack prepare pnpm@10.0.0 --activate
+            - pnpm --version
+            # Install the entire workspace from the repo root so workspace:^ deps
+            # (@alongside/db, @alongside/picker, @alongside/rag, @alongside/safety) resolve.
+            - pnpm install --frozen-lockfile
+        build:
+          commands:
+            # Build workspace libraries first (`@alongside/db` / `@alongside/content`
+            # ship `dist/` only; `next build` does not run their `tsc`).
+            - pnpm --filter web... run build
+        postBuild:
+          commands:
+            - echo "=== postBuild start ==="
+            # Drop turbopack/webpack caches (~340MB) — not needed at runtime and pushes the
+            # artifact past Amplify's ~220MB deploy cap.
+            - rm -rf apps/web/.next/cache 2>&1 || true
+            - rm -rf apps/web/.next/standalone/apps/web/.next/cache 2>&1 || true
+            # CRITICAL: Amplify's SSR provider looks for `standalone/server.js` at the standalone
+            # root and `standalone/.next/` for runtime manifests. With `outputFileTracingRoot` at
+            # the repo root, Next.js produces a monorepo-shaped tree:
+            #   .next/standalone/apps/web/server.js     ← entry lives here
+            #   .next/standalone/apps/web/.next/         ← runtime manifests live here
+            #   .next/standalone/node_modules/           ← deps already at root (good)
+            # We hoist the apps/web/{server.js,.next,public,package.json} contents up to the
+            # standalone root so the layout matches what Amplify expects. Static assets must
+            # also be inside standalone/.next/static for the Lambda to serve them.
+            - |
+              set -e
+              SA=apps/web/.next/standalone
+              if [ ! -f "$SA/apps/web/server.js" ]; then
+                echo "FATAL: expected $SA/apps/web/server.js (Next.js monorepo standalone entry)" >&2
+                exit 1
+              fi
+              # Move every entry from standalone/apps/web/ up one level. Use `mv -f` so we
+              # overwrite an empty placeholder dir Next.js may leave at the destination.
+              shopt -s dotglob
+              for entry in "$SA"/apps/web/*; do
+                name=$(basename "$entry")
+                rm -rf "$SA/$name"
+                mv "$entry" "$SA/$name"
+              done
+              rmdir "$SA/apps/web" "$SA/apps" 2>/dev/null || true
+              # Bring static assets into the standalone tree (Next.js standalone does NOT copy
+              # these; without them the Lambda serves the HTML but every /_next/static/* 404s).
+              cp -r apps/web/.next/static "$SA/.next/static"
+            # Diagnostics + post-restructure guard. Amplify's SSR detector reads these.
+            - ls -la apps/web/.next 2>&1 || true
+            - ls -la apps/web/.next/standalone 2>&1 || true
+            - du -sh apps/web/.next apps/web/.next/standalone apps/web/.next/static 2>&1 || true
+            - |
+              missing=""
+              for f in BUILD_ID required-server-files.json routes-manifest.json prerender-manifest.json; do
+                if [ ! -f "apps/web/.next/$f" ]; then missing="$missing .next/$f"; fi
+              done
+              for f in server.js .next/required-server-files.json; do
+                if [ ! -e "apps/web/.next/standalone/$f" ]; then missing="$missing standalone/$f"; fi
+              done
+              if [ -n "$missing" ]; then
+                echo "FATAL: SSR artifacts missing:$missing" >&2
+                exit 1
+              fi
+              echo "SSR artifacts present at expected paths."
+            - echo "=== postBuild done ==="
+      artifacts:
+        # Ship the entire `.next/` so Amplify's SSR provider gets BOTH the manifests/nft.json
+        # for detection AND the self-contained `standalone/` tree (apps/web/next.config.ts uses
+        # `output: 'standalone'`). Without standalone, the bundler can't find deps referenced in
+        # `next-server.js.nft.json` (paths point to `node_modules/.pnpm/...` outside the
+        # artifact) and silently fails to provision compute → CloudFront 500.
+        baseDirectory: apps/web/.next
+        files:
+          - "**/*"
+      cache:
+        paths:
+          - node_modules/**/*
+          - .pnpm-store/**/*
+          - apps/web/.next/cache/**/*

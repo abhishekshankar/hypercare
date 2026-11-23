@@ -1,0 +1,49 @@
+{
+  "tool_type": "conversation-script",
+  "title": "Telling someone the thoughts no one says out loud",
+  "description": "A script for naming the hardest things to a trusted person — a friend, therapist, or support group. What to say when you need to name the relief, the frustration, the wish that it was over, the grief for someone still alive.",
+  "openings": [
+    {
+      "opening": "I need to say something out loud, and I need you to not try to fix it or tell me it's going to be okay. Can I just say it?",
+      "common_fear": "That saying it will make you sound like a bad person, or that the listener will judge you for not being more grateful, more patient, more loving.",
+      "what_to_say_if_they_respond_badly": "If they respond with 'You should be grateful for the time you have' or 'At least they're still here,' you can say: 'I know you mean well, but what I needed was for someone to just hear me, not to fix it or reframe it. I'm going to talk to someone else about this.' Then exit the conversation. Not everyone can hold hard things without trying to make them softer."
+    },
+    {
+      "opening": "I love them, and I also sometimes wish this was over. Both of those things are true at the same time.",
+      "common_fear": "That wishing for it to be over means you are wishing them dead, or that you are a terrible person for thinking it.",
+      "what_to_say_if_they_respond_badly": "If they say 'You don't really mean that' or 'You'll regret saying that later,' you can say: 'Actually, I do mean it, and I need you to believe me. If you can't hold that without correcting me, I understand, but I can't keep talking about it with you.' Then find someone else — a therapist, a dementia caregiver support group — who has heard this before and knows it is normal."
+    },
+    {
+      "opening": "I feel relieved when they nap, or when I drop them off at day care, or when respite starts. And then I feel guilty for feeling relieved.",
+      "common_fear": "That relief means you do not love them enough, or that you are not cut out for this.",
+      "what_to_say_if_they_respond_badly": "If they say 'Well, you chose to take this on' or 'Maybe you need to find more joy in the time you have,' you can say: 'I didn't come to you for advice on how to feel differently. I came to you because I needed to name what I'm actually feeling. If that's not something you can hear without judgment, I'll talk to someone else.' Then do."
+    },
+    {
+      "opening": "I am grieving someone who is still sitting at the table. I miss who they were, and I feel disloyal for missing them while they are still here.",
+      "common_fear": "That grieving them while they are alive is somehow premature, disrespectful, or evidence that you have given up on them.",
+      "what_to_say_if_they_respond_badly": "If they say 'But they're still here — you should focus on the present' or 'You're mourning too early,' you can say: 'What I'm describing is called ambiguous grief, and it's real grief. If you haven't experienced it, I understand why it might not make sense, but I need you to trust that this is what I'm living with.' If they keep pushing back, end the conversation."
+    },
+    {
+      "opening": "Sometimes I am so angry at them — not at the disease, at them — and I know it is not their fault, but the anger is there anyway.",
+      "common_fear": "That anger at the person (not just the disease) means you are cruel, or that you are failing at caregiving.",
+      "what_to_say_if_they_respond_badly": "If they say 'You can't be angry at someone who has dementia' or 'That's not fair to them,' you can say: 'I'm not asking for permission to be angry. I'm telling you that I am angry, and I needed to say it out loud to someone who wouldn't shame me for it. If you can't do that, I'll find someone who can.' Anger is normal; being told you are not allowed to feel it makes it worse."
+    },
+    {
+      "opening": "I think about what will happen when they die, and sometimes I feel a sense of relief imagining it, and then I feel like a monster.",
+      "common_fear": "That anticipating their death — or feeling relief at the thought of it — makes you a terrible person, or that you are betraying them by thinking ahead.",
+      "what_to_say_if_they_respond_badly": "If they say 'You shouldn't think like that' or 'How can you say that?' you can say: 'I'm not saying I want them to die. I'm saying I sometimes imagine what it will be like when this is over, and I needed to name that to someone. If you can't hear that, I understand, but I'm going to find someone who can.' This is anticipatory grief, and it is normal in late-stage caregiving. Not everyone knows that."
+    },
+    {
+      "opening": "I am the only one doing this. No one else calls, no one else shows up, and I am so tired of being the only one.",
+      "common_fear": "That saying this out loud will sound like you are complaining, or that it will make you look like you are not capable of handling it.",
+      "what_to_say_if_they_respond_badly": "If they say 'Well, someone has to do it' or 'Maybe the others don't know how to help,' you can say: 'I didn't come to you for explanations of why no one else is helping. I came to you because I needed someone to witness how alone I feel in this. If you can't do that, I need to talk to someone else.' Solo caregiving has a distinct emotional load, and not everyone understands that without having lived it."
+    },
+    {
+      "opening": "I don't know if I can keep doing this. Not 'I'm going to stop' — just 'I don't know how much longer I can go on like this.'",
+      "common_fear": "That admitting you are at your limit means you have failed, or that people will think you are abandoning your person.",
+      "what_to_say_if_they_respond_badly": "If they say 'You're stronger than you think' or 'You'll get through this,' you can say: 'I need you to hear that I am at my limit, not tell me that I'm not. If you can't sit with that without trying to talk me out of it, I'm going to hang up.' Then do. What you need in this moment is witness, not encouragement. If they cannot give you that, find someone who can — a therapist, a crisis line, or a dementia caregiver support group where people have been exactly where you are."
+    }
+  ],
+  "closing_the_conversation": "After you have said the hard thing out loud, you do not owe the listener anything else. You do not have to explain it further, defend it, or make them feel better about what you said. If it helped to name it, that is enough. If it did not help, or if they responded in a way that made you feel worse, you can end the conversation: 'Thank you for listening. I need to go now.' Then find someone else to talk to next time.",
+  "usage_note": "This script assumes the listener is someone you have chosen — not a family member who will escalate or weaponize what you say, and not someone who will report you to authorities. If you do not have a person who can hold these conversations, a therapist or a dementia caregiver support group is often safer than a friend or family member. Some things are too hard for untrained listeners."
+}

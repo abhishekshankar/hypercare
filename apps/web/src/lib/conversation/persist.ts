@@ -1,0 +1,277 @@
+import "server-only";
+import { and, eq } from "drizzle-orm";
+
+import { conversations, createDbClient, messages } from "@alongside/db";
+import type { AnswerResult, Citation, RefusalReason, TopicFields } from "@alongside/rag";
+
+import { serverEnv } from "@/lib/env.server";
+
+function refusalReasonCode(r: RefusalReason): string {
+  return r.code;
+}
+
+export type CreateConversationInput = {
+  userId: string;
+  title?: string | null;
+};
+
+export async function createConversation(
+  input: CreateConversationInput,
+): Promise<{ id: string }> {
+  const db = createDbClient(serverEnv.DATABASE_URL);
+  const [row] = await db
+    .insert(conversations)
+    .values({
+      userId: input.userId,
+      title: input.title ?? null,
+    })
+    .returning({ id: conversations.id });
+  if (!row) {
+    throw new Error("Failed to create conversation row.");
+  }
+  return { id: row.id };
+}
+
+/** Load a conversation owned by `userId`, or return null. */
+export async function loadConversationOwned(
+  conversationId: string,
+  userId: string,
+): Promise<{ id: string; title: string | null } | null> {
+  const db = createDbClient(serverEnv.DATABASE_URL);
+  const [row] = await db
+    .select({ id: conversations.id, title: conversations.title })
+    .from(conversations)
+    .where(and(eq(conversations.id, conversationId), eq(conversations.userId, userId)))
+    .limit(1);
+  return row ?? null;
+}
+
+export type AssistantMessageRow = {
+  id: string;
+  role: "assistant";
+  content: string;
+  citations: Citation[];
+  refusal: RefusalReason | null;
+  createdAt: Date;
+  rating: "up" | "down" | null;
+  ratingInvited: boolean;
+};
+
+export type UserMessageRow = {
+  id: string;
+  role: "user";
+  content: string;
+  createdAt: Date;
+};
+
+export type PersistedTurn = {
+  user: UserMessageRow;
+  assistant: AssistantMessageRow;
+};
+
+/**
+ * Persist one user→assistant turn from a `rag.answer()` call.
+ *
+ * Writes happen in declaration order — user row first so the assistant row
+ * (and any safety_flag inserted by the safety package at layer 0) point at
+ * a real conversation_id even if the assistant insert fails.
+ */
+export async function persistTurn(args: {
+  conversationId: string;
+  userText: string;
+  result: AnswerResult;
+}): Promise<PersistedTurn> {
+  const db = createDbClient(serverEnv.DATABASE_URL);
+  const { classifiedTopics, topicConfidence } = args.result as TopicFields;
+
+  const [userRow] = await db
+    .insert(messages)
+    .values({
+      conversationId: args.conversationId,
+      role: "user",
+      content: args.userText,
+      classifiedTopics,
+      topicConfidence,
+    })
+    .returning({
+      id: messages.id,
+      content: messages.content,
+      createdAt: messages.createdAt,
+    });
+  if (!userRow) {
+    throw new Error("Failed to insert user message.");
+  }
+
+  const assistantContent =
+    args.result.kind === "answered" ? args.result.text : "";
+  const assistantCitations: Citation[] =
+    args.result.kind === "answered" ? args.result.citations : [];
+  const assistantRefusal: RefusalReason | null =
+    args.result.kind === "refused" ? args.result.reason : null;
+  const responseKind: "answer" | "refusal" =
+    args.result.kind === "answered" ? "answer" : "refusal";
+  const isSafetyEscalation =
+    args.result.kind === "refused" && args.result.reason.code === "safety_triaged";
+  const op = args.result.operator;
+  const genUsage = op.lastGenerationUsage;
+
+  const [assistantRow] = await db
+    .insert(messages)
+    .values({
+      conversationId: args.conversationId,
+      role: "assistant",
+      content: assistantContent,
+      responseKind,
+      citations: assistantCitations,
+      refusal: assistantRefusal,
+      retrievalTopTier: op.topRetrievalTier,
+      refusalReasonCode: args.result.kind === "refused" ? refusalReasonCode(args.result.reason) : null,
+      bedrockInputTokens: genUsage?.inputTokens ?? null,
+      bedrockOutputTokens: genUsage?.outputTokens ?? null,
+      modelId: genUsage?.modelId ?? null,
+      generationLatencyMs: op.pipelineLatencyMs,
+      streamFirstChunkMs: null,
+      streamTotalMs: null,
+      ratingInvited: responseKind === "answer" || isSafetyEscalation,
+    })
+    .returning({
+      id: messages.id,
+      content: messages.content,
+      citations: messages.citations,
+      refusal: messages.refusal,
+      createdAt: messages.createdAt,
+    });
+  if (!assistantRow) {
+    throw new Error("Failed to insert assistant message.");
+  }
+
+  // bump conversations.updated_at so "recent conversations" sorts correctly.
+  await db
+    .update(conversations)
+    .set({ updatedAt: new Date() })
+    .where(eq(conversations.id, args.conversationId));
+
+  return {
+    user: {
+      id: userRow.id,
+      role: "user",
+      content: userRow.content,
+      createdAt: userRow.createdAt,
+    },
+    assistant: {
+      id: assistantRow.id,
+      role: "assistant",
+      content: assistantRow.content,
+      citations: (assistantRow.citations ?? []) as Citation[],
+      refusal: (assistantRow.refusal ?? null) as RefusalReason | null,
+      createdAt: assistantRow.createdAt,
+      rating: null,
+      ratingInvited: responseKind === "answer" || isSafetyEscalation,
+    },
+  };
+}
+
+/** Insert the user row only (TASK-031 streaming: before generation starts). */
+export async function persistUserMessageOnly(args: {
+  conversationId: string;
+  userText: string;
+  classifiedTopics: TopicFields["classifiedTopics"];
+  topicConfidence: TopicFields["topicConfidence"];
+}): Promise<UserMessageRow> {
+  const db = createDbClient(serverEnv.DATABASE_URL);
+  const [userRow] = await db
+    .insert(messages)
+    .values({
+      conversationId: args.conversationId,
+      role: "user",
+      content: args.userText,
+      classifiedTopics: args.classifiedTopics,
+      topicConfidence: args.topicConfidence,
+    })
+    .returning({
+      id: messages.id,
+      content: messages.content,
+      createdAt: messages.createdAt,
+    });
+  if (!userRow) {
+    throw new Error("Failed to insert user message.");
+  }
+  await db
+    .update(conversations)
+    .set({ updatedAt: new Date() })
+    .where(eq(conversations.id, args.conversationId));
+  return {
+    id: userRow.id,
+    role: "user",
+    content: userRow.content,
+    createdAt: userRow.createdAt,
+  };
+}
+
+/** Insert assistant row after streaming or refusal mid-stream (TASK-031). */
+export async function persistAssistantMessage(args: {
+  conversationId: string;
+  result: AnswerResult;
+  streamFirstChunkMs?: number | null;
+  streamTotalMs?: number | null;
+}): Promise<AssistantMessageRow> {
+  const db = createDbClient(serverEnv.DATABASE_URL);
+  const assistantContent = args.result.kind === "answered" ? args.result.text : "";
+  const assistantCitations: Citation[] =
+    args.result.kind === "answered" ? args.result.citations : [];
+  const assistantRefusal: RefusalReason | null =
+    args.result.kind === "refused" ? args.result.reason : null;
+  const responseKind: "answer" | "refusal" =
+    args.result.kind === "answered" ? "answer" : "refusal";
+  const isSafetyEscalation =
+    args.result.kind === "refused" && args.result.reason.code === "safety_triaged";
+  const op = args.result.operator;
+  const genUsage = op.lastGenerationUsage;
+
+  const [assistantRow] = await db
+    .insert(messages)
+    .values({
+      conversationId: args.conversationId,
+      role: "assistant",
+      content: assistantContent,
+      responseKind,
+      citations: assistantCitations,
+      refusal: assistantRefusal,
+      retrievalTopTier: op.topRetrievalTier,
+      refusalReasonCode: args.result.kind === "refused" ? refusalReasonCode(args.result.reason) : null,
+      bedrockInputTokens: genUsage?.inputTokens ?? null,
+      bedrockOutputTokens: genUsage?.outputTokens ?? null,
+      modelId: genUsage?.modelId ?? null,
+      generationLatencyMs: op.pipelineLatencyMs,
+      streamFirstChunkMs: args.streamFirstChunkMs ?? null,
+      streamTotalMs: args.streamTotalMs ?? null,
+      ratingInvited: responseKind === "answer" || isSafetyEscalation,
+    })
+    .returning({
+      id: messages.id,
+      content: messages.content,
+      citations: messages.citations,
+      refusal: messages.refusal,
+      createdAt: messages.createdAt,
+      rating: messages.rating,
+      ratingInvited: messages.ratingInvited,
+    });
+  if (!assistantRow) {
+    throw new Error("Failed to insert assistant message.");
+  }
+  await db
+    .update(conversations)
+    .set({ updatedAt: new Date() })
+    .where(eq(conversations.id, args.conversationId));
+
+  return {
+    id: assistantRow.id,
+    role: "assistant",
+    content: assistantRow.content,
+    citations: (assistantRow.citations ?? []) as Citation[],
+    refusal: (assistantRow.refusal ?? null) as RefusalReason | null,
+    createdAt: assistantRow.createdAt,
+    rating: (assistantRow.rating ?? null) as AssistantMessageRow["rating"],
+    ratingInvited: Boolean(assistantRow.ratingInvited),
+  };
+}

@@ -8,11 +8,11 @@ Status: Draft v1 • April 2026
 
 # **1\. Executive summary**
 
-Hypercare is a web-based AI companion for family members caring for someone with dementia. It combines a living care profile, situation-specific guidance on demand, and a proactive, stage-aware learning path grounded in reviewed expert sources. The product is built around a single insight: caregiver needs change dramatically as the disease progresses, and generic content fails because it is almost always either too early or too late for where a specific family is today.
+Alongside is a web-based AI companion for family members caring for someone with dementia. It combines a living care profile, situation-specific guidance on demand, and a proactive, stage-aware learning path grounded in reviewed expert sources. The product is built around a single insight: caregiver needs change dramatically as the disease progresses, and generic content fails because it is almost always either too early or too late for where a specific family is today.
 
-Hypercare is not a brain-training app for the person with dementia, not a symptom tracker, and not a medical device. It educates and supports the caregiver — the domain where evidence for impact is strongest (REACH II, NYU Caregiver Intervention, Savvy Caregiver) and where regulatory risk is lowest.
+Alongside is not a brain-training app for the person with dementia, not a symptom tracker, and not a medical device. It educates and supports the caregiver — the domain where evidence for impact is strongest (REACH II, NYU Caregiver Intervention, Savvy Caregiver) and where regulatory risk is lowest.
 
-The category is underserved. The Alzheimer's Association has thorough content but a navigation problem; Teepa Snow's Positive Approach to Care (PAC) is the gold standard for technique but shaped as expensive video courses aimed at professional caregivers; a handful of apps exist (Dementia Careblazers, CareYaya, Rippl) but none have nailed the "AI guide for your specific situation" angle. This is the opening Hypercare is built for.
+The category is underserved. The Alzheimer's Association has thorough content but a navigation problem; Teepa Snow's Positive Approach to Care (PAC) is the gold standard for technique but shaped as expensive video courses aimed at professional caregivers; a handful of apps exist (Dementia Careblazers, CareYaya, Rippl) but none have nailed the "AI guide for your specific situation" angle. This is the opening Alongside is built for.
 
 ## **1.1 Product in one line**
 
@@ -38,7 +38,7 @@ The AI guide that helps you care for someone with dementia — tailored to their
 
 Each of these is tempting; each is deferred on purpose.
 
-- Multi-patient profiles (one caregiver, one care recipient in v1).
+- Multi-patient profiles (one caregiver, one care recipient in v1).[^family-sharing-v2]
 
 - Native mobile apps (iOS/Android).
 
@@ -60,11 +60,13 @@ Each of these is tempting; each is deferred on purpose.
 
 The primary user is the family caregiver — most often an adult child (commonly a daughter aged 45–65) or a spouse (often themselves 65+). They are overwhelmed, time-starved, and reading this on a phone, probably at night, probably tired. They are not medical professionals, and they should never need to be.
 
-A secondary consideration: in many families, caregiving is split across siblings with unequal involvement. v1 is tuned to the primary caregiver's voice; family sharing is a v2 concern.
+A secondary consideration: in many families, caregiving is split across siblings with unequal involvement. v1 is tuned to the primary caregiver's voice; family sharing is a v2 concern.[^family-sharing-v2]
+
+[^family-sharing-v2]: **Sprint 5 update (TASK-038):** family sharing v1 shipped — multiple caregivers may share one `care_profile` via `care_profile_members`, with conversation history and saved answers staying per-caregiver by default. The "v2 concern" framing here is preserved for narrative continuity; the data model and privacy posture are documented in [`docs/schema-v2.md`](docs/schema-v2.md) § `care_profile_members` and [ADR 0027](docs/adr/0027-family-sharing-data-model-and-privacy.md). The "multi-patient profiles" deferral above is unchanged: one care **recipient** per profile remains the v1 contract.
 
 ## **2.2 The jobs to be done**
 
-From conversations with caregivers and caregiver-support literature, Hypercare has to do three jobs at once, and they are different in shape:
+From conversations with caregivers and caregiver-support literature, Alongside has to do three jobs at once, and they are different in shape:
 
 - **Tell me what to do right now**. The 2am "she won't let me bathe her" problem. Needs: fast, concrete, situation-specific, non-clinical answer with a try-this-now technique.
 
@@ -74,11 +76,11 @@ From conversations with caregivers and caregiver-support literature, Hypercare h
 
 ## **2.3 Why generic content fails**
 
-Caregiver needs are a moving target. Someone whose mother was diagnosed last month needs totally different help than someone whose father has stopped recognizing them. A generic blog article is either too early (irrelevant) or too late (assumes context the reader doesn't have). The premise of Hypercare is that AI-driven personalization tuned to stage and situation is genuinely the right tool for this — not as a gimmick but because the underlying problem is an information-matching problem.
+Caregiver needs are a moving target. Someone whose mother was diagnosed last month needs totally different help than someone whose father has stopped recognizing them. A generic blog article is either too early (irrelevant) or too late (assumes context the reader doesn't have). The premise of Alongside is that AI-driven personalization tuned to stage and situation is genuinely the right tool for this — not as a gimmick but because the underlying problem is an information-matching problem.
 
 ## **2.4 Evidence base for the intervention**
 
-Caregiver education and skills training — the thing Hypercare is actually delivering — are well-evidenced to reduce caregiver burden and delay nursing home placement. Named, peer-reviewed interventions relevant to the product include:
+Caregiver education and skills training — the thing Alongside is actually delivering — are well-evidenced to reduce caregiver burden and delay nursing home placement. Named, peer-reviewed interventions relevant to the product include:
 
 - REACH II — Resources for Enhancing Alzheimer's Caregiver Health.
 
@@ -124,9 +126,11 @@ The content strategy (Section 7\) is explicitly organized around these sources.
 
 Five rules, from which everything else in this document derives. If any of these is wrong, the product is wrong.
 
-### **4.1 One caregiver, one care recipient, one profile**
+### **4.1 One care recipient per profile; caregivers and households**
 
-The product is emotionally and informationally tuned to this situation. Multi-patient dashboards, family sharing, and caregiver-team features are v2. If a user cares for two parents, they make two accounts in v1.
+The product is emotionally and informationally tuned to **one care recipient per Alongside care profile**. **Multi-patient dashboards** (one logged-in caregiver formally managing two parents in one account) remain out of scope for v1 — if a user cares for two parents, they still use two accounts today.
+
+**Family sharing (Sprint 5, TASK-038):** a **second caregiver** (e.g. a sibling) can be invited onto the **same** care profile so the household shares the plan (stage, situation notes, library catalog). Each caregiver keeps their **own** Cognito identity, **own** conversation threads, and **own** saved answers unless a future opt-in changes that; see `docs/adr/0027-family-sharing-data-model-and-privacy.md`. Deeper “caregiver team” workflows (ownership transfer, cross-thread sharing) stay on the roadmap beyond v1.
 
 ### **4.2 Crisis-first, not curriculum-first**
 
@@ -235,6 +239,8 @@ Single page. Warm but serious typography — closer to the New York Times than t
 - **Primary CTA:** "Get started."
 
 - **Persistent crisis strip:** "If you're in crisis right now, call the Alzheimer's Association 24/7 helpline: 800-272-3900." Always visible.
+
+  _Implementation note (TASK-005):_ placement (`sticky` vs `fixed`), palette, and typography tokens are recorded in [`docs/adr/0003-design-tokens-and-crisis-strip.md`](docs/adr/0003-design-tokens-and-crisis-strip.md).
 
 ## **6.2 Screen 2 — Onboarding**
 
@@ -374,7 +380,7 @@ Not all sources are equal. The content system maintains three tiers:
 
 | Tier   | Description                                                   | Example sources                           |
 | :----- | :------------------------------------------------------------ | :---------------------------------------- |
-| Tier 1 | Reviewed internal modules. Explicit stage, topic, confidence. | The 50 Hypercare modules                  |
+| Tier 1 | Reviewed internal modules. Explicit stage, topic, confidence. | The 50 Alongside modules                  |
 | Tier 2 | Curated external sources, indexed and labeled.                | Alzheimer's Association, NIA, Mayo Clinic |
 | Tier 3 | Structured summaries of major intervention literature.        | REACH II, NYU CI, Savvy Caregiver, TAP    |
 
@@ -396,7 +402,7 @@ The first four modules to draft — chosen because together they stress-test the
 
 ## **8.1 The expert roster**
 
-The expert layer is what separates Hypercare from a ChatGPT wrapper. Five roles, some combinable:
+The expert layer is what separates Alongside from a ChatGPT wrapper. Five roles, some combinable:
 
 | Role                        | Scope                                                   | Commitment      | Compensation (indicative)           |
 | :-------------------------- | :------------------------------------------------------ | :-------------- | :---------------------------------- |
@@ -547,6 +553,8 @@ The "add this topic" button feeds the content pipeline's queue of requested modu
 | Reranker              | Cross-encoder (Cohere or OSS)                   | Real quality improvement, worth the latency cost.             |
 | Observability         | Log every query / retrieval / prompt / response | Weekly review of 50 random queries by Content Lead \+ expert. |
 
+**Model routing (v1, TASK-042):** When the server flag `MODEL_ROUTING` is on, the **answering** Bedrock model id is chosen from a checked-in policy (`@alongside/model-router`, topic bridged from the topic classifier) with an A/B cohort on `users.routing_cohort` (`routing_v1_control` = always default model; `routing_v1_treatment` = full policy). Each assistant turn can append one row to `model_routing_decisions` for experiment analysis. When the flag is off, behavior matches the single default answer model. See **`docs/adr/0030-per-user-model-routing.md`** and migration **`0021_model_routing.sql`**. Internal metrics (`/internal/metrics`) include a per-cohort routing comparison tile for operators.
+
 ## **9.5 Evaluation**
 
 A red-team eval set exists from day one, not after launch:
@@ -561,7 +569,7 @@ A red-team eval set exists from day one, not after launch:
 
 # **10\. Safety classifier and escalation**
 
-This is the area where getting it wrong has consequences beyond churn. It is treated with the seriousness of a medical-device build, even though legally Hypercare is not one.
+This is the area where getting it wrong has consequences beyond churn. It is treated with the seriousness of a medical-device build, even though legally Alongside is not one.
 
 ## **10.1 The six risk categories**
 
@@ -631,7 +639,7 @@ Not every concerning query is crisis-level. Yellow flags — caregiver burnout s
 
 - Post-launch: flagged-query audit every 2 weeks for the first 3 months, monthly thereafter.
 
-## **10.6 What Hypercare deliberately does not do**
+## **10.6 What Alongside deliberately does not do**
 
 - Does not build an "I'm worried about you" intervention triggered on emotional language without a real risk signal — it condescends and drives churn.
 
@@ -649,7 +657,7 @@ This audience is not on TikTok and does not respond to growth hacks. They find h
 
 - **SEO on crisis queries (primary).** Specific, high-intent searches — "dementia patient won't shower," "mom keeps accusing me of stealing," "how to handle sundowning," "when to stop letting dad drive." Each seed query maps to an existing or planned module. The library doubles as SEO surface.
 
-- **Geriatric practice partnerships (secondary).** Neurologists, geriatricians, and memory clinics hand Hypercare to families at the diagnosis visit. Provide print handouts, a simple signup link, and occasional clinician-facing updates.
+- **Geriatric practice partnerships (secondary).** Neurologists, geriatricians, and memory clinics hand Alongside to families at the diagnosis visit. Provide print handouts, a simple signup link, and occasional clinician-facing updates.
 
 - **Alzheimer's Association chapter partnerships.** Local chapters run support groups and caregiver education; a non-competitive co-marketing posture is possible if positioning is careful.
 
@@ -673,7 +681,11 @@ Three metrics, in strict priority order.
 | Return rate      | % of users returning in week 2 / week 4 / week 8\.                       | ≥ 50% W2, ≥ 40% W4, ≥ 25% W8                             |
 | Behavior change  | Weekly check-in: "Did you try something this week that helped?" → % yes. | ≥ 50% of active caregivers                               |
 
+Observed values (per-sprint snapshots from `/internal/metrics`) are captured in [`docs/beta-cohort-metrics-sprint4-snapshot.md`](docs/beta-cohort-metrics-sprint4-snapshot.md); the definitions here are the source of truth, the snapshot is the dated readout. See also ADR 0019.
+
 Deliberately not tracked as primary metrics: session length, DAU, streaks, or any engagement metric that rewards anxiety-driven use.
+
+When **model routing** is enabled (`MODEL_ROUTING`; TASK-042, ADR 0030), operators can slice the same helpfulness signal by routing cohort on `/internal/metrics` — a secondary readout for experiments; it does not change the priority order of the three metrics above.
 
 # **13\. Risks and mitigations**
 
@@ -702,7 +714,7 @@ Deliberately not tracked as primary metrics: session length, DAU, streaks, or an
 
 # **15\. Appendix — primary sources**
 
-Content and the RAG system draw on a curated set of primary and secondary sources. The Tier-1 position is held by Hypercare's own reviewed modules; Tiers 2 and 3 include:
+Content and the RAG system draw on a curated set of primary and secondary sources. The Tier-1 position is held by Alongside's own reviewed modules; Tiers 2 and 3 include:
 
 - Alzheimer's Association (alz.org) — consumer guidance, 24/7 helpline, Safe Return program.
 

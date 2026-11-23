@@ -1,0 +1,3 @@
+# ESLint in this monorepo
+
+Hypercare uses two ESLint entry points on purpose. The root `eslint.config.mjs` only lints shared libraries and infrastructure code (`packages/*/src`, `infra/bin`) with `typescript-eslint`’s recommended rules, keeping server-side and package code consistent without pulling in React or Next.js rule sets. The Next.js app uses `apps/web/eslint.config.mjs`, which wraps `eslint-config-next` (core-web-vitals + TypeScript) through `FlatCompat` inside ESLint’s flat `defineConfig` so that `next build`’s lint step correctly detects the `@next/next` plugin and stays aligned with Vercel’s expected setup.

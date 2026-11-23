@@ -1,0 +1,154 @@
+# Hermes config for Alongside content production.
+# Copy this to ~/.hermes/config.yaml on the operator's machine.
+# Override any value at runtime with `hermes --config-override key=value`.
+
+# ---------------------------------------------------------------------------
+# Project
+# ---------------------------------------------------------------------------
+
+project:
+  name: alongside-content
+  root: /Users/abhi/Documents/GitHub/hypercare
+  context_file: AGENTS.md   # picks up our orchestration playbook
+
+# ---------------------------------------------------------------------------
+# Identity
+# ---------------------------------------------------------------------------
+# Hermes loads ~/.hermes/SOUL.md as the primary identity.
+# We've placed our identity at hermes/SOUL.md in the repo. The operator
+# should symlink or copy it: cp hermes/SOUL.md ~/.hermes/SOUL.md
+
+# ---------------------------------------------------------------------------
+# Model — uniform Kimi K2 across every role
+# ---------------------------------------------------------------------------
+#
+# Cost decision (April 25, 2026): the wave-1 spike on Opus 4.6 cost $44 for one
+# module because per-role routing didn't load on this Hermes version, so every
+# subagent ran on Opus instead of the Sonnet/Haiku/Kimi split we'd planned. At
+# 60 modules that extrapolates to ~$2,640 — past what the sprint can absorb.
+#
+# Switching to all-Kimi K2. Per-module cost drops to roughly $0.40-0.65. Full
+# sprint of 60 modules: ~$25-40. About 60x cheaper than the failed Opus run.
+#
+# Quality compromise, named honestly:
+# - K2 voice register is more clinical than Claude's, slightly less warm. The
+#   prompts (especially 00-system.md and 04-lived-experience.md) lean hard
+#   on the seeded modules' restraint, so the voice should still match — but
+#   first 2-3 modules need close external review.
+# - K2 is genuinely strong on long-context retrieval-and-synthesis and on
+#   JSON-strict output. Those map well to Synthesis, Citation, Tools roles.
+# - K2 may be weaker on the lived_experience axis (subtle composite work)
+#   than Sonnet would be. The external Cowork critique catches this.
+# - The Critique Agent (rubric gate) running on K2 instead of Opus is the
+#   real risk. Mitigation: my external critique pass runs against every
+#   module and overrides Hermes' internal score where it drifts.
+#
+# Per-role overrides removed since routing didn't honor them anyway. One
+# top-level model wins every call.
+
+model:
+  provider: kimi
+  name: kimi-k2-0905-preview
+  max_tokens: 32000
+  # If `hermes model list` shows a different Kimi slug (e.g. moonshot-v1-128k
+  # or kimi-k2-instruct), edit this. The provider stays kimi.
+
+# ---------------------------------------------------------------------------
+# Delegation — subagents
+# ---------------------------------------------------------------------------
+
+delegation:
+  max_concurrent_children: 3
+  max_spawn_depth: 1
+  # Per-role overrides removed. This Hermes version inherits the parent
+  # model on every delegation, so all eight subagents run kimi-k2-0905-preview.
+  # If a future Hermes release surfaces working per_role_model routing, we
+  # can re-introduce the split. Until then: one model, one provider.
+
+# ---------------------------------------------------------------------------
+# Provider auth
+# ---------------------------------------------------------------------------
+# KIMI_API_KEY: required (already configured per `hermes status`).
+# OPENROUTER_API_KEY: not required for content production; can stay set for
+#   manual Opus checks if you want a second-opinion pass on a flagged module.
+# ANTHROPIC_API_KEY: not required.
+
+# ---------------------------------------------------------------------------
+# Memory
+# ---------------------------------------------------------------------------
+
+memory:
+  enabled: true
+  # Hermes' persistent memory is per-project. Useful here so the agent
+  # accumulates corpus knowledge and prompt-tuning lessons across runs.
+  store: ~/.hermes/memory/alongside-content
+
+# ---------------------------------------------------------------------------
+# Tools — built-in
+# ---------------------------------------------------------------------------
+
+tools:
+  filesystem:
+    enabled: true
+    # Restrict writes to module output folders + snapshot directory.
+    write_allowlist:
+      - "/Users/abhi/Documents/GitHub/hypercare/content/modules/**"
+      - "/Users/abhi/Documents/GitHub/hypercare/packages/content/corpus/snapshots/**"
+    read_allowlist:
+      - "/Users/abhi/Documents/GitHub/hypercare/**"
+
+  web:
+    enabled: true
+    # Capture HTML to snapshot path on every fetch (Citation Agent enforces presence).
+    snapshot_dir: /Users/abhi/Documents/GitHub/hypercare/packages/content/corpus/snapshots/
+    snapshot_on_fetch: true
+
+  python:
+    enabled: true
+    # Used for: jsonschema validation, URL HEAD checks, branch-key computation,
+    # rubric scoring. Sandboxed.
+    backend: docker
+    timeout_seconds: 60
+
+  schedule:
+    enabled: false   # not used in content production
+
+# ---------------------------------------------------------------------------
+# Skills — Hermes can drop custom skills under ~/.hermes/plugins/
+# ---------------------------------------------------------------------------
+
+skills:
+  enabled: true
+  config:
+    # Validators and helpers for module-bundle work.
+    # If the operator adds custom Hermes skills (Python plugins), they read these.
+    rubric_path: /Users/abhi/Documents/GitHub/hypercare/hermes/critique-rubric.json
+    corpus_manifest: /Users/abhi/Documents/GitHub/hypercare/packages/content/corpus/manifest.yaml
+    seeded_voice_modules:
+      - /Users/abhi/Documents/GitHub/hypercare/content/modules/behavior-sundowning.md
+      - /Users/abhi/Documents/GitHub/hypercare/content/modules/daily-bathing-resistance.md
+      - /Users/abhi/Documents/GitHub/hypercare/content/modules/self-care-caregiver-burnout.md
+
+# ---------------------------------------------------------------------------
+# Logging
+# ---------------------------------------------------------------------------
+
+logging:
+  level: info
+  # Per-module-run log directory; useful for the post-sprint retro.
+  per_run_log_dir: /Users/abhi/Documents/GitHub/hypercare/hermes/run-logs/
+  redact_secrets: true
+
+# ---------------------------------------------------------------------------
+# Safety rails
+# ---------------------------------------------------------------------------
+
+safety:
+  # Hermes will refuse to write outside the allowlists above. Belt-and-braces.
+  block_external_writes: true
+  # Hermes will refuse to call any tool that mutates git state.
+  block_git_mutations: true
+  # Hermes will refuse to read or write packages/safety/src/scripts/* (escalation
+  # scripts are human-only).
+  block_paths:
+    - "/Users/abhi/Documents/GitHub/hypercare/packages/safety/src/scripts/**"

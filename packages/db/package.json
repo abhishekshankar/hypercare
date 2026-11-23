@@ -1,5 +1,5 @@
 {
-  "name": "@hypercare/db",
+  "name": "@alongside/db",
   "version": "0.0.0",
   "private": true,
   "type": "module",
@@ -9,15 +9,35 @@
     ".": {
       "types": "./dist/index.d.ts",
       "import": "./dist/index.js"
+    },
+    "./library-search-score": {
+      "types": "./dist/library/library-search-score.d.ts",
+      "import": "./dist/library/library-search-score.js"
     }
   },
   "scripts": {
-    "build": "tsc -p tsconfig.json",
-    "lint": "eslint src --max-warnings 0",
-    "typecheck": "tsc -p tsconfig.json --noEmit",
-    "test": "node -e \"process.exit(0)\""
+    "build": "node ../../node_modules/typescript/lib/tsc.js -p tsconfig.json",
+    "generate": "drizzle-kit generate --config drizzle.config.ts",
+    "migrate": "node ../../node_modules/tsx/dist/cli.mjs src/migrate.ts",
+    "studio": "drizzle-kit studio --config drizzle.config.ts",
+    "lint": "eslint src test --max-warnings 0",
+    "typecheck": "node ../../node_modules/typescript/lib/tsc.js -p tsconfig.json --noEmit && node ../../node_modules/typescript/lib/tsc.js -p tsconfig.test.json --noEmit",
+    "test": "node ../../node_modules/vitest/vitest.mjs run",
+    "seed:topics": "node ../../node_modules/tsx/dist/cli.mjs scripts/seed-topics.ts",
+    "retention:cron": "node ../../node_modules/tsx/dist/cli.mjs src/scripts/retention-cron.ts",
+    "admin:forget": "node ../../node_modules/tsx/dist/cli.mjs src/scripts/admin-forget.ts"
   },
   "devDependencies": {
-    "typescript": "^5.9.3"
+    "@types/node": "^25.6.0",
+    "drizzle-kit": "^0.31.10",
+    "tsx": "^4.21.0",
+    "typescript": "^5.9.3",
+    "vitest": "^3.2.4"
+  },
+  "dependencies": {
+    "@alongside/model-router": "workspace:*",
+    "drizzle-orm": "^0.45.2",
+    "postgres": "^3.4.9",
+    "zod": "^4.3.6"
   }
 }

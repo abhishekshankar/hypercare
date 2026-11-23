@@ -1,5 +1,6 @@
 node_modules
 .next
+.open-next
 cdk.out
 .env*
 !.env.example
@@ -8,3 +9,6 @@ dist
 infra/dist
 *.tsbuildinfo
 .DS_Store
+.gstack/
+# Accidental duplicate install (local machine)
+node_modules 2/

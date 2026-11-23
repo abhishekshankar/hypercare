@@ -1,0 +1,5 @@
+# Keep only `latest.json` / `latest.md` in git; timestamped runs are local/CI artifacts.
+reports/*/*.json
+!reports/*/latest.json
+reports/*/*.md
+!reports/*/latest.md

@@ -1,4 +1,4 @@
-# Hypercare — Project Brief for Cursor
+# Alongside — Project Brief for Cursor
 
 > Read this file before touching any ticket. It defines the contract.
 
@@ -23,7 +23,7 @@ PM does not write feature code. Cursor does not invent stack choices. If a ticke
 | API           | Next.js Route Handlers (server actions where they fit)                                                                                      | No separate AppSync layer in v1; revisit if mobile arrives.                                                 |
 | DB            | Aurora PostgreSQL Serverless v2                                                                                                             | One cluster, two databases: `hypercare_dev`, `hypercare_prod`.                                              |
 | Vector        | `pgvector` extension on the same Aurora cluster                                                                                             | One store, simpler ops. PRD §9.4.                                                                           |
-| Auth          | **AWS Cognito user pool — shared with the other project (the "main" project).** Hypercare is a **second app client** on that existing pool. | See §4.                                                                                                     |
+| Auth          | **AWS Cognito user pool — shared with the other project (the "main" project).** Alongside is a **second app client** on that existing pool. | See §4.                                                                                                     |
 | LLM           | AWS Bedrock                                                                                                                                 | Claude Sonnet/Opus for generation; Claude Haiku for the safety classifier and the post-generation verifier. |
 | Embeddings    | Bedrock-hosted embedding model (Titan Text Embeddings v2 to start)                                                                          | Tickets may revisit if retrieval quality is weak.                                                           |
 | Reranker      | Cohere Rerank via Bedrock if available, else skip in v1                                                                                     | Decision deferred to the retrieval ticket.                                                                  |
@@ -42,11 +42,12 @@ PM does not write feature code. Cursor does not invent stack choices. If a ticke
   PROJECT_BRIEF.md       this file
   TASKS.md               sprint board
   tasks/                 individual ticket files (TASK-NNN-slug.md)
-  docs/                  ADRs, runbooks, schema notes
+  docs/                  ADRs, runbooks, schema notes (incl. `schema-v1.md`, `auth-runbook.md`)
   apps/web/              Next.js app
   packages/              shared TS packages (only when needed; default to apps/web)
     db/                  drizzle schema + migrations
     rag/                 retrieval + prompt composition + verification
+    model-router/        Layer-5 answer model policy (YAML + `selectModel`; TASK-042)
     safety/              classifier + escalation flows
     eval/                red-team + golden-answer eval harness
   infra/                 AWS CDK app
@@ -57,18 +58,25 @@ The monorepo is **pnpm workspaces**. No Turborepo / Nx in v1 — keep it boring.
 
 ## 4. Auth integration with the other project
 
-Hypercare does **not** own user identity. The other project ("main project") owns the Cognito user pool. Hypercare is a second app client.
+Alongside does **not** own user identity. The other project ("main project") owns the Cognito user pool. Alongside is a second app client.
 
-What Cursor needs from the user (block on TASK-002 if missing):
+Cognito handoff for TASK-002 is **documented in `docs/auth-contract.md`** (pool ID, region, app client, OAuth scopes, callback and sign-out URLs, Hosted UI domain, JWKS, custom attributes — none — and client-secret notes).
 
-1. Cognito User Pool ID.
-2. Cognito region.
-3. App Client ID for Hypercare (the user creates this in the main project's Cognito console; Hypercare's CDK does **not** create the user pool).
-4. Whether the App Client uses a client secret (recommended: no, public client + PKCE).
-5. Allowed callback URLs the user has set (`http://localhost:3000/api/auth/callback`, the Amplify preview URL, and prod URL).
-6. Hosted-UI domain, if any.
+Implementation: `aws-amplify` v6 with the `auth` category configured against the existing pool. Server-side session validation via the Cognito JWKS. **No password fields in the Alongside UI** — sign-in routes through the shared Hosted UI (or a token bridge if the main project provides one). If the main project hands off via a redirect with a Cognito session cookie or a one-time code, the auth ticket will detail that flow when implemented.
 
-Implementation: `aws-amplify` v6 with the `auth` category configured against the existing pool. Server-side session validation via the Cognito JWKS. **No password fields in the Hypercare UI** — sign-in routes through the shared Hosted UI (or a token bridge if the main project provides one). If the main project hands off via a redirect with a Cognito session cookie or a one-time code, the auth ticket will detail that flow once §4.1–§4.6 above are filled in.
+**Session model (entry point):** PKCE authorization code flow, token exchange and JWKS verification on the server, **`hc_session` opaque HMAC cookie** (not a browser-visible Cognito JWT) — see [`docs/adr/0004-auth-session-model.md`](docs/adr/0004-auth-session-model.md).
+
+**Family sharing (TASK-038):** multiple caregivers can share one `care_profile` via `care_profile_members`; conversations and saved answers stay **per Cognito user** (`conversations.user_id`, `saved_answers.user_id`). Operators: invite/accept notes in [`docs/auth-runbook.md`](docs/auth-runbook.md) § “Co-caregiver invites”. Schema + retention: [`docs/schema-v1.md`](docs/schema-v1.md) § `care_profile_members` / `invite_tokens`. ADR: [`docs/adr/0027-family-sharing-data-model-and-privacy.md`](docs/adr/0027-family-sharing-data-model-and-privacy.md).
+
+### Environment variables (runtime vs operator)
+
+- **`DATABASE_URL`**: Postgres URL for the **`hypercare_app`** role; used by the Next.js app and app-owned jobs. Required for auth callback user upsert and any DB-backed route.
+- **`DATABASE_URL_ADMIN`**: Optional **operator/bootstrap** URL (admin or migration role) for tunnels, `drizzle-kit`, and one-off DBA tasks. **Do not** point the web app or `env.server.ts` at this; keep app traffic on the least-privileged role. Details: `docs/infra-runbook.md`.
+- **`BEDROCK_ANSWER_MODEL_ID`**: Optional override for the RAG answering model (Claude on Bedrock). Default is the Haiku 4.5 `us.*` system inference profile id in `packages/rag` config; set this if your account exposes a different profile id. See `docs/adr/0008-rag-pipeline-v0.md` §4.
+- **`BEDROCK_CLASSIFIER_MODEL_ID`**: Optional override for the safety classifier’s Layer B model (same default family / inference-profile pattern as the answerer). Default in `packages/safety/src/config.ts`; see `docs/adr/0008-rag-pipeline-v0.md` §4 and `docs/adr/0009-safety-classifier-v0.md` §5.
+- **`EVAL_LIVE`**: Set to `1` to run the `@alongside/eval` harness against **real** Postgres (`DATABASE_URL`) and Bedrock (unset = offline fixtures, deterministic). See `docs/adr/0011-eval-harness-v0.md`.
+- **`EVAL_USER_ID`**: Optional; when set with `EVAL_LIVE=1`, passed through as the `userId` in answer eval so `loadStage` can resolve a real `care_profile` (defaults to a synthetic `eval-answers:…` id if unset).
+- **`MODEL_ROUTING`**: Set to `1` or `true` to enable **Layer-5 model routing** (topic-aware policy + A/B cohort). Requires migration **`0021_model_routing.sql`** (`users.routing_cohort`, `model_routing_decisions`). When unset, answering uses `BEDROCK_ANSWER_MODEL_ID` / package default only and no routing decision rows are written. Policy file: `packages/model-router/config/model-routing.yaml`. Contract: `docs/adr/0030-per-user-model-routing.md`.
 
 ## 5. Conventions
 
@@ -135,9 +143,14 @@ If any acceptance criterion is unchecked, the status line is `blocked: <reason>`
 - Add a dependency that duplicates something already chosen.
 - Edit a shipped migration.
 - Commit secrets, even temporarily.
+- **Fetch, print, or log any value from AWS Secrets Manager, Parameter Store, or any other secret store** — including "just to test that it works." Reading Aurora admin credentials, Cognito client secrets, Bedrock keys, or any other sensitive material is a **PM/operator activity**, not a Cursor activity. If a ticket needs the presence of a secret verified, verify it by its ARN and metadata (`aws secretsmanager describe-secret`), never its value. If a ticket genuinely needs a secret value at runtime (e.g. a Lambda), the code retrieves it at runtime from Secrets Manager at the deployed runtime's identity — it never flows through Cursor's shell.
 - Mark a ticket complete with failing tests.
 - Skip the safety / refusal / verification layers when wiring the RAG pipeline. PRD §9 and §10 are non-negotiable.
 - Generate medical content. All content is sourced and reviewed (PRD §7, §8). The pipeline only retrieves and renders.
+
+### If Cursor accidentally exposes a secret
+
+Stop. Report it in the next message, clearly, with a one-line "SECURITY: <what leaked, where>" at the top. Do not try to clean it up silently. The PM will rotate and document. A leaked secret reported is a near-miss; a leaked secret hidden is an incident.
 
 ## 9. Where to look first
 

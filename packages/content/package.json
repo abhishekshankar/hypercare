@@ -1,0 +1,45 @@
+{
+  "name": "@alongside/content",
+  "version": "0.0.0",
+  "private": true,
+  "type": "module",
+  "main": "./dist/index.js",
+  "types": "./dist/index.d.ts",
+  "exports": {
+    ".": {
+      "types": "./dist/index.d.ts",
+      "import": "./dist/index.js"
+    },
+    "./stage-rules": {
+      "types": "./dist/stage-rules/index.d.ts",
+      "import": "./dist/stage-rules/index.js"
+    },
+    "./tools": {
+      "types": "./dist/tools/index.d.ts",
+      "import": "./dist/tools/index.js"
+    }
+  },
+  "scripts": {
+    "build": "node ../../node_modules/typescript/lib/tsc.js -p tsconfig.json",
+    "load": "node ../../node_modules/tsx/dist/cli.mjs src/cli.ts",
+    "migrate:stage-v1": "node ../../node_modules/tsx/dist/cli.mjs src/scripts/migrate-stage-v1.ts",
+    "check:ingest": "node ../../node_modules/tsx/dist/cli.mjs src/scripts/check-ingest.ts",
+    "seed:roles": "node ../../node_modules/tsx/dist/cli.mjs src/scripts/seed-roles.ts",
+    "lint": "eslint src test --max-warnings 0",
+    "typecheck": "node ../../node_modules/typescript/lib/tsc.js -p tsconfig.json --noEmit",
+    "test": "node ../../node_modules/vitest/vitest.mjs run"
+  },
+  "dependencies": {
+    "@aws-sdk/client-bedrock-runtime": "^3.1034.0",
+    "@alongside/db": "workspace:*",
+    "drizzle-orm": "^0.45.2",
+    "gray-matter": "^4.0.3",
+    "zod": "^4.3.6"
+  },
+  "devDependencies": {
+    "@types/node": "^25.6.0",
+    "tsx": "^4.21.0",
+    "typescript": "^5.9.3",
+    "vitest": "^3.2.4"
+  }
+}

@@ -1,5 +1,5 @@
 {
-  "name": "@hypercare/eval",
+  "name": "@alongside/eval",
   "version": "0.0.0",
   "private": true,
   "type": "module",
@@ -12,12 +12,29 @@
     }
   },
   "scripts": {
-    "build": "tsc -p tsconfig.json",
-    "lint": "eslint src --max-warnings 0",
-    "typecheck": "tsc -p tsconfig.json --noEmit",
-    "test": "node -e \"process.exit(0)\""
+    "build": "node ../../node_modules/typescript/lib/tsc.js -p tsconfig.json",
+    "lint": "eslint src test --max-warnings 0",
+    "typecheck": "node ../../node_modules/typescript/lib/tsc.js -p tsconfig.json --noEmit && node ../../node_modules/typescript/lib/tsc.js -p tsconfig.test.json --noEmit",
+    "test": "node ../../node_modules/vitest/vitest.mjs run",
+    "start": "tsx src/cli.ts",
+    "eval": "tsx src/cli.ts",
+    "redteam:live": "EVAL_LIVE=1 tsx src/cli.ts -- redteam",
+    "redteam:offline": "tsx src/cli.ts -- redteam --offline",
+    "redteam:v2": "tsx src/cli.ts -- redteam:v2",
+    "redteam:v2:gate": "tsx src/cli.ts -- redteam:v2 --offline --gate"
+  },
+  "dependencies": {
+    "@alongside/db": "workspace:*",
+    "@alongside/rag": "workspace:*",
+    "@alongside/safety": "workspace:*",
+    "drizzle-orm": "^0.45.2",
+    "yaml": "^2.8.0",
+    "zod": "^4.3.6"
   },
   "devDependencies": {
-    "typescript": "^5.9.3"
+    "@types/node": "^25.6.0",
+    "tsx": "^4.21.0",
+    "typescript": "^5.9.3",
+    "vitest": "^3.2.4"
   }
 }

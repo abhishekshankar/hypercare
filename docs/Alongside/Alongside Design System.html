@@ -1,0 +1,1336 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<title>Alongside — Design System v1.0</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Source+Serif+4:ital,opsz,wght@0,8..60,300..700;1,8..60,300..700&family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+<style>
+  :root {
+    /* ── Neutrals (light) ── Warm paper, never blue-white ── */
+    --paper:        #F7F4EE;  /* page bg */
+    --paper-2:      #EFEAE1;  /* surface */
+    --paper-3:      #E4DDD0;  /* surface raised / hover */
+    --rule:         #D8CFBE;  /* hairline border */
+    --rule-strong:  #B8AD96;
+    --ink:          #1B1A17;  /* primary text, near-black */
+    --ink-2:        #3A3733;  /* secondary text */
+    --ink-3:        #5E5952;  /* tertiary / caption */
+    --ink-4:        #8A847B;  /* placeholder, disabled ink */
+
+    /* ── Warm primary ── moss, not forest; calmer, less corporate ── */
+    --moss:         #415A3E;  /* primary */
+    --moss-ink:     #2C3E2A;  /* primary hover */
+    --moss-wash:    #E5E7DC;  /* primary-tinted surface */
+    --moss-rule:    #B9C0AC;
+
+    /* ── Urgency accent ── burnt amber, not red ── */
+    --amber:        #B8531A;  /* crisis strip, escalation */
+    --amber-ink:    #8A3D10;  /* pressed / hover */
+    --amber-wash:   #F6E6D6;
+
+    /* ── Semantic ── muted, serious ── */
+    --success:      #2F6A4A;
+    --success-wash: #E1ECE3;
+    --warning:      #8A5A0C;
+    --warning-wash: #F4E8D0;
+    --error:        #A1291B;
+    --error-wash:   #F3DAD4;
+    --info:         #3A5F76;
+    --info-wash:    #DDE6EC;
+
+    /* ── Focus ── */
+    --focus:        #6B8E68;   /* light-mode focus ring */
+    --focus-ink:    #1B1A17;
+
+    /* ── Elevation (restrained, tinted) ── */
+    --shadow-1: 0 1px 0 rgba(27,26,23,.04), 0 1px 2px rgba(27,26,23,.04);
+    --shadow-2: 0 1px 0 rgba(27,26,23,.04), 0 6px 16px -6px rgba(27,26,23,.10);
+    --shadow-3: 0 1px 0 rgba(27,26,23,.04), 0 18px 40px -20px rgba(27,26,23,.18);
+
+    /* ── Type ── */
+    --serif: 'Source Serif 4', Georgia, 'Times New Roman', serif;
+    --sans:  'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+
+    /* ── Spacing (8pt grid, with 4 as half-step) ── */
+    --s-0: 0;
+    --s-1: 4px;
+    --s-2: 8px;
+    --s-3: 12px;
+    --s-4: 16px;
+    --s-5: 24px;
+    --s-6: 32px;
+    --s-7: 48px;
+    --s-8: 64px;
+    --s-9: 96px;
+
+    /* ── Radius ── */
+    --r-0: 0;
+    --r-1: 4px;   /* chip, input, small */
+    --r-2: 8px;   /* card */
+    --r-3: 12px;  /* modal, sheet */
+    --r-pill: 999px;
+  }
+
+  [data-theme="dark"] {
+    --paper:        #141413;
+    --paper-2:      #1D1C1A;
+    --paper-3:      #27251F;
+    --rule:         #35322B;
+    --rule-strong:  #56524A;
+    --ink:          #F0ECE3;
+    --ink-2:        #C9C3B5;
+    --ink-3:        #9A9587;
+    --ink-4:        #6F6A5D;
+
+    --moss:         #A8BE9F;
+    --moss-ink:     #C1D4B8;
+    --moss-wash:    #232820;
+    --moss-rule:    #3E4A38;
+
+    --amber:        #E39A68;
+    --amber-ink:    #F1B486;
+    --amber-wash:   #2B1E14;
+
+    --success:      #8AB89A;
+    --success-wash: #1C2820;
+    --warning:      #D6B066;
+    --warning-wash: #2A2316;
+    --error:        #E08478;
+    --error-wash:   #2A1815;
+    --info:         #8FB1C3;
+    --info-wash:    #18232B;
+
+    --focus:        #C1D4B8;
+    --focus-ink:    #F0ECE3;
+
+    --shadow-1: 0 1px 0 rgba(0,0,0,.25), 0 1px 2px rgba(0,0,0,.35);
+    --shadow-2: 0 1px 0 rgba(0,0,0,.3),  0 8px 20px -8px rgba(0,0,0,.55);
+    --shadow-3: 0 1px 0 rgba(0,0,0,.3),  0 22px 50px -20px rgba(0,0,0,.7);
+  }
+
+  * { box-sizing: border-box; }
+  html { scroll-behavior: smooth; }
+  @media (prefers-reduced-motion: reduce) {
+    html { scroll-behavior: auto; }
+    *, *::before, *::after {
+      animation-duration: 0.01ms !important;
+      transition-duration: 0.01ms !important;
+    }
+  }
+
+  body {
+    margin: 0;
+    background: var(--paper);
+    color: var(--ink);
+    font-family: var(--sans);
+    font-size: 17px;
+    line-height: 1.6;
+    -webkit-font-smoothing: antialiased;
+    text-rendering: optimizeLegibility;
+  }
+
+  /* ── Layout ── */
+  .shell {
+    display: grid;
+    grid-template-columns: 240px minmax(0, 1fr);
+    max-width: 1240px;
+    margin: 0 auto;
+    padding: 0 40px;
+    gap: 64px;
+  }
+  @media (max-width: 900px) {
+    .shell { grid-template-columns: 1fr; padding: 0 24px; gap: 0; }
+    .nav { display: none; }
+  }
+
+  /* ── Masthead ── */
+  .masthead {
+    border-bottom: 1px solid var(--rule);
+    padding: 28px 0 24px;
+    margin-bottom: 48px;
+  }
+  .masthead-inner {
+    max-width: 1240px; margin: 0 auto; padding: 0 40px;
+    display: flex; align-items: baseline; justify-content: space-between; gap: 24px;
+    flex-wrap: wrap;
+  }
+  .wordmark {
+    font-family: var(--serif);
+    font-weight: 500;
+    font-size: 28px;
+    letter-spacing: -0.01em;
+  }
+  .wordmark em { font-style: italic; font-weight: 400; color: var(--moss); }
+  .masthead-meta {
+    font-family: var(--sans);
+    font-size: 12px;
+    letter-spacing: 0.12em;
+    text-transform: uppercase;
+    color: var(--ink-3);
+  }
+  .theme-toggle {
+    appearance: none; border: 1px solid var(--rule); background: var(--paper-2);
+    padding: 8px 14px; border-radius: var(--r-pill); font: inherit;
+    font-size: 12px; letter-spacing: 0.12em; text-transform: uppercase; color: var(--ink-2);
+    cursor: pointer; min-height: 36px;
+  }
+  .theme-toggle:hover { background: var(--paper-3); }
+  .theme-toggle:focus-visible { outline: 2px solid var(--focus); outline-offset: 2px; }
+
+  /* ── Nav ── */
+  .nav {
+    position: sticky; top: 24px; align-self: start;
+    padding: 16px 0;
+    border-top: 1px solid var(--rule);
+  }
+  .nav-label {
+    font-size: 11px; letter-spacing: 0.18em; text-transform: uppercase;
+    color: var(--ink-3); margin: 0 0 12px;
+  }
+  .nav ol { list-style: none; padding: 0; margin: 0; counter-reset: nav; }
+  .nav li { counter-increment: nav; }
+  .nav a {
+    display: block; padding: 6px 0; color: var(--ink-2);
+    text-decoration: none; font-size: 14px;
+    border-bottom: 1px dotted transparent;
+  }
+  .nav a::before {
+    content: counter(nav, decimal-leading-zero) "  ";
+    color: var(--ink-4); font-variant-numeric: tabular-nums;
+  }
+  .nav a:hover { color: var(--ink); }
+
+  /* ── Content ── */
+  main { min-width: 0; padding-bottom: 120px; }
+  section { margin-bottom: 96px; scroll-margin-top: 24px; }
+  .kicker {
+    font-size: 11px; letter-spacing: 0.22em; text-transform: uppercase;
+    color: var(--moss); font-weight: 600; margin: 0 0 12px;
+  }
+  h1.display {
+    font-family: var(--serif);
+    font-weight: 400;
+    font-size: clamp(40px, 6vw, 64px);
+    line-height: 1.05;
+    letter-spacing: -0.02em;
+    margin: 0 0 20px;
+    max-width: 18ch;
+  }
+  h1.display em { font-style: italic; color: var(--moss); }
+  .lede {
+    font-family: var(--serif);
+    font-weight: 300;
+    font-size: 22px;
+    line-height: 1.5;
+    color: var(--ink-2);
+    max-width: 62ch;
+    margin: 0 0 24px;
+  }
+  h2 {
+    font-family: var(--serif);
+    font-weight: 400;
+    font-size: 36px;
+    line-height: 1.15;
+    letter-spacing: -0.015em;
+    margin: 0 0 8px;
+  }
+  h2 em { font-style: italic; color: var(--moss); }
+  .section-intro {
+    color: var(--ink-2); max-width: 62ch; font-size: 17px;
+    margin: 0 0 32px;
+  }
+  h3 {
+    font-family: var(--sans);
+    font-weight: 600;
+    font-size: 15px;
+    letter-spacing: 0.12em;
+    text-transform: uppercase;
+    color: var(--ink-2);
+    margin: 40px 0 16px;
+    padding-bottom: 8px;
+    border-bottom: 1px solid var(--rule);
+  }
+  h4 {
+    font-family: var(--sans);
+    font-weight: 600;
+    font-size: 15px;
+    margin: 24px 0 8px;
+    color: var(--ink);
+  }
+  p { margin: 0 0 16px; max-width: 68ch; color: var(--ink-2); }
+  p strong { color: var(--ink); font-weight: 600; }
+
+  .rationale {
+    border-left: 2px solid var(--moss);
+    padding: 2px 0 2px 16px;
+    margin: 16px 0 24px;
+    color: var(--ink-2);
+    font-family: var(--serif);
+    font-size: 17px;
+    line-height: 1.55;
+    font-style: italic;
+    max-width: 60ch;
+  }
+  .rationale strong { font-style: normal; font-family: var(--sans); font-weight: 600; color: var(--ink); letter-spacing: 0.04em; font-size: 13px; text-transform: uppercase; display: block; margin-bottom: 4px; }
+
+  /* ── Tables ── */
+  table {
+    width: 100%;
+    border-collapse: collapse;
+    font-size: 14px;
+    margin: 0 0 24px;
+    font-variant-numeric: tabular-nums;
+  }
+  th, td {
+    text-align: left; padding: 12px 16px;
+    border-bottom: 1px solid var(--rule);
+    vertical-align: top;
+  }
+  th {
+    font-weight: 600; font-size: 11px; letter-spacing: 0.14em;
+    text-transform: uppercase; color: var(--ink-3);
+    border-bottom: 1px solid var(--rule-strong);
+  }
+  td code {
+    font-family: ui-monospace, SFMono-Regular, Menlo, monospace;
+    font-size: 13px; background: var(--paper-2); padding: 2px 6px;
+    border-radius: var(--r-1); color: var(--ink);
+  }
+  tbody tr:hover { background: var(--paper-2); }
+
+  /* ── Swatches ── */
+  .swatch-grid {
+    display: grid; grid-template-columns: repeat(auto-fill, minmax(220px, 1fr));
+    gap: 16px; margin: 16px 0 32px;
+  }
+  .swatch {
+    border: 1px solid var(--rule);
+    border-radius: var(--r-2);
+    background: var(--paper-2);
+    overflow: hidden;
+  }
+  .swatch-chip {
+    height: 88px;
+    border-bottom: 1px solid var(--rule);
+    display: flex; align-items: flex-end; padding: 12px;
+  }
+  .swatch-chip .hex {
+    font-family: ui-monospace, monospace;
+    font-size: 12px; padding: 3px 6px;
+    background: rgba(255,255,255,.85); border-radius: var(--r-1);
+    color: #111;
+  }
+  .swatch.on-dark .swatch-chip .hex { background: rgba(0,0,0,.55); color: #fff; }
+  .swatch-body { padding: 12px 14px; font-size: 13px; line-height: 1.45; }
+  .swatch-name { font-weight: 600; color: var(--ink); }
+  .swatch-use { color: var(--ink-3); margin-top: 2px; }
+  .swatch-ratio { color: var(--ink-3); font-size: 12px; margin-top: 6px; font-family: ui-monospace, monospace; }
+  .swatch-ratio b { color: var(--ink); font-weight: 600; }
+
+  /* ── Type specimens ── */
+  .specimen {
+    border: 1px solid var(--rule);
+    border-radius: var(--r-2);
+    background: var(--paper-2);
+    padding: 24px;
+    margin: 12px 0;
+  }
+  .specimen-meta {
+    display: flex; gap: 16px; flex-wrap: wrap;
+    font-family: ui-monospace, monospace;
+    font-size: 12px; color: var(--ink-3);
+    margin-bottom: 14px;
+    padding-bottom: 12px;
+    border-bottom: 1px dashed var(--rule);
+  }
+  .specimen-meta b { color: var(--ink); font-weight: 600; }
+  .spec-display { font-family: var(--serif); font-weight: 400; font-size: 56px; line-height: 1.05; letter-spacing: -0.02em; color: var(--ink); }
+  .spec-display em { font-style: italic; color: var(--moss); }
+  .spec-h1 { font-family: var(--serif); font-weight: 400; font-size: 40px; line-height: 1.1; letter-spacing: -0.015em; color: var(--ink); }
+  .spec-h2 { font-family: var(--serif); font-weight: 400; font-size: 30px; line-height: 1.2; color: var(--ink); }
+  .spec-h3 { font-family: var(--sans); font-weight: 600; font-size: 22px; line-height: 1.3; color: var(--ink); }
+  .spec-h4 { font-family: var(--sans); font-weight: 600; font-size: 18px; line-height: 1.4; color: var(--ink); }
+  .spec-body-lg { font-family: var(--serif); font-weight: 400; font-size: 19px; line-height: 1.55; color: var(--ink-2); max-width: 62ch; }
+  .spec-body { font-family: var(--sans); font-weight: 400; font-size: 17px; line-height: 1.6; color: var(--ink-2); max-width: 64ch; }
+  .spec-small { font-family: var(--sans); font-weight: 400; font-size: 15px; line-height: 1.5; color: var(--ink-3); }
+  .spec-caption { font-family: var(--sans); font-weight: 600; font-size: 12px; line-height: 1.4; letter-spacing: 0.14em; text-transform: uppercase; color: var(--ink-3); }
+
+  /* ── Tokens display ── */
+  .token-grid {
+    display: grid; grid-template-columns: repeat(auto-fill, minmax(160px, 1fr));
+    gap: 12px; margin: 16px 0 24px;
+  }
+  .token {
+    border: 1px solid var(--rule); border-radius: var(--r-2);
+    background: var(--paper-2); padding: 14px;
+    font-family: ui-monospace, monospace; font-size: 12px;
+  }
+  .token .viz {
+    background: var(--paper); border: 1px solid var(--rule);
+    height: 48px; margin-bottom: 10px; border-radius: var(--r-1);
+    display: flex; align-items: center; justify-content: center;
+    color: var(--ink-3);
+  }
+  .token .name { color: var(--ink); font-weight: 600; }
+  .token .val { color: var(--ink-3); }
+
+  .radius-demo { background: var(--moss-wash); border: 1px solid var(--moss-rule); width: 100%; height: 100%; }
+  .elev-demo { background: var(--paper); width: 64%; height: 64%; border-radius: var(--r-2); }
+  .elev-1 { box-shadow: var(--shadow-1); }
+  .elev-2 { box-shadow: var(--shadow-2); }
+  .elev-3 { box-shadow: var(--shadow-3); }
+
+  /* ── Components area ── */
+  .demo {
+    border: 1px solid var(--rule); border-radius: var(--r-2);
+    background: var(--paper-2); padding: 28px;
+    margin: 12px 0 24px;
+  }
+  .demo-row {
+    display: flex; flex-wrap: wrap; gap: 12px; align-items: center;
+    margin-bottom: 8px;
+  }
+  .demo-label {
+    font-size: 11px; letter-spacing: 0.16em; text-transform: uppercase;
+    color: var(--ink-3); width: 100%;
+    margin: 12px 0 4px;
+  }
+  .demo-label:first-child { margin-top: 0; }
+
+  /* ── BUTTONS ── */
+  .btn {
+    appearance: none; border: 1px solid transparent;
+    font-family: var(--sans); font-weight: 600; font-size: 15px;
+    padding: 0 20px;
+    min-height: 44px;
+    border-radius: var(--r-pill);
+    cursor: pointer;
+    display: inline-flex; align-items: center; justify-content: center; gap: 8px;
+    letter-spacing: 0.01em;
+    transition: background-color 150ms ease, border-color 150ms ease, color 150ms ease;
+  }
+  .btn:focus-visible { outline: 2px solid var(--focus); outline-offset: 3px; }
+  .btn[disabled], .btn[aria-disabled="true"] { opacity: 0.45; cursor: not-allowed; }
+
+  .btn-primary { background: var(--moss); color: #F7F4EE; }
+  .btn-primary:hover { background: var(--moss-ink); }
+  .btn-primary:active { background: var(--moss-ink); }
+  [data-theme="dark"] .btn-primary { color: #141413; }
+
+  .btn-secondary { background: var(--paper); color: var(--ink); border-color: var(--rule-strong); }
+  .btn-secondary:hover { background: var(--paper-3); }
+  .btn-secondary:active { background: var(--paper-3); border-color: var(--ink-3); }
+
+  .btn-ghost { background: transparent; color: var(--ink); }
+  .btn-ghost:hover { background: var(--paper-2); }
+  .btn-ghost:active { background: var(--paper-3); }
+
+  .btn-destructive { background: transparent; color: var(--error); border-color: var(--error); }
+  .btn-destructive:hover { background: var(--error-wash); }
+  .btn-destructive:active { background: var(--error-wash); }
+
+  /* ── INPUT / TEXTAREA ── */
+  .field { display: flex; flex-direction: column; gap: 6px; max-width: 360px; }
+  .field label {
+    font-size: 13px; color: var(--ink-2); font-weight: 500;
+  }
+  .field .help { font-size: 13px; color: var(--ink-3); }
+  .field .error-msg { font-size: 13px; color: var(--error); }
+
+  .input, .textarea {
+    font-family: var(--sans); font-size: 17px; line-height: 1.5;
+    color: var(--ink);
+    background: var(--paper);
+    border: 1px solid var(--rule-strong);
+    border-radius: var(--r-1);
+    padding: 12px 14px;
+    min-height: 48px;
+    transition: border-color 150ms ease, box-shadow 150ms ease;
+  }
+  .input::placeholder, .textarea::placeholder { color: var(--ink-4); }
+  .input:hover, .textarea:hover { border-color: var(--ink-3); }
+  .input:focus, .textarea:focus {
+    outline: none;
+    border-color: var(--moss);
+    box-shadow: 0 0 0 3px color-mix(in srgb, var(--focus) 35%, transparent);
+  }
+  .input[aria-invalid="true"], .textarea[aria-invalid="true"] { border-color: var(--error); }
+  .input[aria-invalid="true"]:focus, .textarea[aria-invalid="true"]:focus {
+    box-shadow: 0 0 0 3px color-mix(in srgb, var(--error) 30%, transparent);
+  }
+  .input[disabled], .textarea[disabled] { background: var(--paper-2); color: var(--ink-4); cursor: not-allowed; }
+  .textarea { min-height: 120px; resize: vertical; }
+
+  /* ── CARD ── */
+  .card {
+    background: var(--paper);
+    border: 1px solid var(--rule);
+    border-radius: var(--r-2);
+    padding: 20px;
+    box-shadow: var(--shadow-1);
+    max-width: 420px;
+  }
+  .card h4 { margin: 0 0 4px; font-family: var(--serif); font-weight: 500; font-size: 20px; }
+  .card p { margin: 0; font-size: 15px; color: var(--ink-2); }
+  .card .meta {
+    font-size: 12px; letter-spacing: 0.14em; text-transform: uppercase;
+    color: var(--ink-3); margin-bottom: 10px;
+  }
+
+  /* ── CHIP ── */
+  .chip {
+    display: inline-flex; align-items: center; gap: 6px;
+    background: var(--paper-2);
+    border: 1px solid var(--rule);
+    color: var(--ink-2);
+    font-family: var(--sans); font-weight: 500; font-size: 13px;
+    padding: 6px 12px;
+    border-radius: var(--r-pill);
+    min-height: 32px;
+    cursor: pointer;
+  }
+  .chip:hover { background: var(--paper-3); }
+  .chip[aria-pressed="true"] { background: var(--moss-wash); border-color: var(--moss-rule); color: var(--moss-ink); }
+  [data-theme="dark"] .chip[aria-pressed="true"] { color: var(--moss); }
+
+  /* ── MODAL ── */
+  .modal-shell {
+    position: relative; background: rgba(27,26,23,.4); padding: 32px;
+    border-radius: var(--r-3); min-height: 320px;
+    display: flex; align-items: center; justify-content: center;
+  }
+  [data-theme="dark"] .modal-shell { background: rgba(0,0,0,.45); }
+  .modal {
+    background: var(--paper);
+    border: 1px solid var(--rule);
+    border-radius: var(--r-3);
+    box-shadow: var(--shadow-3);
+    max-width: 440px; width: 100%;
+    padding: 28px;
+  }
+  .modal h4 { margin: 0 0 8px; font-family: var(--serif); font-weight: 500; font-size: 22px; }
+  .modal p { margin: 0 0 20px; font-size: 16px; }
+  .modal-actions { display: flex; gap: 10px; justify-content: flex-end; }
+
+  /* ── BANNER / STRIP ── */
+  .strip {
+    display: flex; align-items: center; gap: 16px;
+    padding: 14px 18px;
+    border-radius: var(--r-2);
+    border: 1px solid;
+    font-size: 15px; line-height: 1.45;
+  }
+  .strip strong { font-weight: 600; }
+  .strip .strip-action {
+    margin-left: auto; flex-shrink: 0; font-weight: 600;
+    text-decoration: underline; text-underline-offset: 3px;
+    color: inherit; cursor: pointer;
+  }
+  .strip-crisis { background: var(--amber-wash); color: var(--amber-ink); border-color: var(--amber); }
+  [data-theme="dark"] .strip-crisis { color: var(--amber-ink); border-color: var(--amber); }
+  .strip-info    { background: var(--info-wash); color: var(--info); border-color: color-mix(in srgb, var(--info) 45%, transparent); }
+  .strip-warning { background: var(--warning-wash); color: var(--warning); border-color: color-mix(in srgb, var(--warning) 45%, transparent); }
+  .strip-success { background: var(--success-wash); color: var(--success); border-color: color-mix(in srgb, var(--success) 45%, transparent); }
+  .strip-error   { background: var(--error-wash); color: var(--error); border-color: color-mix(in srgb, var(--error) 45%, transparent); }
+
+  /* Full-width top-of-app crisis strip */
+  .crisis-strip {
+    background: var(--amber);
+    color: #FFF7EE;
+    padding: 12px 20px;
+    display: flex; gap: 16px; align-items: center;
+    font-size: 15px; font-weight: 500;
+    border-radius: var(--r-2);
+  }
+  .crisis-strip a { color: inherit; font-weight: 700; text-decoration: underline; text-underline-offset: 3px; }
+  .crisis-strip .dot {
+    width: 8px; height: 8px; background: #FFF7EE; border-radius: 50%;
+    box-shadow: 0 0 0 3px rgba(255,247,238,.25);
+    flex-shrink: 0;
+  }
+
+  /* ── LIST ITEM ── */
+  .list {
+    border: 1px solid var(--rule);
+    border-radius: var(--r-2);
+    background: var(--paper);
+    max-width: 520px;
+    overflow: hidden;
+  }
+  .list-item {
+    display: flex; align-items: center; gap: 16px;
+    padding: 16px 20px;
+    min-height: 56px;
+    border-bottom: 1px solid var(--rule);
+    cursor: pointer;
+    text-decoration: none; color: inherit;
+  }
+  .list-item:last-child { border-bottom: none; }
+  .list-item:hover { background: var(--paper-2); }
+  .list-item .li-title { font-size: 16px; color: var(--ink); font-weight: 500; }
+  .list-item .li-sub { font-size: 14px; color: var(--ink-3); margin-top: 2px; }
+  .list-item .li-chevron { margin-left: auto; color: var(--ink-3); font-size: 18px; }
+  .list-item .li-body { flex: 1; min-width: 0; }
+  .list-item:focus-visible { outline: 2px solid var(--focus); outline-offset: -2px; }
+
+  /* ── CONVERSATION BUBBLE ── */
+  .conv {
+    display: flex; flex-direction: column; gap: 10px;
+    max-width: 440px;
+  }
+  .bubble {
+    padding: 12px 16px;
+    border-radius: 16px;
+    font-size: 16px; line-height: 1.5;
+    max-width: 80%;
+  }
+  .bubble-them {
+    background: var(--paper-2);
+    color: var(--ink);
+    border: 1px solid var(--rule);
+    align-self: flex-start;
+    border-bottom-left-radius: 4px;
+  }
+  .bubble-you {
+    background: var(--moss-wash);
+    color: var(--ink);
+    border: 1px solid var(--moss-rule);
+    align-self: flex-end;
+    border-bottom-right-radius: 4px;
+  }
+  .bubble-meta {
+    font-size: 12px; color: var(--ink-3);
+    padding: 0 4px;
+  }
+  .bubble-them + .bubble-meta { align-self: flex-start; }
+  .bubble-you + .bubble-meta { align-self: flex-end; }
+
+  /* ── Anti-patterns ── */
+  .anti-grid {
+    display: grid; grid-template-columns: repeat(auto-fit, minmax(260px, 1fr));
+    gap: 16px; margin: 16px 0 24px;
+  }
+  .anti {
+    border: 1px solid var(--rule);
+    border-radius: var(--r-2);
+    padding: 20px;
+    background: var(--paper-2);
+  }
+  .anti h4 {
+    display: flex; align-items: center; gap: 8px;
+    margin: 0 0 8px; font-family: var(--serif); font-weight: 500; font-size: 20px;
+  }
+  .anti h4::before {
+    content: ""; display: inline-block; width: 8px; height: 8px;
+    border-radius: 50%; background: var(--amber);
+  }
+  .anti p { font-size: 14px; line-height: 1.55; margin: 0; color: var(--ink-2); }
+
+  /* ── Focus ring demo ── */
+  .focus-demo {
+    display: flex; gap: 20px; align-items: center; flex-wrap: wrap;
+    padding: 24px; background: var(--paper-2);
+    border: 1px solid var(--rule); border-radius: var(--r-2);
+  }
+  .focus-ring-visual {
+    width: 120px; height: 44px; border-radius: var(--r-pill);
+    background: var(--moss);
+    outline: 2px solid var(--focus);
+    outline-offset: 3px;
+  }
+
+  /* ── Footer ── */
+  footer {
+    border-top: 1px solid var(--rule);
+    padding: 32px 0;
+    margin-top: 64px;
+    color: var(--ink-3);
+    font-size: 13px;
+  }
+  footer .wordmark { font-size: 18px; }
+
+  /* swatch backgrounds for visual accuracy (inline-safe) */
+  .bg-paper       { background: #F7F4EE; }
+  .bg-paper2      { background: #EFEAE1; }
+  .bg-paper3      { background: #E4DDD0; }
+  .bg-rule        { background: #D8CFBE; }
+  .bg-ink         { background: #1B1A17; }
+  .bg-ink2        { background: #3A3733; }
+  .bg-ink3        { background: #5E5952; }
+  .bg-ink4        { background: #8A847B; }
+  .bg-moss        { background: #415A3E; }
+  .bg-moss-ink    { background: #2C3E2A; }
+  .bg-moss-wash   { background: #E5E7DC; }
+  .bg-amber       { background: #B8531A; }
+  .bg-amber-ink   { background: #8A3D10; }
+  .bg-amber-wash  { background: #F6E6D6; }
+  .bg-success     { background: #2F6A4A; }
+  .bg-warning     { background: #8A5A0C; }
+  .bg-error       { background: #A1291B; }
+  .bg-info        { background: #3A5F76; }
+
+  /* dark-mode equivalents */
+  .bg-d-paper     { background: #141413; }
+  .bg-d-paper2    { background: #1D1C1A; }
+  .bg-d-paper3    { background: #27251F; }
+  .bg-d-ink       { background: #F0ECE3; }
+  .bg-d-ink2      { background: #C9C3B5; }
+  .bg-d-moss      { background: #A8BE9F; }
+  .bg-d-amber     { background: #E39A68; }
+  .bg-d-success   { background: #8AB89A; }
+  .bg-d-warning   { background: #D6B066; }
+  .bg-d-error     { background: #E08478; }
+  .bg-d-info      { background: #8FB1C3; }
+</style>
+</head>
+<body>
+
+<header class="masthead">
+  <div class="masthead-inner">
+    <div class="wordmark">Along<em>side</em>.</div>
+    <div class="masthead-meta">Design System · v1.0 · For engineering handoff</div>
+    <button class="theme-toggle" id="themeToggle" aria-label="Toggle dark mode">Night mode</button>
+  </div>
+</header>
+
+<div class="shell">
+
+  <aside class="nav" aria-label="Sections">
+    <div class="nav-label">Contents</div>
+    <ol>
+      <li><a href="#foundations">Foundations</a></li>
+      <li><a href="#type">Typography</a></li>
+      <li><a href="#color">Color</a></li>
+      <li><a href="#spacing">Spacing &amp; Radius</a></li>
+      <li><a href="#elevation">Elevation</a></li>
+      <li><a href="#components">Components</a></li>
+      <li><a href="#a11y">Accessibility</a></li>
+      <li><a href="#dont">What we don't do</a></li>
+    </ol>
+  </aside>
+
+  <main>
+
+    <section id="foundations">
+      <p class="kicker">A design system for Alongside</p>
+      <h1 class="display">For the person reading this at <em>3 a.m.</em>, in a dark hallway, between hard moments.</h1>
+      <p class="lede">Alongside is used by family caregivers of people with dementia — often exhausted, often older, almost always on a phone, frequently at night. This document specifies the foundational visual and interaction language of the product. It is not a marketing system. It is not a consumer SaaS system. It is a quiet, editorial system: closer to a serious publication or a thoughtful nonprofit than to a productivity app.</p>
+      <div class="rationale">
+        <strong>Principle</strong>
+        Every choice here — the type, the color, the radii, the restraint — serves one question: will this feel steady to someone who is not steady right now? When in doubt, we choose calm over clever, and legibility over personality.
+      </div>
+
+      <h3>Design principles</h3>
+      <ol>
+        <li><p><strong>Calm, not cheerful.</strong> No confetti, no streaks, no "You did it!" The reward for using Alongside is clarity, not dopamine.</p></li>
+        <li><p><strong>Readable first, beautiful second.</strong> Type sizes, contrast, and line length are chosen for a tired 65-year-old at 11&nbsp;p.m., not a designer at 2&nbsp;p.m.</p></li>
+        <li><p><strong>Editorial over interface.</strong> Where we can use words, hierarchy, and whitespace, we do. Chrome is minimal; content is primary.</p></li>
+        <li><p><strong>One warm voice.</strong> A single warm primary (moss), a single urgency accent (amber). We resist adding a third color until the product earns it.</p></li>
+        <li><p><strong>Motion you do not notice.</strong> Transitions under 200ms, no parallax, no bounce. If you see the animation, we failed.</p></li>
+      </ol>
+    </section>
+
+    <!-- ─── TYPE ─── -->
+    <section id="type">
+      <p class="kicker">01 — Typography</p>
+      <h2>A <em>quiet</em> serif for the human voice. A sans for everything else.</h2>
+      <p class="section-intro">Caregivers often read Alongside late at night on a phone they are half-holding. The type system optimizes for that reader: large minimum body size, generous line height, short line length, and a pairing that feels editorial rather than clinical.</p>
+
+      <h3>Typeface rationale</h3>
+
+      <div class="rationale">
+        <strong>Primary — Source Serif 4 (display &amp; long-form)</strong>
+        A contemporary text serif with open counters, a calm vertical axis, and a true italic (not a slant). It reads as considered and human — closer to a hospice pamphlet or a NYT Well column than to a technology brand. It replaces Georgia's warmth with better on-screen hinting, and avoids the fashion-magazine theatrics of Playfair or Didone serifs.
+      </div>
+      <div class="rationale">
+        <strong>Secondary — Inter (UI, data, labels)</strong>
+        A neutral, workmanlike grotesque with excellent screen legibility at small sizes. It carries no personality — which is what we want from UI. Inter handles the labels, form fields, buttons, and data; the serif carries voice. The pairing reads editorial rather than app-like.
+      </div>
+      <div class="rationale">
+        <strong>Fallback stack</strong>
+        <code style="font-style:normal;">Georgia, 'Times New Roman', serif</code> for the serif; <code style="font-style:normal;">-apple-system, 'Segoe UI', sans-serif</code> for the sans. Both are chosen so that when webfonts fail to load (common on older phones with poor connectivity), the fallback still reads correctly.
+      </div>
+
+      <h3>Type scale</h3>
+      <p>All sizes are in px at a base of 17px (not 16). The base was raised deliberately — see rationale below.</p>
+
+      <div class="rationale">
+        <strong>Why 17px base, not 16</strong>
+        Our target reader is often 55–75 with presbyopic vision and is reading on a phone at arm's length in dim light. 17px body, 1.6 line-height, ~62ch line length lifts the baseline reading experience out of "technically legible" and into "comfortable." On iOS, 17pt is already Apple's default body size; on Android we simply follow suit.
+      </div>
+
+      <table>
+        <thead>
+          <tr><th>Role</th><th>Font</th><th>Size / Weight</th><th>Line height</th><th>Tracking</th><th>Use</th></tr>
+        </thead>
+        <tbody>
+          <tr><td><code>display</code></td><td>Serif</td><td>56px / 400</td><td>1.05</td><td>-0.02em</td><td>Landing hero only. One per screen, max.</td></tr>
+          <tr><td><code>h1</code></td><td>Serif</td><td>40px / 400</td><td>1.10</td><td>-0.015em</td><td>Screen title. Italic for voiced moments.</td></tr>
+          <tr><td><code>h2</code></td><td>Serif</td><td>30px / 400</td><td>1.20</td><td>-0.01em</td><td>Section title within a screen.</td></tr>
+          <tr><td><code>h3</code></td><td>Sans</td><td>22px / 600</td><td>1.30</td><td>0</td><td>Sub-section. Switches to sans — shifts tone from "voice" to "structure."</td></tr>
+          <tr><td><code>h4</code></td><td>Sans</td><td>18px / 600</td><td>1.40</td><td>0</td><td>Card titles, inline headings, list group headers.</td></tr>
+          <tr><td><code>body-lg</code></td><td>Serif</td><td>19px / 400</td><td>1.55</td><td>0</td><td>Long-form reading: journal entries, articles, scripts.</td></tr>
+          <tr><td><code>body</code></td><td>Sans</td><td>17px / 400</td><td>1.60</td><td>0</td><td>Default body. Everything that is not long-form.</td></tr>
+          <tr><td><code>small</code></td><td>Sans</td><td>15px / 400</td><td>1.50</td><td>0</td><td>Secondary text, help text. Minimum size for any informational text.</td></tr>
+          <tr><td><code>caption</code></td><td>Sans</td><td>12px / 600</td><td>1.40</td><td>0.14em / UPPER</td><td>Timestamps, metadata, labels. Used sparingly.</td></tr>
+        </tbody>
+      </table>
+
+      <p><strong>Minimum size rule:</strong> no informational text below 15px, ever. Caption (12px UPPERCASE) is reserved for non-informational metadata — a user must never need to read it to complete a task.</p>
+
+      <h3>Specimens</h3>
+
+      <div class="specimen">
+        <div class="specimen-meta"><b>display</b> · Source Serif 4 · 56/59 · -0.02em</div>
+        <div class="spec-display">You're doing something <em>hard.</em></div>
+      </div>
+
+      <div class="specimen">
+        <div class="specimen-meta"><b>h1</b> · Source Serif 4 · 40/44 · -0.015em</div>
+        <div class="spec-h1">This afternoon with Mom</div>
+      </div>
+
+      <div class="specimen">
+        <div class="specimen-meta"><b>h2</b> · Source Serif 4 · 30/36</div>
+        <div class="spec-h2">What usually helps on bad days</div>
+      </div>
+
+      <div class="specimen">
+        <div class="specimen-meta"><b>h3</b> · Inter · 22/29 · 600</div>
+        <div class="spec-h3">Today's log</div>
+      </div>
+
+      <div class="specimen">
+        <div class="specimen-meta"><b>body-lg</b> · Source Serif 4 · 19/29</div>
+        <div class="spec-body-lg">She didn't recognize me for about twenty minutes tonight. I stayed in the kitchen and made tea until she came back. I know this will happen more, and I know I'm supposed to not take it personally, but I want to write it down somewhere that isn't in my head.</div>
+      </div>
+
+      <div class="specimen">
+        <div class="specimen-meta"><b>body</b> · Inter · 17/27</div>
+        <div class="spec-body">A caregiver support specialist will read your note within one business day. If something feels urgent tonight, you can reach the 24/7 line at the top of the screen.</div>
+      </div>
+
+      <div class="specimen">
+        <div class="specimen-meta"><b>small</b> · Inter · 15/22</div>
+        <div class="spec-small">You can edit or delete this note until a specialist has opened it.</div>
+      </div>
+
+      <div class="specimen">
+        <div class="specimen-meta"><b>caption</b> · Inter · 12/17 · 600 · 0.14em · UPPER</div>
+        <div class="spec-caption">Thursday · 11:42 pm · Local time</div>
+      </div>
+
+      <h3>Usage rules</h3>
+      <ul>
+        <li><p><strong>Italic is voice.</strong> Italics are reserved for the person speaking — a headline that sounds like a human saying something gentle. Never for emphasis inside body text; use sans + weight instead.</p></li>
+        <li><p><strong>Line length.</strong> Target 55–72 characters per line on any reading surface. Set <code>max-width: 62ch</code> on body containers.</p></li>
+        <li><p><strong>No ALL CAPS in body.</strong> Reserved for the caption role. Uppercase body text is harder to read, which matters here.</p></li>
+        <li><p><strong>Numbers use tabular figures</strong> in any UI context (<code>font-variant-numeric: tabular-nums</code>), so counts and timestamps don't shift.</p></li>
+      </ul>
+    </section>
+
+    <!-- ─── COLOR ─── -->
+    <section id="color">
+      <p class="kicker">02 — Color</p>
+      <h2>Warm paper. <em>Moss.</em> One flare of amber for when it matters.</h2>
+      <p class="section-intro">The palette is intentionally narrow. Neutrals are warm (never blue-white); the primary is a moss green that reads grounded rather than corporate; the urgency accent is burnt amber, not red — closer to a lamp in a dark room than an alarm. Semantic colors are muted, not saturated.</p>
+
+      <div class="rationale">
+        <strong>Why warm neutrals, not white</strong>
+        Pure white #FFFFFF on a phone at night is physically uncomfortable and emotionally cold. Our paper (<code style="font-style:normal;">#F7F4EE</code>) is a soft, recycled-paper cream; it reads serious (like a printed program, not a kids' app) and is kinder to tired eyes. The dark mode equivalent (<code style="font-style:normal;">#141413</code>) is not pure black either — it is a warm near-black that reduces halation around text on OLED screens.
+      </div>
+      <div class="rationale">
+        <strong>Why moss, not forest or teal</strong>
+        Moss (<code style="font-style:normal;">#415A3E</code>) is a low-chroma green with a brown undertone. It does not carry "success/healthy" signaling (that belongs to a separate semantic green). It is grounded and outdoorsy without feeling outdoorsy-branded. It passes AA contrast on our paper at all body sizes.
+      </div>
+      <div class="rationale">
+        <strong>Why burnt amber for urgency, not red</strong>
+        Red, in this product, would be cruel. A caregiver opening the app in the middle of a crisis does not need their screen to yell at them. Burnt amber (<code style="font-style:normal;">#B8531A</code>) communicates "this matters, attend to this" without the clinical-emergency register of red. Red is reserved strictly for the <em>error</em> semantic state (failed form submission, etc.) — not for the crisis strip.
+      </div>
+
+      <h3>Neutrals — light mode</h3>
+      <div class="swatch-grid">
+        <div class="swatch"><div class="swatch-chip bg-paper"><span class="hex">#F7F4EE</span></div><div class="swatch-body"><div class="swatch-name">paper</div><div class="swatch-use">Page background.</div></div></div>
+        <div class="swatch"><div class="swatch-chip bg-paper2"><span class="hex">#EFEAE1</span></div><div class="swatch-body"><div class="swatch-name">paper-2</div><div class="swatch-use">Surface / subtle card.</div></div></div>
+        <div class="swatch"><div class="swatch-chip bg-paper3"><span class="hex">#E4DDD0</span></div><div class="swatch-body"><div class="swatch-name">paper-3</div><div class="swatch-use">Raised / hover surface.</div></div></div>
+        <div class="swatch"><div class="swatch-chip bg-rule"><span class="hex">#D8CFBE</span></div><div class="swatch-body"><div class="swatch-name">rule</div><div class="swatch-use">Hairline border.</div></div></div>
+        <div class="swatch on-dark"><div class="swatch-chip bg-ink"><span class="hex">#1B1A17</span></div><div class="swatch-body"><div class="swatch-name">ink</div><div class="swatch-use">Primary text.</div><div class="swatch-ratio">on paper · <b>15.8:1</b> · AAA</div></div></div>
+        <div class="swatch on-dark"><div class="swatch-chip bg-ink2"><span class="hex">#3A3733</span></div><div class="swatch-body"><div class="swatch-name">ink-2</div><div class="swatch-use">Secondary text.</div><div class="swatch-ratio">on paper · <b>9.4:1</b> · AAA</div></div></div>
+        <div class="swatch on-dark"><div class="swatch-chip bg-ink3"><span class="hex">#5E5952</span></div><div class="swatch-body"><div class="swatch-name">ink-3</div><div class="swatch-use">Tertiary / caption.</div><div class="swatch-ratio">on paper · <b>5.4:1</b> · AA</div></div></div>
+        <div class="swatch"><div class="swatch-chip bg-ink4"><span class="hex">#8A847B</span></div><div class="swatch-body"><div class="swatch-name">ink-4</div><div class="swatch-use">Placeholder, disabled ink. <em>Not</em> for real content.</div><div class="swatch-ratio">on paper · 3.1:1 · AA Large only</div></div></div>
+      </div>
+
+      <h3>Brand &amp; accent — light mode</h3>
+      <div class="swatch-grid">
+        <div class="swatch on-dark"><div class="swatch-chip bg-moss"><span class="hex">#415A3E</span></div><div class="swatch-body"><div class="swatch-name">moss</div><div class="swatch-use">Primary button, primary text accent, focus tint.</div><div class="swatch-ratio">on paper · <b>7.1:1</b> · AAA</div></div></div>
+        <div class="swatch on-dark"><div class="swatch-chip bg-moss-ink"><span class="hex">#2C3E2A</span></div><div class="swatch-body"><div class="swatch-name">moss-ink</div><div class="swatch-use">Primary hover / pressed.</div><div class="swatch-ratio">on paper · <b>10.8:1</b> · AAA</div></div></div>
+        <div class="swatch"><div class="swatch-chip bg-moss-wash"><span class="hex">#E5E7DC</span></div><div class="swatch-body"><div class="swatch-name">moss-wash</div><div class="swatch-use">Selected chip, primary-tinted surface, self bubble.</div></div></div>
+        <div class="swatch on-dark"><div class="swatch-chip bg-amber"><span class="hex">#B8531A</span></div><div class="swatch-body"><div class="swatch-name">amber</div><div class="swatch-use">Crisis strip, escalation, "this matters" accent.</div><div class="swatch-ratio">on paper · <b>4.7:1</b> · AA</div></div></div>
+        <div class="swatch on-dark"><div class="swatch-chip bg-amber-ink"><span class="hex">#8A3D10</span></div><div class="swatch-body"><div class="swatch-name">amber-ink</div><div class="swatch-use">Amber hover / pressed, amber-on-wash text.</div><div class="swatch-ratio">on paper · <b>7.4:1</b> · AAA</div></div></div>
+        <div class="swatch"><div class="swatch-chip bg-amber-wash"><span class="hex">#F6E6D6</span></div><div class="swatch-body"><div class="swatch-name">amber-wash</div><div class="swatch-use">Crisis banner background (inline context).</div></div></div>
+      </div>
+
+      <h3>Semantic — light mode</h3>
+      <div class="swatch-grid">
+        <div class="swatch on-dark"><div class="swatch-chip bg-success"><span class="hex">#2F6A4A</span></div><div class="swatch-body"><div class="swatch-name">success</div><div class="swatch-use">Saved, sent, completed — small confirmations.</div><div class="swatch-ratio">on paper · <b>5.8:1</b> · AA</div></div></div>
+        <div class="swatch on-dark"><div class="swatch-chip bg-warning"><span class="hex">#8A5A0C</span></div><div class="swatch-body"><div class="swatch-name">warning</div><div class="swatch-use">"Heads up" — reversible concerns.</div><div class="swatch-ratio">on paper · <b>5.2:1</b> · AA</div></div></div>
+        <div class="swatch on-dark"><div class="swatch-chip bg-error"><span class="hex">#A1291B</span></div><div class="swatch-body"><div class="swatch-name">error</div><div class="swatch-use">Form validation, destructive confirmation.</div><div class="swatch-ratio">on paper · <b>6.1:1</b> · AA</div></div></div>
+        <div class="swatch on-dark"><div class="swatch-chip bg-info"><span class="hex">#3A5F76</span></div><div class="swatch-body"><div class="swatch-name">info</div><div class="swatch-use">Neutral informational banner.</div><div class="swatch-ratio">on paper · <b>5.9:1</b> · AA</div></div></div>
+      </div>
+
+      <h3>Dark mode</h3>
+      <p>Dark mode is not an inversion. It is a separate, hand-tuned palette with warmer near-blacks and slightly desaturated tints. Primary (moss) and accent (amber) are lightened so they sit comfortably on near-black. Contrast ratios below are against the <code>paper</code> token (<code>#141413</code>) unless noted.</p>
+
+      <div class="swatch-grid">
+        <div class="swatch on-dark"><div class="swatch-chip bg-d-paper"><span class="hex">#141413</span></div><div class="swatch-body"><div class="swatch-name">paper (dark)</div><div class="swatch-use">Page background. Not pure black.</div></div></div>
+        <div class="swatch on-dark"><div class="swatch-chip bg-d-paper2"><span class="hex">#1D1C1A</span></div><div class="swatch-body"><div class="swatch-name">paper-2</div><div class="swatch-use">Surface / card.</div></div></div>
+        <div class="swatch on-dark"><div class="swatch-chip bg-d-paper3"><span class="hex">#27251F</span></div><div class="swatch-body"><div class="swatch-name">paper-3</div><div class="swatch-use">Raised / hover surface.</div></div></div>
+        <div class="swatch"><div class="swatch-chip bg-d-ink"><span class="hex">#F0ECE3</span></div><div class="swatch-body"><div class="swatch-name">ink</div><div class="swatch-use">Primary text.</div><div class="swatch-ratio">on paper · <b>15.1:1</b> · AAA</div></div></div>
+        <div class="swatch"><div class="swatch-chip bg-d-ink2"><span class="hex">#C9C3B5</span></div><div class="swatch-body"><div class="swatch-name">ink-2</div><div class="swatch-use">Secondary.</div><div class="swatch-ratio">on paper · <b>10.3:1</b> · AAA</div></div></div>
+        <div class="swatch"><div class="swatch-chip bg-d-moss"><span class="hex">#A8BE9F</span></div><div class="swatch-body"><div class="swatch-name">moss</div><div class="swatch-use">Primary (lightened).</div><div class="swatch-ratio">on paper · <b>8.9:1</b> · AAA</div></div></div>
+        <div class="swatch"><div class="swatch-chip bg-d-amber"><span class="hex">#E39A68</span></div><div class="swatch-body"><div class="swatch-name">amber</div><div class="swatch-use">Urgency (lightened).</div><div class="swatch-ratio">on paper · <b>8.2:1</b> · AAA</div></div></div>
+        <div class="swatch"><div class="swatch-chip bg-d-success"><span class="hex">#8AB89A</span></div><div class="swatch-body"><div class="swatch-name">success</div><div class="swatch-use"></div><div class="swatch-ratio">on paper · <b>7.5:1</b> · AAA</div></div></div>
+        <div class="swatch"><div class="swatch-chip bg-d-warning"><span class="hex">#D6B066</span></div><div class="swatch-body"><div class="swatch-name">warning</div><div class="swatch-use"></div><div class="swatch-ratio">on paper · <b>9.3:1</b> · AAA</div></div></div>
+        <div class="swatch"><div class="swatch-chip bg-d-error"><span class="hex">#E08478</span></div><div class="swatch-body"><div class="swatch-name">error</div><div class="swatch-use"></div><div class="swatch-ratio">on paper · <b>7.1:1</b> · AAA</div></div></div>
+        <div class="swatch"><div class="swatch-chip bg-d-info"><span class="hex">#8FB1C3</span></div><div class="swatch-body"><div class="swatch-name">info</div><div class="swatch-use"></div><div class="swatch-ratio">on paper · <b>7.8:1</b> · AAA</div></div></div>
+      </div>
+
+      <div class="rationale">
+        <strong>Contrast floors</strong>
+        All body text meets <b>AAA (7:1)</b>. All UI text and controls meet <b>AA (4.5:1)</b> minimum — we raise that to AAA wherever the text role is informational. <code style="font-style:normal;">ink-4</code> / <code style="font-style:normal;">paper-3</code> are placeholder-only tokens; they are disallowed for real content.
+      </div>
+
+      <p><strong>Contrast-checking note for engineers:</strong> the ratios above were computed against the <code>paper</code> token in each mode. If you place colored text on <code>paper-2</code> or a washed surface, re-check — the wash surfaces can drop contrast by 0.3–0.5 for mid-tone colors.</p>
+    </section>
+
+    <!-- ─── SPACING ─── -->
+    <section id="spacing">
+      <p class="kicker">03 — Spacing &amp; Radius</p>
+      <h2>Eight-point grid. Four radii. <em>No</em> exceptions.</h2>
+      <p class="section-intro">One grid, a very small radius set, no decorative spacing values. Restraint here is load-bearing: it makes the product feel composed rather than assembled.</p>
+
+      <h3>Spacing scale (8pt grid)</h3>
+      <p>Multiples of 8, with 4 as a half-step for dense in-component padding (e.g. chip internal padding). No values outside the scale.</p>
+      <div class="token-grid">
+        <div class="token"><div class="viz" style="padding: 0"><div style="width:4px; background:var(--moss); height:100%"></div></div><div class="name">s-1</div><div class="val">4px · half-step</div></div>
+        <div class="token"><div class="viz" style="padding: 0"><div style="width:8px; background:var(--moss); height:100%"></div></div><div class="name">s-2</div><div class="val">8px</div></div>
+        <div class="token"><div class="viz" style="padding: 0"><div style="width:12px; background:var(--moss); height:100%"></div></div><div class="name">s-3</div><div class="val">12px</div></div>
+        <div class="token"><div class="viz" style="padding: 0"><div style="width:16px; background:var(--moss); height:100%"></div></div><div class="name">s-4</div><div class="val">16px</div></div>
+        <div class="token"><div class="viz" style="padding: 0"><div style="width:24px; background:var(--moss); height:100%"></div></div><div class="name">s-5</div><div class="val">24px</div></div>
+        <div class="token"><div class="viz" style="padding: 0"><div style="width:32px; background:var(--moss); height:100%"></div></div><div class="name">s-6</div><div class="val">32px</div></div>
+        <div class="token"><div class="viz" style="padding: 0"><div style="width:48px; background:var(--moss); height:100%"></div></div><div class="name">s-7</div><div class="val">48px</div></div>
+        <div class="token"><div class="viz" style="padding: 0"><div style="width:64px; background:var(--moss); height:100%"></div></div><div class="name">s-8</div><div class="val">64px</div></div>
+        <div class="token"><div class="viz" style="padding: 0"><div style="width:96px; background:var(--moss); height:100%"></div></div><div class="name">s-9</div><div class="val">96px</div></div>
+      </div>
+
+      <h4>Component conventions</h4>
+      <ul>
+        <li><p><strong>Tap target minimum:</strong> 44×44px for any interactive element. Most land at 48px.</p></li>
+        <li><p><strong>Content padding on mobile:</strong> 20px horizontal, 24px vertical (s-5 both axes is acceptable).</p></li>
+        <li><p><strong>Card internal padding:</strong> 20px (s-5).</p></li>
+        <li><p><strong>Section separation:</strong> 48–64px between major blocks on mobile; 64–96px on desktop.</p></li>
+      </ul>
+
+      <h3>Radius scale</h3>
+      <div class="rationale">
+        <strong>Why small radii</strong>
+        Large radii (16px+) and pills everywhere read as playful/consumer. We use them <em>sparingly</em> — pills only for buttons and chips, where they help with tap affordance. Everything else uses 4–12px. This keeps the surface feel editorial rather than app-like.
+      </div>
+      <div class="token-grid">
+        <div class="token"><div class="viz"><div class="radius-demo" style="border-radius:0"></div></div><div class="name">r-0</div><div class="val">0 · rules, tables</div></div>
+        <div class="token"><div class="viz"><div class="radius-demo" style="border-radius:4px"></div></div><div class="name">r-1</div><div class="val">4px · inputs, chips body</div></div>
+        <div class="token"><div class="viz"><div class="radius-demo" style="border-radius:8px"></div></div><div class="name">r-2</div><div class="val">8px · cards, banners</div></div>
+        <div class="token"><div class="viz"><div class="radius-demo" style="border-radius:12px"></div></div><div class="name">r-3</div><div class="val">12px · modals, sheets</div></div>
+        <div class="token"><div class="viz"><div class="radius-demo" style="border-radius:999px; width:80%"></div></div><div class="name">r-pill</div><div class="val">buttons, chips, bubble tails</div></div>
+      </div>
+    </section>
+
+    <!-- ─── ELEVATION ─── -->
+    <section id="elevation">
+      <p class="kicker">04 — Elevation</p>
+      <h2>Three shadows. All barely visible.</h2>
+      <p class="section-intro">Elevation is used for affordance, not decoration. We do not have colored glows, large drop shadows, or floating pill chrome. Shadows are warm-tinted (slight ink warmth, not neutral gray) to match the paper.</p>
+
+      <div class="token-grid">
+        <div class="token" style="padding:0; border:none; background: transparent;">
+          <div class="viz elev-1" style="background: var(--paper); height: 96px; border:1px solid var(--rule);"></div>
+          <div style="padding: 10px 2px;">
+            <div class="name">elev-1</div>
+            <div class="val">Resting surface. Cards at rest.</div>
+          </div>
+        </div>
+        <div class="token" style="padding:0; border:none; background: transparent;">
+          <div class="viz elev-2" style="background: var(--paper); height: 96px; border:1px solid var(--rule);"></div>
+          <div style="padding: 10px 2px;">
+            <div class="name">elev-2</div>
+            <div class="val">Hover, popover, small sheet.</div>
+          </div>
+        </div>
+        <div class="token" style="padding:0; border:none; background: transparent;">
+          <div class="viz elev-3" style="background: var(--paper); height: 96px; border:1px solid var(--rule);"></div>
+          <div style="padding: 10px 2px;">
+            <div class="name">elev-3</div>
+            <div class="val">Modal, bottom sheet.</div>
+          </div>
+        </div>
+      </div>
+
+      <div class="rationale">
+        <strong>Rule of thumb</strong>
+        If you need a shadow stronger than <code style="font-style:normal;">elev-3</code>, you need a modal overlay instead. We do not stack elevations.
+      </div>
+    </section>
+
+    <!-- ─── COMPONENTS ─── -->
+    <section id="components">
+      <p class="kicker">05 — Core components</p>
+      <h2>Quiet parts that <em>behave</em>.</h2>
+      <p class="section-intro">Every component below specifies default, hover, focus, active, and disabled states. Focus states use a single consistent ring; see §06.</p>
+
+      <!-- BUTTON -->
+      <h3>Button</h3>
+      <p>Four variants. One shape (pill). Weight conveys hierarchy, never color alone. <strong>Label case is sentence case</strong>, not UPPERCASE — uppercase labels read as shouting, which this product will not do.</p>
+
+      <div class="demo">
+        <div class="demo-label">Primary · default · hover · active · focus · disabled</div>
+        <div class="demo-row">
+          <button class="btn btn-primary">Send note</button>
+          <button class="btn btn-primary" style="background: var(--moss-ink);">Send note</button>
+          <button class="btn btn-primary" style="background: var(--moss-ink); transform: translateY(0.5px);">Send note</button>
+          <button class="btn btn-primary" style="outline:2px solid var(--focus); outline-offset:3px;">Send note</button>
+          <button class="btn btn-primary" disabled>Send note</button>
+        </div>
+
+        <div class="demo-label">Secondary</div>
+        <div class="demo-row">
+          <button class="btn btn-secondary">Save draft</button>
+          <button class="btn btn-secondary" style="background:var(--paper-3);">Save draft</button>
+          <button class="btn btn-secondary" style="background:var(--paper-3); border-color:var(--ink-3);">Save draft</button>
+          <button class="btn btn-secondary" style="outline:2px solid var(--focus); outline-offset:3px;">Save draft</button>
+          <button class="btn btn-secondary" disabled>Save draft</button>
+        </div>
+
+        <div class="demo-label">Ghost</div>
+        <div class="demo-row">
+          <button class="btn btn-ghost">Cancel</button>
+          <button class="btn btn-ghost" style="background:var(--paper-2);">Cancel</button>
+          <button class="btn btn-ghost" style="background:var(--paper-3);">Cancel</button>
+          <button class="btn btn-ghost" style="outline:2px solid var(--focus); outline-offset:3px;">Cancel</button>
+          <button class="btn btn-ghost" disabled>Cancel</button>
+        </div>
+
+        <div class="demo-label">Destructive</div>
+        <div class="demo-row">
+          <button class="btn btn-destructive">Delete this entry</button>
+          <button class="btn btn-destructive" style="background:var(--error-wash);">Delete this entry</button>
+          <button class="btn btn-destructive" style="background:var(--error-wash); border-color:var(--error);">Delete this entry</button>
+          <button class="btn btn-destructive" style="outline:2px solid var(--focus); outline-offset:3px;">Delete this entry</button>
+          <button class="btn btn-destructive" disabled>Delete this entry</button>
+        </div>
+      </div>
+
+      <table>
+        <thead><tr><th>Spec</th><th>Value</th></tr></thead>
+        <tbody>
+          <tr><td>Height</td><td>44px minimum, 48px default</td></tr>
+          <tr><td>Horizontal padding</td><td>20px (s-5)</td></tr>
+          <tr><td>Radius</td><td><code>r-pill</code></td></tr>
+          <tr><td>Label</td><td>Inter 15/1 · 600 · sentence case · 0.01em tracking</td></tr>
+          <tr><td>Transition</td><td>background-color 150ms ease · no transform</td></tr>
+          <tr><td>Disabled</td><td>opacity 0.45, cursor not-allowed, no hover state</td></tr>
+        </tbody>
+      </table>
+
+      <div class="rationale">
+        <strong>No translate on hover</strong>
+        Buttons do not lift, scale, or shimmer. Caregivers tap with trembling hands and gloves; motion on hover teaches the thumb that the target is moving. Color change is the only hover signal.
+      </div>
+
+      <!-- INPUT / TEXTAREA -->
+      <h3>Input &amp; Textarea</h3>
+
+      <div class="demo" style="display: grid; grid-template-columns: repeat(auto-fit, minmax(260px, 1fr)); gap: 24px;">
+        <div class="field">
+          <label for="in1">Email</label>
+          <input class="input" id="in1" type="email" placeholder="you@yourhome.com" />
+          <div class="help">We'll only use this to reach you.</div>
+        </div>
+        <div class="field">
+          <label for="in2">Email · focused</label>
+          <input class="input" id="in2" type="email" value="ann@home.com" style="border-color: var(--moss); box-shadow: 0 0 0 3px color-mix(in srgb, var(--focus) 35%, transparent);" />
+          <div class="help">We'll only use this to reach you.</div>
+        </div>
+        <div class="field">
+          <label for="in3">Email · error</label>
+          <input class="input" id="in3" type="email" value="ann@home" aria-invalid="true" style="border-color: var(--error);" />
+          <div class="error-msg">That address looks incomplete.</div>
+        </div>
+        <div class="field">
+          <label for="in4">Email · disabled</label>
+          <input class="input" id="in4" type="email" value="on file" disabled />
+          <div class="help">Managed by your provider.</div>
+        </div>
+        <div class="field" style="grid-column: 1 / -1; max-width: 560px;">
+          <label for="ta1">What happened tonight?</label>
+          <textarea class="textarea" id="ta1" placeholder="Take your time. There's no word limit, and no one will see this tonight."></textarea>
+          <div class="help">Auto-saves as you type.</div>
+        </div>
+      </div>
+
+      <table>
+        <thead><tr><th>State</th><th>Border</th><th>Background</th><th>Ring</th></tr></thead>
+        <tbody>
+          <tr><td>Default</td><td><code>rule-strong</code></td><td><code>paper</code></td><td>—</td></tr>
+          <tr><td>Hover</td><td><code>ink-3</code></td><td><code>paper</code></td><td>—</td></tr>
+          <tr><td>Focus</td><td><code>moss</code></td><td><code>paper</code></td><td>3px · 35% <code>focus</code></td></tr>
+          <tr><td>Error</td><td><code>error</code></td><td><code>paper</code></td><td>on focus: 3px · 30% <code>error</code></td></tr>
+          <tr><td>Disabled</td><td><code>rule</code></td><td><code>paper-2</code></td><td>—</td></tr>
+        </tbody>
+      </table>
+
+      <!-- CARD -->
+      <h3>Card</h3>
+      <div class="demo" style="display: grid; grid-template-columns: repeat(auto-fit, minmax(300px, 1fr)); gap: 20px;">
+        <div class="card">
+          <div class="meta">Thursday evening</div>
+          <h4>A hard afternoon</h4>
+          <p>You wrote about the moment in the kitchen. Nina, your specialist, has read it.</p>
+        </div>
+        <div class="card" style="background: var(--paper-2); box-shadow: var(--shadow-2);">
+          <div class="meta">Hover state</div>
+          <h4>A hard afternoon</h4>
+          <p>Surface shifts to paper-2. Shadow raises to elev-2. No border color change.</p>
+        </div>
+      </div>
+
+      <table>
+        <thead><tr><th>State</th><th>Change</th></tr></thead>
+        <tbody>
+          <tr><td>Default</td><td><code>paper</code> surface, <code>rule</code> border, <code>elev-1</code></td></tr>
+          <tr><td>Hover (clickable cards only)</td><td><code>paper-2</code> surface, <code>elev-2</code></td></tr>
+          <tr><td>Focus</td><td>Adds outer focus ring (see §06); no other change</td></tr>
+          <tr><td>Active / pressed</td><td><code>paper-3</code> surface, <code>elev-1</code></td></tr>
+          <tr><td>Disabled</td><td>opacity 0.5, no hover</td></tr>
+        </tbody>
+      </table>
+
+      <!-- CHIP -->
+      <h3>Chip</h3>
+      <p>Used for filter tags, selectable categories, reactions on a journal entry.</p>
+      <div class="demo">
+        <div class="demo-row">
+          <button class="chip">This week</button>
+          <button class="chip" aria-pressed="true">This month</button>
+          <button class="chip">All time</button>
+          <button class="chip" style="background: var(--paper-3);">Hover</button>
+          <button class="chip" style="outline:2px solid var(--focus); outline-offset:3px;">Focused</button>
+          <button class="chip" disabled style="opacity:0.5; cursor:not-allowed;">Disabled</button>
+        </div>
+      </div>
+
+      <!-- MODAL -->
+      <h3>Modal</h3>
+      <div class="modal-shell">
+        <div class="modal">
+          <h4>Delete this entry?</h4>
+          <p>This will remove your note from tonight. Nina hasn't opened it yet, so she won't see it.</p>
+          <div class="modal-actions">
+            <button class="btn btn-ghost">Cancel</button>
+            <button class="btn btn-destructive">Delete</button>
+          </div>
+        </div>
+      </div>
+      <p><strong>Modal rules:</strong> Center on desktop; full-sheet from bottom on mobile (≤600px). Backdrop is <code>rgba(27,26,23,.4)</code> light / <code>rgba(0,0,0,.55)</code> dark. Close on Esc. Focus is trapped inside. Entrance is a 150ms fade — no slide, no scale.</p>
+
+      <!-- BANNER / STRIP -->
+      <h3>Banner &amp; Crisis strip</h3>
+      <p>The <strong>crisis strip</strong> is the one piece of chrome that is always visible on hard screens. It is the app's standing commitment that a human is reachable.</p>
+      <div class="demo" style="display: flex; flex-direction: column; gap: 12px;">
+        <div class="crisis-strip">
+          <span class="dot" aria-hidden="true"></span>
+          <div>If something feels urgent — <strong>call our 24/7 line at (800) 555-0142</strong> or text HELP to 741741.</div>
+          <a href="#" style="margin-left:auto;">Open crisis resources</a>
+        </div>
+        <div class="strip strip-info"><div><strong>Heads up.</strong> Nina is out Friday; messages will be read Monday morning.</div><span class="strip-action">Got it</span></div>
+        <div class="strip strip-warning"><div><strong>Your note is unsaved.</strong> We'll try to save it again in a moment.</div><span class="strip-action">Retry</span></div>
+        <div class="strip strip-success"><div><strong>Saved.</strong> Nina will read this within one business day.</div><span class="strip-action">Dismiss</span></div>
+        <div class="strip strip-error"><div><strong>Couldn't send.</strong> Your note is safe on this device.</div><span class="strip-action">Try again</span></div>
+      </div>
+
+      <div class="rationale">
+        <strong>Crisis strip is a separate component from banners</strong>
+        The crisis strip is amber, always present on hard surfaces, and never dismissible. Semantic banners (info / warning / success / error) are inline, contextual, and dismissible. Mixing the two would let a success banner sit where the crisis strip belongs.
+      </div>
+
+      <!-- LIST ITEM -->
+      <h3>List item</h3>
+      <div class="demo">
+        <div class="list">
+          <a href="#" class="list-item">
+            <div class="li-body">
+              <div class="li-title">Tonight's note</div>
+              <div class="li-sub">Read by Nina · 2 minutes ago</div>
+            </div>
+            <span class="li-chevron" aria-hidden="true">›</span>
+          </a>
+          <a href="#" class="list-item" style="background: var(--paper-2);">
+            <div class="li-body">
+              <div class="li-title">Hover state</div>
+              <div class="li-sub">Surface lifts to paper-2.</div>
+            </div>
+            <span class="li-chevron" aria-hidden="true">›</span>
+          </a>
+          <a href="#" class="list-item">
+            <div class="li-body">
+              <div class="li-title">Weekly check-in</div>
+              <div class="li-sub">Scheduled for Sunday</div>
+            </div>
+            <span class="li-chevron" aria-hidden="true">›</span>
+          </a>
+        </div>
+      </div>
+
+      <table>
+        <thead><tr><th>Spec</th><th>Value</th></tr></thead>
+        <tbody>
+          <tr><td>Min height</td><td>56px (well above 44 tap target)</td></tr>
+          <tr><td>Padding</td><td>16px vertical · 20px horizontal</td></tr>
+          <tr><td>Separator</td><td>1px <code>rule</code>, not shown on last child</td></tr>
+          <tr><td>Hover</td><td>Row background <code>paper-2</code>. No shadow.</td></tr>
+          <tr><td>Focus</td><td>Inset 2px <code>focus</code> ring (full row)</td></tr>
+          <tr><td>Active</td><td>Row background <code>paper-3</code></td></tr>
+        </tbody>
+      </table>
+
+      <!-- BUBBLE -->
+      <h3>Conversation bubble</h3>
+      <p>Used for messages between a caregiver and their assigned specialist. <strong>Not</strong> used for AI. If Alongside ever has an assistant, its UI must be visually distinct — this bubble pattern is reserved for real humans.</p>
+      <div class="demo">
+        <div class="conv">
+          <div class="bubble bubble-them">It sounds like tonight was heavy. I'm here. Do you want to talk through what happened, or just have me read it and sit with it for now?</div>
+          <div class="bubble-meta">Nina · 11:47 pm</div>
+          <div class="bubble bubble-you">Just sit with it tonight. I'll probably want to talk tomorrow.</div>
+          <div class="bubble-meta">You · 11:49 pm</div>
+          <div class="bubble bubble-them">Okay. I'll check in tomorrow morning. Sleep if you can.</div>
+          <div class="bubble-meta">Nina · 11:50 pm</div>
+        </div>
+      </div>
+
+      <table>
+        <thead><tr><th>Spec</th><th>Value</th></tr></thead>
+        <tbody>
+          <tr><td>Padding</td><td>12px × 16px</td></tr>
+          <tr><td>Radius</td><td>16px rounded; tail corner drops to 4px (bottom-left for <em>them</em>, bottom-right for <em>you</em>)</td></tr>
+          <tr><td>Max width</td><td>80% of conversation column</td></tr>
+          <tr><td>Typography</td><td>Inter 16/24. Never serif — bubbles are functional, not editorial.</td></tr>
+          <tr><td>Self bubble</td><td><code>moss-wash</code> bg, <code>moss-rule</code> border, <code>ink</code> text</td></tr>
+          <tr><td>Other bubble</td><td><code>paper-2</code> bg, <code>rule</code> border, <code>ink</code> text</td></tr>
+          <tr><td>Timestamp</td><td>Inter 12/17, <code>ink-3</code>, directly under author-aligned edge</td></tr>
+        </tbody>
+      </table>
+    </section>
+
+    <!-- ─── A11Y ─── -->
+    <section id="a11y">
+      <p class="kicker">06 — Accessibility</p>
+      <h2>Baked in. <em>Not a pass at the end.</em></h2>
+      <p class="section-intro">Our readers are disproportionately older, tired, and one-handed. Accessibility is a feature here, not a compliance checkbox.</p>
+
+      <h3>Minimum contrast</h3>
+      <ul>
+        <li><p><strong>Body text, help text, anything informational:</strong> AAA (7:1) minimum. If it can't clear AAA, it's not body text — it's caption, and it can't be load-bearing.</p></li>
+        <li><p><strong>UI controls, buttons, icons:</strong> AA (4.5:1) minimum against their background, including hover and disabled states.</p></li>
+        <li><p><strong>Decorative borders &amp; rules:</strong> No contrast minimum, but a second non-color affordance (shape, text, position) must always exist.</p></li>
+      </ul>
+
+      <h3>Tap targets</h3>
+      <p>Every interactive element has a minimum <strong>44 × 44pt</strong> hit area (iOS HIG floor). Most components in this system default to 48pt. Inline text links inside body copy are the only exception and must be accompanied by sufficient line-height (1.5+) to keep adjacent targets separable.</p>
+
+      <h3>Focus ring</h3>
+      <div class="focus-demo">
+        <div class="focus-ring-visual" role="img" aria-label="Focus ring visual"></div>
+        <div style="font-size: 14px; color: var(--ink-2); max-width: 40ch;">
+          <strong style="color:var(--ink);">Spec:</strong> 2px solid <code>focus</code>, 3px offset from the element. Applied via <code>:focus-visible</code> only — never on mouse click. Always visible over any background (tested on paper, paper-3, moss, amber, error, and modal backdrops). Never removed without replacement.
+        </div>
+      </div>
+
+      <h3>Motion reduction</h3>
+      <p>The system respects <code>prefers-reduced-motion: reduce</code> globally.</p>
+      <ul>
+        <li><p>Transitions longer than 10ms are clamped to 10ms.</p></li>
+        <li><p>Modal and sheet entrances swap from fade to instant-show.</p></li>
+        <li><p>Any decorative motion (skeleton shimmer, subtle pulses) is disabled.</p></li>
+        <li><p>The only motion that remains is <em>directly caused by user input</em> — e.g. a scroll, a sheet the user is dragging. Implicit motion is removed.</p></li>
+      </ul>
+
+      <h3>Language &amp; screen readers</h3>
+      <ul>
+        <li><p>All interactive elements have an accessible name (<code>aria-label</code> or visible text).</p></li>
+        <li><p>Icons are <code>aria-hidden</code> when adjacent to a text label; stand-alone icon buttons carry their own label.</p></li>
+        <li><p>Status regions (save confirmations, errors) use <code>aria-live="polite"</code>; the crisis strip is never live-announced on every page — it is a persistent landmark.</p></li>
+        <li><p>Lang is set per document; date/time formats come from the user's locale, not a hard-coded format.</p></li>
+      </ul>
+
+      <h3>Zoom &amp; reflow</h3>
+      <p>All layouts reflow cleanly at <strong>200% browser zoom</strong> without horizontal scrolling (WCAG 1.4.10). Line length is enforced via <code>ch</code>-based max-width rather than px, so text stays readable as the user scales up.</p>
+    </section>
+
+    <!-- ─── DO NOT ─── -->
+    <section id="dont">
+      <p class="kicker">07 — What we don't do</p>
+      <h2>Three <em>deliberate</em> absences.</h2>
+      <p class="section-intro">A design system is as much about what it refuses as what it includes. These three refusals are load-bearing.</p>
+
+      <div class="anti-grid">
+        <div class="anti">
+          <h4>No gradients</h4>
+          <p>Gradients — even subtle ones — read as marketing. They are the visual language of landing pages, of "sign up for our newsletter," of AI apps. Our surfaces are single flat tones of warm paper. The only place color transitions are allowed is inside photographs or illustrations chosen for editorial purpose. Backgrounds, buttons, banners, cards, and headings are all flat fills.</p>
+        </div>
+        <div class="anti">
+          <h4>No emoji in UI</h4>
+          <p>Emoji carry tone we cannot control. An emoji ✨ next to "Great job!" may feel fine to a designer and devastating to a user whose mother just didn't recognize them. Our affordances are words and shape. Status indicators use color + text (never color alone, never color + emoji). If we need a glyph, we use a stroked Lucide icon at 1.5 stroke weight, semantically labeled.</p>
+        </div>
+        <div class="anti">
+          <h4>No attention-seeking motion</h4>
+          <p>No bounce, no spring, no parallax, no confetti, no pulse to draw the eye, no floating elements, no page-transition shimmer, no animated illustrations. A caregiver's attention is already spent elsewhere. Motion in this product serves function only — a sheet opening so the user understands where they came from, a form field settling into focus. If you can <em>notice</em> the animation, it is too much.</p>
+        </div>
+      </div>
+
+      <div class="rationale">
+        <strong>The underlying test</strong>
+        For any visual or motion choice, ask: would this feel okay to someone whose day is already hard? If the answer isn't an unambiguous yes, remove it. Alongside's job is to get out of the way.
+      </div>
+    </section>
+
+    <footer>
+      <div class="wordmark">Along<em>side</em>.</div>
+      <p style="max-width:60ch; margin-top:12px;">Design System v1.0 · Foundations. Next: responsive patterns, data visualization (gentle), form flows, empty states, and the long-form writing surface. Send questions to the design team.</p>
+    </footer>
+
+  </main>
+</div>
+
+<script>
+  const toggle = document.getElementById('themeToggle');
+  const root = document.documentElement;
+  const saved = localStorage.getItem('alongside-theme');
+  if (saved === 'dark') { root.setAttribute('data-theme', 'dark'); toggle.textContent = 'Day mode'; }
+  toggle.addEventListener('click', () => {
+    const isDark = root.getAttribute('data-theme') === 'dark';
+    if (isDark) {
+      root.removeAttribute('data-theme');
+      toggle.textContent = 'Night mode';
+      localStorage.setItem('alongside-theme', 'light');
+    } else {
+      root.setAttribute('data-theme', 'dark');
+      toggle.textContent = 'Day mode';
+      localStorage.setItem('alongside-theme', 'dark');
+    }
+  });
+</script>
+
+</body>
+</html>

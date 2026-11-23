@@ -1,0 +1,57 @@
+{
+  "slug": "transitions-first-two-weeks",
+  "rubric_version": "v1.0",
+  "verdict": "pass",
+  "overall_score": 9.1,
+  "axis_scores": {
+    "clinical_depth": {
+      "score": 9,
+      "evidence": "Module names pTau217, pTau181, Fujirebio Lumipulse, Roche Elecsys, MoCA/MMSE/Mini-Cog, delirium mechanism (UTI trigger), CMS GUIDE Model (390 orgs, $2,500/yr), Lancet 2024 Commission post-diagnostic support finding, DMT existence (appropriately deferred to month-one). Blood-biomarker concordance data (91.7%/97.3%) cited with [1]. 2025-2026 framing is current. FMLA referenced with correct scope (12 weeks unpaid, 50+ employees). Depth is above pamphlet, appropriate for a transitions module that explicitly defers medical primer territory to medical-diagnosis-demystified. Branches replicate clinical content faithfully with situation-specific framing."
+    },
+    "specificity": {
+      "score": 9,
+      "evidence": "High concrete-instance density across all files: exact phone numbers (1-800-272-3900, 1-800-438-4380), cms.gov/guide URL, naela.org referral in tools, 91.7%/97.3% concordance figures, $2,500/year GUIDE reimbursement, 390 organizations, 2-4 week follow-up window, specific document list (POA, healthcare proxy, Medicare/Medicaid cards), FMLA 12-week leave, phone scripts ('I need to tell you something about Mom', 'Can I call you tonight? Something happened at Mom's appointment.'). Tools have actionable what_to_look_for detail per item. Counted >=6 concrete instances per 1000 words across module.md and branches."
+    },
+    "lived_experience": {
+      "score": 9,
+      "evidence": "All lived-experience passages tagged <!-- provenance: composite --> and written in third-person ('Many caregivers describe...', 'Adult children in this situation often describe...'). Zero first-person quotes — no fabrication risk. Module.md has 4 composite passages; each branch has 2-3 situation-specific composites. Composites are genuinely distinct per branch: early-parent-alone has 'the running calculation they cannot turn off'; early-spouse-with_caregiver has 'the loneliness of lying next to someone who is changing'; early-parent-with_other_family has 'the in-house person does not want to be organized. Your mother does not want a spreadsheet'; early-spouse-alone has 'a specific kind of guilt that comes with not being there.' Provenance tags consistent throughout."
+    },
+    "tools": {
+      "score": 9,
+      "evidence": "Two JSON checklists: things-that-can-wait.json (9 items) and first-two-weeks-action-items.json (5 items). Both have id, label, rationale, what_to_look_for per item. Actionable detail: naela.org directory in financial item, 'Four things to capture' in write-down item, GUIDE enrollment steps, FMLA mentioned in quitting-your-job deferral item. Context strings calibrate tone ('Pick one or two. Not all of them.'). Screenshot-ready structure. JSON is well-formed."
+    },
+    "branches": {
+      "score": 9,
+      "evidence": "6 branches present: 5 situation-specific + 1 any-any-any fallback. All have complete YAML frontmatter with branch_key, stage, relationship, living_situation, try_this_today. Content is genuinely tailored, not find-replaced: early-parent-with_caregiver adds anti-rearrangement advice and live-in role-reversal grief; early-parent-alone adds medication management, HIPAA release, local-contact identification, and remote safety check; early-parent-with_other_family addresses in-house vs outside caregiver dynamic; early-spouse-with_caregiver focuses on partnership grief and shared-space dignity; early-spouse-alone addresses remote spousal guilt and check-in rhythms; any-any-any is a genuine universal fallback that reads as complete on its own."
+    },
+    "emotional_handling": {
+      "score": 9,
+      "evidence": "Grief named explicitly without requiring reader to accept the label: 'You do not have to name it as grief out loud yet if that word feels too big. You can call it tired. You can call it strange. You can call it nothing.' No toxic positivity — 'This is not a crisis. It is a transition' validates without false reassurance. Branch-specific emotional handling: spousal loneliness ('the loneliness of lying next to someone who is changing'), parent-alone distance grief ('they grieve the diagnosis, and they grieve the fact that they are grieving it from somewhere else'), with_other_family guilt ('outside caregivers often feel like they have no right to be as upset as they are'). Crisis copy present in module.md and every branch with 988/emergency services. soft_flag_companion_for declared for transitions-driving-conversation."
+    },
+    "evidence_table": {
+      "score": 9,
+      "evidence": "8 claims [1]-[8], all present in evidence.json with claim_anchor, claim_text, source_id, source_title, tier, url, quoted_excerpt. All 8 have url_snapshot_path populated. url_status for [6] NIA ('405 rejects HEAD') and [7] Lancet ('403 bot protection') explained with locked snapshots available — acceptable. [8] DOL FMLA url_status 200 with snapshot. Minor JSON indentation inconsistency in [8] but valid JSON. No unanchored claims detected in module.md or any branch."
+    },
+    "related_modules": {
+      "score": 9,
+      "evidence": "5 edges in relations.json: medical-diagnosis-demystified (prerequisite), self-care-guilt-ambiguous-grief (follow_up), self-care-caregiver-burnout (follow_up), legal-advance-planning (follow_up), transitions-driving-conversation (soft_flag_companion). Types correctly used. Edges match brief's related_modules exactly. Module body explicitly defers content to prerequisite and follow_up modules at appropriate points."
+    },
+    "refusal_awareness": {
+      "score": 9,
+      "evidence": "Topics array covers actual scope: 'new-diagnosis', 'early-stage', 'ambiguous-grief', 'asking-for-help', 'advance-planning', 'blood-biomarkers', 'guide-model'. Brief 'What this module is NOT' section explicitly defers to 5 other modules. Module body mirrors deferrals: DMTs ('month-one conversation, not week-one decision'), advance planning ('month-two task'), driving ('call the clinic'). secondary_topics genuinely secondary. No scope creep."
+    },
+    "operational_metadata": {
+      "score": 9,
+      "evidence": "All operational fields present and well-calibrated: srs_suitable: false (correct — one-time transitions module), srs_difficulty_bucket: null (appropriate when srs_suitable is false), weeks_focus_eligible: true with rationale, soft_flag_companion_for: ['transitions-driving-conversation'] matches relations.json, secondary_topics: ['caregiver-burnout', 'guilt-and-grief', 'delirium-basics'] all appear in module body as secondary themes. All 6 branches have complete frontmatter."
+    },
+    "corpus_discipline": {
+      "score": 9,
+      "evidence": "Every clinical claim maps to an evidence.json row with quoted_excerpt. No 'recent research suggests' without specific source. Blood-biomarker claims trace to [1] AAIC, [2] FDA Fujirebio, [3] FDA Roche with snapshots. Lancet Commission claims trace to [7] with locked PDF. GUIDE Model to [4] CMS. FMLA to [8] DOL. Composite lived-experience passages correctly tagged, not attributed to studies. No model-knowledge-only claims detected. All web sources have snapshots."
+    }
+  },
+  "rewrite_instructions": [],
+  "consecutive_passes": 2,
+  "scored_at": "2026-04-25T15:05:00Z",
+  "scorer": "hermes_internal_critique",
+  "notes": "Third critique pass (anti-flicker). No rewrites between pass 2 and pass 3. Re-read all files: module.md, brief.md, 6 branches, 2 tools, evidence.json, relations.json. All 11 axes confirmed at 9; overall 9.1. Every previous score holds on re-examination. Bundle is internally consistent: branches are genuinely tailored (not find-replaced), evidence table is airtight (8 claims, all anchored with snapshots), emotional handling avoids both toxic positivity and despair, tools are screenshot-ready, operational metadata is well-calibrated. Voice matches seed modules. consecutive_passes = 2 — gate cleared for pending_human_review."
+}
